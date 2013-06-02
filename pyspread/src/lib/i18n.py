@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2012 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -59,14 +59,6 @@ mo_location = LOCALE_DIR
 
 # gettext initialization
 # ----------------------
-
-gettext.install(True, localedir=LOCALE_DIR, unicode=1)
-
-gettext.find(APP_NAME, mo_location)
-
-gettext.textdomain(APP_NAME)
-
-gettext.bind_textdomain_codeset(APP_NAME, "UTF-8")
 
 language = gettext.translation(APP_NAME, mo_location, languages=languages,
                                fallback=True)

@@ -40,8 +40,6 @@ from _gui_interfaces import GuiInterfaces
 from _menubars import ContextMenu
 from _chart_dialog import ChartDialog
 
-from src.config import config
-
 import src.lib.i18n as i18n
 
 import src.lib.xrect as xrect
@@ -57,19 +55,34 @@ class Grid(wx.grid.Grid, EventMixin):
     """Pyspread's main grid"""
 
     def __init__(self, main_window, *args, **kwargs):
+        S = kwargs.pop("S")
+
         self.main_window = main_window
 
         self._states()
 
         self.interfaces = GuiInterfaces(self.main_window)
 
-        dimensions = kwargs.pop("dimensions")
+        if S is None:
+            dimensions = kwargs.pop("dimensions")
+        else:
+            dimensions = S.shape
+            kwargs.pop("dimensions")
 
         wx.grid.Grid.__init__(self, main_window, *args, **kwargs)
 
+        # Cursor position on entering selection mode
+        self.sel_mode_cursor = None
+
+        # Set multi line editor
+        self.SetDefaultEditor(wx.grid.GridCellAutoWrapStringEditor())
+
         # Create new grid
-        self.code_array = CodeArray(dimensions)
-        post_command_event(self, self.GridActionNewMsg, shape=dimensions)
+        if S is None:
+            self.code_array = CodeArray(dimensions)
+            post_command_event(self, self.GridActionNewMsg, shape=dimensions)
+        else:
+            self.code_array = S
 
         _grid_table = GridTable(self, self.code_array)
         self.SetTable(_grid_table, True)
@@ -93,8 +106,8 @@ class Grid(wx.grid.Grid, EventMixin):
         self._bind()
 
         # Update toolbars
-        self.cell_handlers._update_entry_line((0, 0, 0))
-        self.cell_handlers._update_attribute_toolbar((0, 0, 0))
+        self.update_entry_line()
+        self.update_attribute_toolbar()
 
         # Focus on grid so that typing can start immediately
         self.SetFocus()
@@ -104,6 +117,9 @@ class Grid(wx.grid.Grid, EventMixin):
 
         # The currently visible table
         self.current_table = 0
+
+        # The cell that has been selected before the latest selection
+        self._last_selected_cell = 0, 0, 0
 
     def _layout(self):
         """Initial layout of grid"""
@@ -139,8 +155,8 @@ class Grid(wx.grid.Grid, EventMixin):
         # Grid events
 
         self.GetGridWindow().Bind(wx.EVT_MOTION, handlers.OnMouseMotion)
-        self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, handlers.OnMouseClick)
         self.Bind(wx.EVT_SCROLLWIN, handlers.OnScroll)
+        self.Bind(wx.grid.EVT_GRID_RANGE_SELECT, handlers.OnRangeSelected)
 
         # Context menu
 
@@ -161,38 +177,45 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_FONTSIZE, c_handlers.OnCellFontSize)
         main_window.Bind(self.EVT_CMD_FONTBOLD, c_handlers.OnCellFontBold)
         main_window.Bind(self.EVT_CMD_FONTITALICS,
-                    c_handlers.OnCellFontItalics)
+                         c_handlers.OnCellFontItalics)
         main_window.Bind(self.EVT_CMD_FONTUNDERLINE,
-                    c_handlers.OnCellFontUnderline)
+                         c_handlers.OnCellFontUnderline)
         main_window.Bind(self.EVT_CMD_FONTSTRIKETHROUGH,
-                    c_handlers.OnCellFontStrikethrough)
+                         c_handlers.OnCellFontStrikethrough)
         main_window.Bind(self.EVT_CMD_FROZEN, c_handlers.OnCellFrozen)
         main_window.Bind(self.EVT_CMD_MERGE, c_handlers.OnMerge)
         main_window.Bind(self.EVT_CMD_JUSTIFICATION,
-                    c_handlers.OnCellJustification)
+                         c_handlers.OnCellJustification)
         main_window.Bind(self.EVT_CMD_ALIGNMENT, c_handlers.OnCellAlignment)
         main_window.Bind(self.EVT_CMD_BORDERWIDTH,
-                    c_handlers.OnCellBorderWidth)
+                         c_handlers.OnCellBorderWidth)
         main_window.Bind(self.EVT_CMD_BORDERCOLOR,
-                    c_handlers.OnCellBorderColor)
+                         c_handlers.OnCellBorderColor)
         main_window.Bind(self.EVT_CMD_BACKGROUNDCOLOR,
-                    c_handlers.OnCellBackgroundColor)
+                         c_handlers.OnCellBackgroundColor)
         main_window.Bind(self.EVT_CMD_TEXTCOLOR, c_handlers.OnCellTextColor)
         main_window.Bind(self.EVT_CMD_ROTATIONDIALOG,
-                    c_handlers.OnTextRotationDialog)
+                         c_handlers.OnTextRotationDialog)
         main_window.Bind(self.EVT_CMD_TEXTROTATATION,
-                    c_handlers.OnCellTextRotation)
+                         c_handlers.OnCellTextRotation)
 
         # Cell selection events
 
         self.Bind(wx.grid.EVT_GRID_CMD_SELECT_CELL, c_handlers.OnCellSelected)
 
+        # Grid edit mode events
+
+        main_window.Bind(self.EVT_CMD_ENTER_SELECTION_MODE,
+                         handlers.OnEnterSelectionMode)
+        main_window.Bind(self.EVT_CMD_EXIT_SELECTION_MODE,
+                         handlers.OnExitSelectionMode)
+
         # Grid view events
 
         main_window.Bind(self.EVT_CMD_REFRESH_SELECTION,
-                    handlers.OnRefreshSelectedCells)
+                         handlers.OnRefreshSelectedCells)
         main_window.Bind(self.EVT_CMD_DISPLAY_GOTO_CELL_DIALOG,
-                    handlers.OnDisplayGoToCellDialog)
+                         handlers.OnDisplayGoToCellDialog)
         main_window.Bind(self.EVT_CMD_GOTO_CELL, handlers.OnGoToCell)
         main_window.Bind(self.EVT_CMD_ZOOM_IN, handlers.OnZoomIn)
         main_window.Bind(self.EVT_CMD_ZOOM_OUT, handlers.OnZoomOut)
@@ -218,7 +241,7 @@ class Grid(wx.grid.Grid, EventMixin):
         main_window.Bind(self.EVT_CMD_DELETE_TABS, handlers.OnDeleteTabs)
 
         main_window.Bind(self.EVT_CMD_SHOW_RESIZE_GRID_DIALOG,
-                                                  handlers.OnResizeGridDialog)
+                         handlers.OnResizeGridDialog)
 
         main_window.Bind(wx.grid.EVT_GRID_ROW_SIZE, handlers.OnRowSize)
         main_window.Bind(wx.grid.EVT_GRID_COL_SIZE, handlers.OnColSize)
@@ -328,6 +351,95 @@ class Grid(wx.grid.Grid, EventMixin):
             else:
                 return "UP"
 
+    def is_merged_cell_drawn(self, key):
+        """True if key in merged area shall be drawn
+
+        This is the case if it is the top left most visible key of the merge
+        area on the screen.
+
+        """
+
+        row, col, tab = key
+
+        # Is key not merged? --> False
+        cell_attributes = self.code_array.cell_attributes
+
+        top, left, __ = cell_attributes.get_merging_cell(key)
+
+        # Case 1: Top left cell of merge is visible
+        # --> Only top left cell returns True
+        top_left_drawn = \
+            row == top and col == left and \
+            self.IsVisible(row, col, wholeCellVisible=False)
+
+        # Case 2: Leftmost column is visible
+        # --> Only top visible leftmost cell returns True
+
+        left_drawn = \
+            col == left and \
+            self.IsVisible(row, col, wholeCellVisible=False) and \
+            not self.IsVisible(row-1, col, wholeCellVisible=False)
+
+        # Case 3: Top row is visible
+        # --> Only left visible top cell returns True
+
+        top_drawn = \
+            row == top and \
+            self.IsVisible(row, col, wholeCellVisible=False) and \
+            not self.IsVisible(row, col-1, wholeCellVisible=False)
+
+        # Case 4: Top row and leftmost column are invisible
+        # --> Only top left visible cell returns True
+
+        middle_drawn = \
+            self.IsVisible(row, col, wholeCellVisible=False) and \
+            not self.IsVisible(row-1, col, wholeCellVisible=False) and \
+            not self.IsVisible(row, col-1, wholeCellVisible=False)
+
+        return top_left_drawn or left_drawn or top_drawn or middle_drawn
+
+    def update_entry_line(self, key=None):
+        """Updates the entry line
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer, defaults to current cell
+        \tCell to which code the entry line is updated
+
+        """
+
+        if key is None:
+            key = self.actions.cursor
+
+        cell_code = self.GetTable().GetValue(*key)
+
+        post_command_event(self, self.EntryLineMsg, text=cell_code)
+
+    def update_attribute_toolbar(self, key=None):
+        """Updates the attribute toolbar
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer, defaults to current cell
+        \tCell to which attributes the attributes toolbar is updated
+
+        """
+
+        if key is None:
+            key = self.actions.cursor
+
+        post_command_event(self, self.ToolbarUpdateMsg, key=key,
+                           attr=self.code_array.cell_attributes[key])
+
+    # Cell selection event handlers
+
+    def set_cursor(self, row, col, tab):
+        """Sets grid cursor to key"""
+
+        self.SetGridCursor(row, col)
+        self._last_selected_cell = row, col, tab
+        return
+
 # End of class Grid
 
 
@@ -342,9 +454,9 @@ class GridCellEventHandlers(object):
     def OnCellText(self, event):
         """Text entry event handler"""
 
-        key = self.grid.actions.cursor
+        row, col, _ = self.grid.actions.cursor
 
-        self.grid.actions.set_code(key, event.code)
+        self.grid.GetTable().SetValue(row, col, event.code)
 
         event.Skip()
 
@@ -355,10 +467,15 @@ class GridCellEventHandlers(object):
         wildcard = "*"
         message = _("Select bitmap for current cell")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, __ = self.grid.interfaces.get_filepath_findex_from_user(
-                                                    wildcard, message, style)
+        filepath, __ = \
+            self.grid.interfaces.get_filepath_findex_from_user(wildcard,
+                                                               message, style)
 
-        bmp = wx.Bitmap(filepath)
+        try:
+            bmp = wx.Bitmap(filepath)
+        except TypeError:
+            return
+
         if bmp.Size == (-1, -1):
             # Bitmap could not be read
             return
@@ -375,15 +492,19 @@ class GridCellEventHandlers(object):
         wildcard = "*"
         message = _("Select bitmap for current cell")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, __ = self.grid.interfaces.get_filepath_findex_from_user(
-                                                    wildcard, message, style)
+        filepath, __ = \
+            self.grid.interfaces.get_filepath_findex_from_user(wildcard,
+                                                               message, style)
+        try:
+            bmp = wx.Bitmap(filepath)
+        except TypeError:
+            return
 
-        bmp = wx.Bitmap(filepath)
         if bmp.Size == (-1, -1):
             # Bitmap could not be read
             return
 
-        code = "wx.Bitmap('{}')".format(filepath)
+        code = "wx.Bitmap('{filepath}')".format(filepath=filepath)
 
         key = self.grid.actions.cursor
         self.grid.actions.set_code(key, code)
@@ -391,12 +512,14 @@ class GridCellEventHandlers(object):
     def OnInsertChartDialog(self, event):
         """Chart dialog event handler"""
 
-        cell_code = self.grid.code_array(self.grid.actions.cursor)
+        key = self.grid.actions.cursor
+
+        cell_code = self.grid.code_array(key)
 
         if cell_code is None:
             cell_code = u""
 
-        chart_dialog = ChartDialog(self.grid, cell_code)
+        chart_dialog = ChartDialog(self.grid.main_window, key, cell_code)
 
         if chart_dialog.ShowModal() == wx.ID_OK:
             code = chart_dialog.get_code()
@@ -412,6 +535,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFontSize(self, event):
@@ -421,18 +546,20 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFontBold(self, event):
         """Cell font bold event handler"""
 
         try:
-            if event.weight == "wxNORMAL":
-                weight = wx.NORMAL
-            elif event.weight == "wxBOLD":
-                weight = wx.BOLD
-            else:
-                raise ValueError(_("Weight {} unknown").format(event.weight))
+            try:
+                weight = getattr(wx, event.weight[2:])
+
+            except AttributeError:
+                msg = _("Weight {weight} unknown").format(weight=event.weight)
+                raise ValueError(msg)
 
             self.grid.actions.set_attr("fontweight", weight)
 
@@ -441,18 +568,20 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFontItalics(self, event):
         """Cell font italics event handler"""
 
         try:
-            if event.style == "wxNORMAL":
-                style = wx.NORMAL
-            elif event.style == "wxITALIC":
-                style = wx.ITALIC
-            else:
-                raise ValueError(_("Style {} unknown").format(event.style))
+            try:
+                style = getattr(wx, event.style[2:])
+
+            except AttributeError:
+                msg = _("Style {style} unknown").format(style=event.style)
+                raise ValueError(msg)
 
             self.grid.actions.set_attr("fontstyle", style)
 
@@ -460,6 +589,8 @@ class GridCellEventHandlers(object):
             self.grid.actions.toggle_attr("fontstyle")
 
         self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -470,6 +601,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellFontStrikethrough(self, event):
@@ -478,6 +611,8 @@ class GridCellEventHandlers(object):
         self.grid.actions.toggle_attr("strikethrough")
 
         self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -488,6 +623,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnMerge(self, event):
@@ -497,12 +634,16 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
     def OnCellJustification(self, event):
         """Horizontal cell justification event handler"""
 
         self.grid.actions.toggle_attr("justification")
 
         self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -513,21 +654,31 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellBorderWidth(self, event):
         """Cell border width event handler"""
 
-        self.grid.actions.set_border_attr("borderwidth", event.width,
-                                                         event.borders)
+        self.grid.actions.set_border_attr("borderwidth",
+                                          event.width, event.borders)
+
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
     def OnCellBorderColor(self, event):
         """Cell border color event handler"""
 
-        self.grid.actions.set_border_attr("bordercolor", event.color,
-                                                         event.borders)
+        self.grid.actions.set_border_attr("bordercolor",
+                                          event.color, event.borders)
+
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -538,6 +689,8 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
 
     def OnCellTextColor(self, event):
@@ -546,6 +699,8 @@ class GridCellEventHandlers(object):
         self.grid.actions.set_attr("textcolor", event.color)
 
         self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
 
         event.Skip()
 
@@ -560,6 +715,10 @@ class GridCellEventHandlers(object):
             post_command_event(self.grid.main_window,
                                self.grid.TextRotationMsg, angle=angle)
 
+        self.grid.ForceRefresh()
+
+        self.grid.update_attribute_toolbar()
+
     def OnCellTextRotation(self, event):
         """Cell text rotation event handler"""
 
@@ -567,40 +726,18 @@ class GridCellEventHandlers(object):
 
         self.grid.ForceRefresh()
 
+        self.grid.update_attribute_toolbar()
+
         event.Skip()
-
-    def _update_entry_line(self, key):
-        """Updates the entry line"""
-
-        cell_code = self.grid.code_array(key)
-
-        # Do not display anything if there is no cell code, i. e. it is None
-        # Also do not display anything if there is too much code because
-        # wx.TextCtrl can only handle up to max_textctrl_length characters
-
-        if cell_code is None or \
-           len(cell_code) < int(config["max_textctrl_length"]):
-
-            post_command_event(self.grid, self.grid.EntryLineMsg,
-                               text=cell_code)
-
-    def _update_attribute_toolbar(self, key):
-        """Updates the attribute toolbar"""
-
-        post_command_event(self.grid, self.grid.ToolbarUpdateMsg, key=key,
-                           attr=self.grid.code_array.cell_attributes[key])
-
-    # Cell selection event handlers
-
-    def set_cursor(self, row, col, tab):
-        """Sets grid cursor to key"""
-
-        self.grid.SetGridCursor(row, col)
-        self._last_selected_cell = row, col, tab
-        return
 
     def OnCellSelected(self, event):
         """Cell selection event handler"""
+
+        # If in selection mode do nothing
+        # This prevents the current cell from changing
+        if not self.grid.IsEditable():
+            event.Skip()
+            return
 
         key = row, col, tab = event.Row, event.Col, self.grid.current_table
 
@@ -609,27 +746,27 @@ class GridCellEventHandlers(object):
 
         if merge_area is not None:
             top, left, bottom, right = merge_area
-            if self._last_selected_cell == (top, left, tab):
+            if self.grid._last_selected_cell == (top, left, tab):
                 if row == top + 1:
-                    self.set_cursor(bottom + 1, left, tab)
+                    self.grid.set_cursor(bottom + 1, left, tab)
                     return
                 elif col == left + 1:
-                    self.set_cursor(top, right + 1, tab)
+                    self.grid.set_cursor(top, right + 1, tab)
                     return
             elif (row, col) != (top, left):
-                self.set_cursor(top, left, tab)
+                self.grid.set_cursor(top, left, tab)
                 return
 
         # Redraw cursor
         self.grid.ForceRefresh()
 
         # Update entry line
-        self._update_entry_line(key)
+        self.grid.update_entry_line(key)
 
         # Update attribute toolbar
-        self._update_attribute_toolbar(key)
+        self.grid.update_attribute_toolbar(key)
 
-        self._last_selected_cell = key
+        self.grid._last_selected_cell = key
 
         event.Skip()
 
@@ -664,47 +801,17 @@ class GridEventHandlers(object):
 
         event.Skip()
 
-    def OnMouseClick(self, event):
-        """Grid left mouse click event handler"""
-
-        cursor = self.grid.actions.cursor
-        click_key = event.GetRow(), event.GetCol(), self.grid.current_table
-
-        if event.ControlDown() and not event.ShiftDown() and event.AltDown():
-            # Add click position as relative reference
-            self.grid.actions.append_reference_code(cursor, click_key,
-                                                    ref_type="relative")
-            # Yield to let grid update happen first
-            wx.Yield()
-            self.grid.ForceRefresh()
-
-            # Enter entry line to continue editing
-
-            self.grid.main_window.entry_line.SetFocus()
-            self.grid.main_window.entry_line.SetInsertionPointEnd()
-
-        elif event.ControlDown() and event.ShiftDown() and not event.AltDown():
-            # Add click position as absolute reference
-            self.grid.actions.append_reference_code(cursor, click_key,
-                                                    ref_type="absolute")
-            # Yield to let grid update happen first
-            wx.Yield()
-            self.grid.ForceRefresh()
-
-            # Enter entry line to continue editing
-
-            self.grid.main_window.entry_line.SetFocus()
-            self.grid.main_window.entry_line.SetInsertionPointEnd()
-
-        else:
-            event.Skip()
-
     def OnKey(self, event):
         """Handles non-standard shortcut events"""
 
         keycode = event.GetKeyCode()
 
-        if event.ControlDown():
+        # If in selection mode and <Enter> is pressed end it
+        if not self.grid.IsEditable() and keycode == 13:
+            ## TODO!
+            pass
+
+        elif event.ControlDown():
             if keycode == 388:
                 # Ctrl + + pressed
                 post_command_event(self.grid, self.grid.ZoomInMsg)
@@ -758,6 +865,20 @@ class GridEventHandlers(object):
 
         event.Skip()
 
+    def OnRangeSelected(self, event):
+        """Event handler for grid selection"""
+
+        # If grid editing is disabled then pyspread is in selection mode
+        if not self.grid.IsEditable():
+            selection = self.grid.selection
+            row, col, __ = self.grid.sel_mode_cursor
+            if (row, col) in selection:
+                self.grid.ClearSelection()
+            else:
+                self.grid.SetGridCursor(row, col)
+                post_command_event(self.grid, self.grid.SelectionMsg,
+                                   selection=selection)
+
     # Grid view events
 
     def OnDisplayGoToCellDialog(self, event):
@@ -776,6 +897,20 @@ class GridEventHandlers(object):
         self.grid.MakeCellVisible(row, col)
 
         event.Skip()
+
+    def OnEnterSelectionMode(self, event):
+        """Event handler for entering selection mode, disables cell edits"""
+
+        self.grid.sel_mode_cursor = list(self.grid.actions.cursor)
+        self.grid.EnableDragGridSize(False)
+        self.grid.EnableEditing(False)
+
+    def OnExitSelectionMode(self, event):
+        """Event handler for leaving selection mode, enables cell edits"""
+
+        self.grid.sel_mode_cursor = None
+        self.grid.EnableDragGridSize(True)
+        self.grid.EnableEditing(True)
 
     def OnRefreshSelectedCells(self, event):
         """Event handler for refreshing the selected cells via menu"""
@@ -841,14 +976,15 @@ class GridEventHandlers(object):
         if findpos is None:
             # If nothing is found mention it in the statusbar and return
 
-            statustext = _("'{}' not found.").format(text)
+            statustext = _("'{text}' not found.").format(text=text)
 
         else:
             # Otherwise select cell with next occurrence if successful
             self.grid.actions.cursor = findpos
 
             # Update statusbar
-            statustext = _(u"Found '{}' in cell {}.").format(text, findpos)
+            statustext = _(u"Found '{text}' in cell {key}.")
+            statustext = statustext.format(text=text, key=findpos)
 
         post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
                            text=statustext)
@@ -944,11 +1080,17 @@ class GridEventHandlers(object):
     def OnInsertRows(self, event):
         """Insert the maximum of 1 and the number of selected rows"""
 
-        no_rows, _ = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
+        no_rows, _ = self._get_no_rowscols(bbox)
 
-        cursor = self.grid.actions.cursor
+        if bbox is None:
+            # Insert rows at cursor
+            ins_point = self.grid.actions.cursor[0] + 1
+        else:
+            # Insert at lower edge of bounding box
+            ins_point = bbox[1][0] + 1
 
-        self.grid.actions.insert_rows(cursor[0], no_rows)
+        self.grid.actions.insert_rows(ins_point, no_rows)
 
         self.grid.GetTable().ResetView()
 
@@ -957,11 +1099,17 @@ class GridEventHandlers(object):
     def OnInsertCols(self, event):
         """Inserts the maximum of 1 and the number of selected columns"""
 
-        _, no_cols = self._get_no_rowscols(self.grid.selection.get_bbox())
+        bbox = self.grid.selection.get_bbox()
+        _, no_cols = self._get_no_rowscols(bbox)
 
-        cursor = self.grid.actions.cursor
+        if bbox is None:
+            # Insert rows at cursor
+            ins_point = self.grid.actions.cursor[1] + 1
+        else:
+            # Insert at right edge of bounding box
+            ins_point = bbox[1][1] + 1
 
-        self.grid.actions.insert_cols(cursor[1], no_cols)
+        self.grid.actions.insert_cols(ins_point, no_cols)
 
         self.grid.GetTable().ResetView()
 
@@ -1021,7 +1169,8 @@ class GridEventHandlers(object):
 
         self.grid.GetTable().ResetView()
 
-        statustext = _("Grid dimensions changed to {}.").format(new_shape)
+        statustext = _("Grid dimensions changed to {shape}.")
+        statustext = statustext.format(shape=new_shape)
         post_command_event(self.grid.main_window, self.grid.StatusBarMsg,
                            text=statustext)
 

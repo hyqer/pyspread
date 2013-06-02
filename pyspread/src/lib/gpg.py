@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -60,16 +60,17 @@ def choose_uid_key(keylist):
             uid_strings.append(uid_string)
             uid_string2key[uid_string] = key
 
-    dlg = wx.SingleChoiceDialog(
-            None,
-          _('Choose a GPG key for signing pyspread save files.\n') +
-          _('The GPG key must not have a passphrase set. \n') +
-          _('Pressing Cancel creates a new key.'),
-          _('Choose key'),
-            uid_strings, wx.CHOICEDLG_STYLE,
-            )
+    msg = _('Choose a GPG key for signing pyspread save files.\n'
+            'The GPG key must not have a passphrase set.')
+
+    dlg = wx.SingleChoiceDialog(None, msg, _('Choose key'), uid_strings,
+                                wx.CHOICEDLG_STYLE)
 
     dlg.SetBestFittingSize()
+
+    childlist = list(dlg.GetChildren())
+    childlist[-3].SetLabel(_("Use chosen key"))
+    childlist[-2].SetLabel(_("Create new key"))
 
     if dlg.ShowModal() == wx.ID_OK:
         uid = dlg.GetStringSelection()
@@ -125,9 +126,9 @@ def genkey():
         pyspread_key_uid = gpg_key_parameters["name_real"]
         short_message = _("New GPG key").format(pyspread_key_uid)
         message = _("After confirming this dialog, a new GPG key ") + \
-                  _("'{}' will be generated.").format(pyspread_key_uid) + \
-                  _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
-                  _("Canceling this operation exits pyspread.")
+            _("'{key}' will be generated.").format(key=pyspread_key_uid) + \
+            _(" \n \nThis may take some time.\nPlease wait.\n \n") + \
+            _("Canceling this operation exits pyspread.")
         dlg = GMD.GenericMessageDialog(None, message, short_message, style)
         dlg.Centre()
 
@@ -155,7 +156,7 @@ def sign(filename):
                                 detach=True)
     signfile.close()
 
-    return signed_data.data
+    return signed_data
 
 
 def verify(sigfilename, filefilename=None):

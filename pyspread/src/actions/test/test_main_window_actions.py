@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
+
 
 """
 test_self.main_window_actions.py
@@ -40,8 +41,6 @@ sys.path.insert(0, TESTPATH + "/../../..")
 sys.path.insert(0, TESTPATH + "/../..")
 
 from src.gui._main_window import MainWindow
-from src.gui._grid import Grid
-from src.model.model import DataArray
 from src.lib.selection import Selection
 from src.lib.testlib import grid_values, restore_basic_grid
 from src.lib.testlib import params, pytest_generate_tests, basic_setup_test
@@ -84,7 +83,6 @@ class TestCsvInterface(object):
         for i, cell in enumerate(cell_gen):
             assert str(i) == cell
 
-
     def test_iter(self):
         """Tests csv generator"""
 
@@ -92,9 +90,8 @@ class TestCsvInterface(object):
 
         assert [list(col) for col in csv_gen] == [['1', '2'], ['3', '4']]
 
-        csv_gen = self._get_csv_gen(self.test_filename2, digest_types = \
-                  [type("")])
-
+        csv_gen = self._get_csv_gen(self.test_filename2,
+                                    digest_types=[type("")])
 
         for i, col in enumerate(csv_gen):
             list_col = list(col)
@@ -130,7 +127,6 @@ class TestTxtGenerator(object):
         self.test_filename_notthere = TESTPATH + "notthere.txt"
         self.test_filename_bin = TESTPATH + "test1.pys"
 
-
     def test_iter(self):
         """Tests iterating over text files"""
 
@@ -138,8 +134,8 @@ class TestTxtGenerator(object):
 
         txt_gen = TxtGenerator(self.main_window, self.test_filename)
 
-        assert list(list(line_gen) for line_gen in txt_gen) == \
-                [['1', '2'], ['3', '4']]
+        res = [['1', '2'], ['3', '4']]
+        assert list(list(line_gen) for line_gen in txt_gen) == res
 
         # Correct file with 1 column
 
@@ -151,7 +147,7 @@ class TestTxtGenerator(object):
             if i == 3:
                 break
         assert txt_list == [['00'], ['877452769922012304'],
-	  ['877453769923767209'], ['877454769925522116']]
+                            ['877453769923767209'], ['877454769925522116']]
 
         # Missing file
 
@@ -194,16 +190,19 @@ class TestClipboardActions(object):
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
-    param_copy = [ \
-      {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "'Test'"},
-      {'selection': Selection([], [], [], [], [(999, 0)]), 'result': "1"},
-      {'selection': Selection([], [], [], [], [(999, 99)]), 'result': "$^%&$^"},
-      {'selection': Selection([], [], [], [], [(0, 1)]), 'result': "1"},
-      {'selection': Selection([(0, 1)], [(0, 1)], [], [], []), 'result': "1"},
-      {'selection': Selection([(0, 1)], [(1, 1)], [], [], []),
-       'result': "1\n3"},
-      {'selection': Selection([(0, 1)], [(1, 2)], [], [], []),
-       'result': "1\t2\n3\t4"},
+    param_copy = [
+        {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "'Test'"},
+        {'selection': Selection([], [], [], [], [(999, 0)]), 'result': "1"},
+        {'selection': Selection([], [], [], [], [(999, 99)]),
+         'result': "$^%&$^"},
+        {'selection': Selection([], [], [], [], [(0, 1)]),
+         'result': "1"},
+        {'selection': Selection([(0, 1)], [(0, 1)], [], [], []),
+         'result': "1"},
+        {'selection': Selection([(0, 1)], [(1, 1)], [], [], []),
+         'result': "1\n3"},
+        {'selection': Selection([(0, 1)], [(1, 2)], [], [], []),
+         'result': "1\t2\n3\t4"},
     ]
 
     @params(param_copy)
@@ -231,11 +230,11 @@ class TestClipboardActions(object):
 
         assert self.main_window.actions.copy(selection) == result
 
-    param_copy_result = [ \
+    param_copy_result = [
         {'selection': Selection([], [], [], [], [(0, 0)]), 'result': "Test"},
         {'selection': Selection([], [], [], [], [(999, 0)]), 'result': "1"},
         {'selection': Selection([], [], [], [], [(999, 99)]),
-                'result': "invalid syntax (<string>, line 1)"},
+         'result': "invalid syntax (<unknown>, line 1)"},
     ]
 
     @params(param_copy_result)
@@ -246,9 +245,7 @@ class TestClipboardActions(object):
 
         assert self.main_window.actions.copy_result(selection) == result
 
-
-## TODO: Test hangs when doing py.test for all tests in directory
-    param_paste = [ \
+    param_paste = [
         {'target': (0, 0), 'data': "1",
          'test_key': (0, 0, 0), 'test_val': "1"},
         {'target': (25, 25), 'data': "1\t2",
@@ -258,11 +255,11 @@ class TestClipboardActions(object):
         {'target': (25, 25), 'data': "1\t2",
          'test_key': (26, 25, 0), 'test_val': None},
         {'target': (25, 25), 'data': "1\t2\n3\t4",
-         'test_key': (25, 25, 0),  'test_val':"1"},
+         'test_key': (25, 25, 0),  'test_val': "1"},
         {'target': (25, 25), 'data': "1\t2\n3\t4",
-         'test_key': (25, 26, 0),  'test_val':"2"},
+         'test_key': (25, 26, 0),  'test_val': "2"},
         {'target': (25, 25), 'data': "1\t2\n3\t4",
-         'test_key': (26, 25, 0),  'test_val':"3"},
+         'test_key': (26, 25, 0),  'test_val': "3"},
         {'target': (27, 27), 'data': u"ä",
          'test_key': (27, 27, 0), 'test_val': u"ä"},
     ]
@@ -293,11 +290,11 @@ class TestMacroActions(object):
 
     def test_execute_macros(self):
 
-        # Unsure how to test since macros are not global ion py.test
+        # Unsure how to test since macros are not global in py.test
 
         pass
 
-    param_open_macros = [ \
+    param_open_macros = [
         {'filename': TESTPATH + "macrotest2.py"},
     ]
 
@@ -313,11 +310,25 @@ class TestMacroActions(object):
         macros = self.main_window.grid.code_array.macros
 
         assert testmacro_string == macros
+        assert self.main_window.grid.code_array.safe_mode
 
     def test_save_macros(self):
-        # Save macros is pretty direct so that the necessary file
-        # protection actions are not yet implemented --> No tests yet
-        pass
+        """Unit tests for save_macros"""
+
+        filepath = TESTPATH + "macro_dummy.py"
+
+        macros = "Test"
+
+        self.main_window.actions.save_macros(filepath, macros)
+        macro_file = open(filepath)
+        assert macros == macro_file.read()
+        macro_file.close()
+        os.remove(filepath)
+
+        macro_file = open(filepath, "w")
+        self.main_window.actions.save_macros(filepath, macros)
+        macro_file.close()
+        os.remove(filepath)
 
 
 class TestHelpActions(object):

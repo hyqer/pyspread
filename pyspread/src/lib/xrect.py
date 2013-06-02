@@ -50,10 +50,11 @@ class Rect(object):
         self_x_min, self_x_max, self_y_min, self_y_max = self.get_bbox()
         other_x_min, other_x_max, other_y_min, other_y_max = other.get_bbox()
 
-        return self_x_min > other_x_max or \
-               other_x_min > self_x_max or \
-               self_y_min > other_y_max or \
-               other_y_min > self_y_max
+        return \
+            self_x_min > other_x_max or \
+            other_x_min > self_x_max or \
+            self_y_min > other_y_max or \
+            other_y_min > self_y_max
 
     def is_point_in_rect(self, pt_x, pt_y):
         """Returns True iif point is inside the rectangle (border included)
@@ -98,9 +99,9 @@ class RotoOriginRect(Rect):
 
     def __str__(self):
         return "RotoOriginRect(" + \
-          ", ".join(map(str, (self.x, self.y,
-                              self.width, self.height, self.angle))) + \
-          ")"
+            ", ".join(map(str, (self.x, self.y,
+                                self.width, self.height, self.angle))) + \
+            ")"
 
     def get_bbox(self):
         """Returns bounding box (xmin, xmax, ymin, ymax)"""
@@ -163,32 +164,32 @@ class RotoOriginRect(Rect):
         if c_a > 0:
             if s_a > 0:
                 return \
-                c_a * other_x_max + s_a * other_y_max < -self_x_diff or \
-                c_a * other_x_min + s_a * other_y_min >  self_x_diff or \
-                c_a * other_y_max - s_a * other_x_min < -self_y_diff or \
-                c_a * other_y_min - s_a * other_x_max >  self_y_diff
+                    c_a * other_x_max + s_a * other_y_max < -self_x_diff or \
+                    c_a * other_x_min + s_a * other_y_min >  self_x_diff or \
+                    c_a * other_y_max - s_a * other_x_min < -self_y_diff or \
+                    c_a * other_y_min - s_a * other_x_max >  self_y_diff
 
             else:  # s_a <= 0.0
                 return \
-                c_a * other_x_max + s_a * other_y_min < -self_x_diff or \
-                c_a * other_x_min + s_a * other_y_max >  self_x_diff or \
-                c_a * other_y_max - s_a * other_x_max < -self_y_diff or \
-                c_a * other_y_min - s_a * other_x_min >  self_y_diff
+                    c_a * other_x_max + s_a * other_y_min < -self_x_diff or \
+                    c_a * other_x_min + s_a * other_y_max >  self_x_diff or \
+                    c_a * other_y_max - s_a * other_x_max < -self_y_diff or \
+                    c_a * other_y_min - s_a * other_x_min >  self_y_diff
 
         else:  # c_a <= 0.0
             if s_a > 0:
                 return \
-                c_a * other_x_min + s_a * other_y_max < -self_x_diff or \
-                c_a * other_x_max + s_a * other_y_min >  self_x_diff or \
-                c_a * other_y_min - s_a * other_x_min < -self_y_diff or \
-                c_a * other_y_max - s_a * other_x_max >  self_y_diff
+                    c_a * other_x_min + s_a * other_y_max < -self_x_diff or \
+                    c_a * other_x_max + s_a * other_y_min >  self_x_diff or \
+                    c_a * other_y_min - s_a * other_x_min < -self_y_diff or \
+                    c_a * other_y_max - s_a * other_x_max >  self_y_diff
 
             else:  # s_a <= 0.0
                 return \
-                c_a * other_x_min + s_a * other_y_min < -self_x_diff or \
-                c_a * other_x_max + s_a * other_y_max >  self_x_diff or \
-                c_a * other_y_min - s_a * other_x_max < -self_y_diff or \
-                c_a * other_y_max - s_a * other_x_min >  self_y_diff
+                    c_a * other_x_min + s_a * other_y_min < -self_x_diff or \
+                    c_a * other_x_max + s_a * other_y_max >  self_x_diff or \
+                    c_a * other_y_min - s_a * other_x_max < -self_y_diff or \
+                    c_a * other_y_max - s_a * other_x_min >  self_y_diff
 
     def collides(self, other):
         """Returns collision with axis aligned rect"""
@@ -251,9 +252,9 @@ class RotoRect(object):
 
     def __str__(self):
         return "RotoRect(" + \
-          ", ".join(map(str, (self.x, self.y,
-                              self.width, self.height, self.angle))) + \
-          ")"
+            ", ".join(map(str, (self.x, self.y,
+                                self.width, self.height, self.angle))) + \
+            ")"
 
     def get_center(self):
         """Returns rectangle center"""
@@ -261,10 +262,8 @@ class RotoRect(object):
         c_a = cos(self.angle_rad)
         s_a = sin(self.angle_rad)
 
-        center_x = self.x + self.width / 2.0 * c_a \
-                          - self.height / 2.0 * s_a
-        center_y = self.y - self.height / 2.0 * c_a \
-                          - self.width / 2.0 * s_a
+        center_x = self.x + self.width / 2.0 * c_a - self.height / 2.0 * s_a
+        center_y = self.y - self.height / 2.0 * c_a - self.width / 2.0 * s_a
 
         return center_x, center_y
 

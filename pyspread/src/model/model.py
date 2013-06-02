@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -154,6 +154,38 @@ class CellAttributes(list):
         self._attr_cache[key] = (len(self), result_dict)
 
         return result_dict
+
+    def get_merging_cell(self, key):
+        """Returns key of cell that merges the cell key
+
+        or None if cell key not merged
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer
+        \tThe key of the cell that is merged
+
+        """
+
+        row, col, tab = key
+
+        merging_cell = None
+
+        def is_in_merge_area(row, col, merge_area):
+            top, left, bottom, right = merge_area
+            return top <= row <= bottom and left <= col <= right
+
+        for selection, table, attr_dict in self:
+            try:
+                merge_area = attr_dict["merge_area"]
+                if table == tab and merge_area is not None:
+                    # We have a merge area in the cell's table
+                    if is_in_merge_area(row, col, merge_area):
+                        merging_cell = merge_area[0], merge_area[1], tab
+            except KeyError:
+                pass
+
+        return merging_cell
 
 # End of class CellAttributes
 
@@ -393,7 +425,8 @@ class DictGrid(KeyValueStore, ParserMixin, StringGeneratorMixin):
 
         for axis, key_ele in enumerate(key):
             if shape[axis] <= key_ele or key_ele < -shape[axis]:
-                msg = "Grid index {} outside grid shape {}.".format(key, shape)
+                msg = "Grid index {key} outside grid shape {shape}."
+                msg = msg.format(key=key, shape=shape)
                 raise IndexError(msg)
 
         return KeyValueStore.__getitem__(self, key)
@@ -474,18 +507,29 @@ class DataArray(object):
 
         return self.dict_grid.keys()
 
-    def pop(self, key):
-        """Pops dict_grid with undo and redo support"""
+    def pop(self, key, mark_unredo=True):
+        """Pops dict_grid with undo and redo support
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer
+        \tCell key that shall be popped
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
+
+        """
 
         # UnRedo support
 
         try:
-            undo_operation = (self.__setitem__, [key, self.dict_grid[key]])
-            redo_operation = (self.pop, [key])
+            undo_operation = (self.__setitem__, [key, self.dict_grid[key],
+                                                 mark_unredo])
+            redo_operation = (self.pop, [key, mark_unredo])
 
             self.unredo.append(undo_operation, redo_operation)
 
-            self.unredo.mark()
+            if mark_unredo:
+                self.unredo.mark()
 
         except KeyError:
             # If key not present then unredo is not necessary
@@ -502,8 +546,17 @@ class DataArray(object):
 
         return self.dict_grid.shape
 
-    def _set_shape(self, shape):
-        """Deletes all cells beyond new shape and sets dict_grid shape"""
+    def _set_shape(self, shape, mark_unredo=True):
+        """Deletes all cells beyond new shape and sets dict_grid shape
+
+        Parameters
+        ----------
+        shape: 3-tuple of Integer
+        \tTarget shape for grid
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
+
+        """
 
         # Delete each cell that is beyond new borders
 
@@ -522,12 +575,13 @@ class DataArray(object):
 
         # UnRedo support
 
-        undo_operation = (setattr, [self.dict_grid, "shape", old_shape])
-        redo_operation = (setattr, [self.dict_grid, "shape", shape])
+        undo_operation = (self._set_shape, [old_shape, mark_unredo])
+        redo_operation = (self._set_shape, [shape, mark_unredo])
 
         self.unredo.append(undo_operation, redo_operation)
 
-        self.unredo.mark()
+        if mark_unredo:
+            self.unredo.mark()
 
         # End UnRedo support
 
@@ -581,7 +635,18 @@ class DataArray(object):
         return self.dict_grid[key]
 
     def __setitem__(self, key, value, mark_unredo=True):
-        """Accepts index and slice keys"""
+        """Accepts index and slice keys
+
+        Parameters
+        ----------
+        key: 3-tuple of Integer or Slice object
+        \tCell key(s) that shall be set
+        value: Object (should be Unicode or similar)
+        \tCode for cell(s) to be set
+        mark_unredo: Boolean, defaults to True
+        \tIf True then an unredo marker is set after the operation
+
+        """
 
         single_keys_per_dim = []
 
@@ -680,19 +745,19 @@ class DataArray(object):
 
                 break
 
-    def _adjust_shape(self, amount, axis):
+    def _adjust_shape(self, amount, axis, mark_unredo=True):
         """Changes shape along axis by amount"""
 
         new_shape = list(self.shape)
         new_shape[axis] += amount
 
-        self.shape = tuple(new_shape)
+        self._set_shape(tuple(new_shape), mark_unredo=mark_unredo)
 
     def _set_cell_attributes(self, value):
         """Setter for cell_atributes"""
 
-        while len(self.cell_attributes):
-            self.cell_attributes.pop()
+        # Empty cell_attributes first
+        self.cell_attributes[:] = []
         self.cell_attributes.extend(value)
 
     def _adjust_cell_attributes(self, insertion_point, no_to_insert, axis):
@@ -770,19 +835,21 @@ class DataArray(object):
 
         new_keys = {}
 
-        for key in copy(self.dict_grid):
+        for key in self.dict_grid.keys():
             if key[axis] >= insertion_point:
                 new_key = list(key)
                 new_key[axis] += no_to_insert
 
-                new_keys[tuple(new_key)] = self.pop(key)
+                new_keys[tuple(new_key)] = self.pop(key, mark_unredo=False)
 
-        self._adjust_shape(no_to_insert, axis)
+        self._adjust_shape(no_to_insert, axis, mark_unredo=False)
 
         for key in new_keys:
-            self[key] = new_keys[key]
+            self.__setitem__(key, new_keys[key], mark_unredo=False)
 
         self._adjust_cell_attributes(insertion_point, no_to_insert, axis)
+
+        self.unredo.mark()
 
     def delete(self, deletion_point, no_to_delete, axis):
         """Deletes no_to_delete rows/cols/... starting with deletion_point
@@ -791,11 +858,14 @@ class DataArray(object):
 
         """
 
+        if not 0 <= axis < len(self.shape):
+            raise ValueError("Axis not in grid dimensions")
+
         if no_to_delete < 0:
             raise ValueError("Cannot delete negative number of rows/cols/...")
 
-        if not 0 <= axis <= len(self.shape):
-            raise ValueError("Axis not in grid dimensions")
+        elif no_to_delete >= self.shape[axis]:
+            raise ValueError("Last row/column/table must not be deleted")
 
         if deletion_point > self.shape[axis] or \
            deletion_point <= -self.shape[axis]:
@@ -807,22 +877,25 @@ class DataArray(object):
         # Note that the loop goes over a list that copies all dict keys
         for key in self.dict_grid.keys():
             if deletion_point <= key[axis] < deletion_point + no_to_delete:
-                self.pop(key)
+                self.pop(key, mark_unredo=False)
 
             elif key[axis] >= deletion_point + no_to_delete:
                 new_key = list(key)
                 new_key[axis] -= no_to_delete
 
-                new_key_values[tuple(new_key)] = self.pop(key)
+                new_key_values[tuple(new_key)] = \
+                    self.pop(key, mark_unredo=False)
 
         self._adjust_cell_attributes(deletion_point, -no_to_delete, axis)
 
-        self._adjust_shape(-no_to_delete, axis)
+        self._adjust_shape(-no_to_delete, axis, mark_unredo=False)
 
         # Now re-insert moved keys
 
         for key in new_key_values:
-            self[key] = new_key_values[key]
+            self.__setitem__(key, new_key_values[key], mark_unredo=False)
+
+        self.unredo.mark()
 
     def set_row_height(self, row, tab, height):
         """Sets row height"""
@@ -886,10 +959,10 @@ class CodeArray(DataArray):
 
     """
 
-    operators = ["+", "-", "*", "**", "/", "//",
-             "%", "<<", ">>", "&", "|", "^", "~",
-             "<", ">", "<=", ">=", "==", "!=", "<>",
-            ]
+    operators = (
+        "+", "-", "*", "**", "/", "//", "%", "<<", ">>", "&", "|", "^", "~",
+        "<", ">", "<=", ">=", "==", "!=", "<>",
+    )
 
     # Cache for results from __getitem__ calls
     result_cache = {}
@@ -960,22 +1033,27 @@ class CodeArray(DataArray):
 
         return res
 
-    def _has_assignment(self, code):
-        """Returns True iif  code is a global assignment
+    def _get_assignment_target_end(self, ast_module):
+        """Returns position of 1st char after assignment traget.
 
-        Assignment is valid iif
-         * only one term in front of "=" and
-         * no "==" and
-         * no operators left and
-         * parentheses balanced
+        If there is no assignment, -1 is returned
+
+        If there are more than one of any ( expressions or assigments)
+        then a ValueError is raised.
 
         """
 
-        return len(code) > 1 and \
-               len(code[0].split()) == 1 and \
-               code[1] != "" and \
-               (not max(op in code[0] for op in self.operators)) and \
-               code[0].count("(") == code[0].count(")")
+        if len(ast_module.body) > 1:
+            raise ValueError("More than one expression or assignment.")
+
+        elif len(ast_module.body) > 0 and \
+                type(ast_module.body[0]) is ast.Assign:
+            if len(ast_module.body[0].targets) != 1:
+                raise ValueError("More than one assignment target.")
+            else:
+                return len(ast_module.body[0].targets[0].id)
+
+        return -1
 
     def _get_updated_environment(self, env_dict=None):
         """Returns globals environment with 'magic' variable
@@ -996,7 +1074,7 @@ class CodeArray(DataArray):
         return env
 
     def _eval_cell(self, key, code):
-        """Evaluates one cell"""
+        """Evaluates one cell and returns its result"""
 
         # Set up environment for evaluation
 
@@ -1024,27 +1102,46 @@ class CodeArray(DataArray):
 
         # If only 1 term in front of the "=" --> global
 
-        split_exp = code.split("=")
+        try:
+            assignment_target_error = None
+            module = ast.parse(code)
+            assignment_target_end = self._get_assignment_target_end(module)
 
-        if self._has_assignment(split_exp):
-            glob_var = split_exp[0].strip()
-            expression = "=".join(split_exp[1:])
+        except ValueError, err:
+            assignment_target_error = ValueError(err)
+
+        except AttributeError, err:
+            # Attribute Error includes RunTimeError
+            assignment_target_error = AttributeError(err)
+
+        except Exception, err:
+            assignment_target_error = Exception(err)
+
+        if assignment_target_error is None and assignment_target_end != -1:
+            glob_var = code[:assignment_target_end]
+            expression = code.split("=", 1)[1]
+            expression = expression.strip()
 
             # Delete result cache because assignment changes results
             self.result_cache.clear()
+
         else:
             glob_var = None
             expression = code
 
-        try:
-            result = eval(expression, env, {})
+        if assignment_target_error is not None:
+            result = assignment_target_error
 
-        except AttributeError, err:
-            # Attribute Error includes RunTimeError
-            result = AttributeError(err)
+        else:
+            try:
+                result = eval(expression, env, {})
 
-        except Exception, err:
-            result = Exception(err)
+            except AttributeError, err:
+                # Attribute Error includes RunTimeError
+                result = AttributeError(err)
+
+            except Exception, err:
+                result = Exception(err)
 
         # Change back cell value for evaluation from other cells
         self.dict_grid[key] = _old_code

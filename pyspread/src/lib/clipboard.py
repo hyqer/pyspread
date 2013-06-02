@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -115,7 +115,8 @@ class Clipboard(object):
             data = wx.BitmapDataObject(bitmap=data)
 
         else:
-            raise ValueError(_("Datatype {} unknown").format(datatype))
+            msg = _("Datatype {type} unknown").format(type=datatype)
+            raise ValueError(msg)
 
         if self.clipboard.Open():
             self.clipboard.SetData(data)

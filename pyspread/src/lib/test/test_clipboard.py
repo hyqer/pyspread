@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -49,7 +49,7 @@ class TestClipboard(object):
 
     clipboard = Clipboard()
 
-    param_convert_clipboard = [ \
+    param_convert_clipboard = [
         {'data': "1\t2\t3", 'sep': "\t", 'res': [['1', '2', '3']]},
         {'data': "1\t2\t3\n4\t5\t6", 'sep': "\t",
          'res': [['1', '2', '3'], ['4', '5', '6']]},
@@ -66,7 +66,7 @@ class TestClipboard(object):
 
         assert result == res
 
-    param_set_get_clipboard = [ \
+    param_set_get_clipboard = [
         {'text': ""},
         {'text': "Test"},
         {'text': u"ÓÓó€ëáßðïœ"},

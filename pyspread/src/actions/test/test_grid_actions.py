@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -46,8 +46,6 @@ from src.lib.selection import Selection
 from src.lib.testlib import params, pytest_generate_tests
 from src.lib.testlib import basic_setup_test, restore_basic_grid
 
-from src.lib.gpg import sign
-
 from src.gui._events import *
 
 
@@ -64,7 +62,7 @@ class TestFileActions(object):
 
         # File with valid signature
         self.filename_valid_sig = TESTPATH + "test1.pys"
-        sign(self.filename_valid_sig)
+        self.grid.actions.sign_file(self.filename_valid_sig)
 
         # File without signature
         self.filename_no_sig = TESTPATH + "test2.pys"
@@ -74,7 +72,7 @@ class TestFileActions(object):
 
         # File for self.grid size test
         self.filename_gridsize = TESTPATH + "test4.pys"
-        sign(self.filename_gridsize)
+        self.grid.actions.sign_file(self.filename_gridsize)
 
         # Empty file
         self.filename_empty = TESTPATH + "test5.pys"
@@ -144,6 +142,16 @@ class TestFileActions(object):
 
         os.chmod(self.filename_not_permitted, 0644)
         os.chmod(self.filename_not_permitted + ".sig", 0644)
+
+    def test_clear_globals_reload_modules(self):
+        """Tests clear_globals_reload_modules"""
+
+        self.grid.code_array[(0, 0, 0)] = "'Test1'"
+        self.grid.code_array[(0, 0, 0)]
+        assert self.grid.code_array.result_cache
+
+        self.grid.actions.clear_globals_reload_modules()
+        assert not self.grid.code_array.result_cache
 
     def test_get_file_version(self):
         """Tests infile version string."""
@@ -258,7 +266,7 @@ class TestFileActions(object):
         assert new_shape == (1000, 100, 10)
 
         # Test self.grid content for valid file
-
+        assert not self.grid.code_array.safe_mode
         assert self.grid.GetTable().data_array[0, 0, 0] == "test4"
 
     def test_save(self):
@@ -334,7 +342,7 @@ class TestTableRowActionsMixins(object):
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
-    param_set_row_height = [ \
+    param_set_row_height = [
         {'row': 0, 'tab': 0, 'height': 0},
         {'row': 0, 'tab': 1, 'height': 0},
         {'row': 0, 'tab': 0, 'height': 34},
@@ -348,7 +356,7 @@ class TestTableRowActionsMixins(object):
         row_heights = self.grid.code_array.row_heights
         assert row_heights[row, tab] == height
 
-    param_insert_rows = [ \
+    param_insert_rows = [
         {'row': 0, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'row': 0, 'no_rows': 1, 'test_key': (0, 0, 0), 'test_val': None},
         {'row': 0, 'no_rows': 1, 'test_key': (1, 0, 0), 'test_val': "'Test'"},
@@ -366,14 +374,16 @@ class TestTableRowActionsMixins(object):
         basic_setup_test(self.grid, self.grid.actions.insert_rows, test_key,
                          test_val, row, no_rows=no_rows)
 
-    param_delete_rows = [ \
-       {'row': 0, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-       {'row': 0, 'no_rows': 1, 'test_key': (0, 0, 0), 'test_val': None},
-       {'row': 0, 'no_rows': 1, 'test_key': (0, 1, 0), 'test_val': "3"},
-       {'row': 0, 'no_rows': 995, 'test_key': (4, 99, 0), 'test_val': "$^%&$^"},
-       {'row': 1, 'no_rows': 1, 'test_key': (0, 1, 0), 'test_val': "1"},
-       {'row': 1, 'no_rows': 1, 'test_key': (1, 1, 0), 'test_val': None},
-       {'row': 1, 'no_rows': 999, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+    param_delete_rows = [
+        {'row': 0, 'no_rows': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'row': 0, 'no_rows': 1, 'test_key': (0, 0, 0), 'test_val': None},
+        {'row': 0, 'no_rows': 1, 'test_key': (0, 1, 0), 'test_val': "3"},
+        {'row': 0, 'no_rows': 995, 'test_key': (4, 99, 0),
+         'test_val': "$^%&$^"},
+        {'row': 1, 'no_rows': 1, 'test_key': (0, 1, 0), 'test_val': "1"},
+        {'row': 1, 'no_rows': 1, 'test_key': (1, 1, 0), 'test_val': None},
+        {'row': 1, 'no_rows': 999, 'test_key': (0, 0, 0),
+         'test_val': "'Test'"},
     ]
 
     @params(param_delete_rows)
@@ -392,7 +402,7 @@ class TestTableColumnActionsMixin(object):
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
-    param_set_col_width = [ \
+    param_set_col_width = [
         {'col': 0, 'tab': 0, 'width': 0},
         {'col': 0, 'tab': 1, 'width': 0},
         {'col': 0, 'tab': 0, 'width': 34},
@@ -406,7 +416,7 @@ class TestTableColumnActionsMixin(object):
         col_widths = self.grid.code_array.col_widths
         assert col_widths[col, tab] == width
 
-    param_insert_cols = [ \
+    param_insert_cols = [
         {'col': 0, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'col': 0, 'no_cols': 1, 'test_key': (0, 0, 0), 'test_val': None},
         {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "'Test'"},
@@ -424,14 +434,15 @@ class TestTableColumnActionsMixin(object):
         basic_setup_test(self.grid, self.grid.actions.insert_cols, test_key,
                          test_val, col, no_cols=no_cols)
 
-    param_delete_cols = [ \
-       {'col': 0, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-       {'col': 0, 'no_cols': 1, 'test_key': (0, 2, 0), 'test_val': None},
-       {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
-       {'col': 0, 'no_cols': 95, 'test_key': (999, 4, 0), 'test_val': "$^%&$^"},
-       {'col': 1, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
-       {'col': 1, 'no_cols': 1, 'test_key': (1, 1, 0), 'test_val': "4"},
-       {'col': 1, 'no_cols': 99, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+    param_delete_cols = [
+        {'col': 0, 'no_cols': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'col': 0, 'no_cols': 1, 'test_key': (0, 2, 0), 'test_val': None},
+        {'col': 0, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
+        {'col': 0, 'no_cols': 95, 'test_key': (999, 4, 0),
+         'test_val': "$^%&$^"},
+        {'col': 1, 'no_cols': 1, 'test_key': (0, 1, 0), 'test_val': "2"},
+        {'col': 1, 'no_cols': 1, 'test_key': (1, 1, 0), 'test_val': "4"},
+        {'col': 1, 'no_cols': 99, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
     ]
 
     @params(param_delete_cols)
@@ -450,7 +461,7 @@ class TestTableTabActionsMixin(object):
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
-    param_insert_tabs = [ \
+    param_insert_tabs = [
         {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'tab': 0, 'no_tabs': 1, 'test_key': (0, 0, 0), 'test_val': None},
         {'tab': 0, 'no_tabs': 1, 'test_key': (0, 0, 1), 'test_val': "'Test'"},
@@ -458,7 +469,8 @@ class TestTableTabActionsMixin(object):
         {'tab': 1, 'no_tabs': 1, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
         {'tab': 1, 'no_tabs': 1, 'test_key': (0, 0, 1), 'test_val': None},
         {'tab': 1, 'no_tabs': 1, 'test_key': (1, 2, 3), 'test_val': "78"},
-        {'tab': 1, 'no_tabs': 5000, 'test_key': (1, 2, 5002), 'test_val': "78"},
+        {'tab': 1, 'no_tabs': 5000, 'test_key': (1, 2, 5002),
+         'test_val': "78"},
     ]
 
     @params(param_insert_tabs)
@@ -468,13 +480,13 @@ class TestTableTabActionsMixin(object):
         basic_setup_test(self.grid, self.grid.actions.insert_tabs, test_key,
                          test_val, tab, no_tabs=no_tabs)
 
-    param_delete_tabs = [ \
-       {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
-       {'tab': 0, 'no_tabs': 1, 'test_key': (0, 2, 0), 'test_val': None},
-       {'tab': 0, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': "78"},
-       {'tab': 2, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': None},
-       {'tab': 1, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': "78"},
-       {'tab': 0, 'no_tabs': 2, 'test_key': (1, 2, 0), 'test_val': "78"},
+    param_delete_tabs = [
+        {'tab': 0, 'no_tabs': 0, 'test_key': (0, 0, 0), 'test_val': "'Test'"},
+        {'tab': 0, 'no_tabs': 1, 'test_key': (0, 2, 0), 'test_val': None},
+        {'tab': 0, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': "78"},
+        {'tab': 2, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': None},
+        {'tab': 1, 'no_tabs': 1, 'test_key': (1, 2, 1), 'test_val': "78"},
+        {'tab': 0, 'no_tabs': 2, 'test_key': (1, 2, 0), 'test_val': "78"},
     ]
 
     @params(param_delete_tabs)
@@ -493,37 +505,37 @@ class TestTableActions(object):
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
-    param_paste = [ \
-       {'tl_cell': (0, 0, 0), 'data': [["78"]],
-        'test_key': (0, 0, 0), 'test_val': "78"},
-       {'tl_cell': (0, 0, 0), 'data': [[None]],
-        'test_key': (0, 0, 0), 'test_val': None},
-       {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (0, 0, 0), 'test_val': "1"},
-       {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (1, 1, 0), 'test_val': "4"},
-       {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (1, 1, 1), 'test_val': None},
-       {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (0, 0, 0), 'test_val': None},
-       {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (1, 0, 0), 'test_val': "1"},
-       {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (0, 1, 0), 'test_val': "1"},
-       {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (0, 0, 0), 'test_val': None},
-       {'tl_cell': (123, 5, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (123, 6, 0), 'test_val': "2"},
-       {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (1, 1, 2), 'test_val': "1"},
-       {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (2, 1, 2), 'test_val': "3"},
-       {'tl_cell': (999, 0, 0), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (999, 0, 0), 'test_val': "1"},
-       {'tl_cell': (999, 99, 2), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (999, 99, 2), 'test_val': "1"},
-       {'tl_cell': (999, 98, 2), 'data': [["1", "2"], ["3", "4"]],
-        'test_key': (999, 99, 2), 'test_val': "2"},
+    param_paste = [
+        {'tl_cell': (0, 0, 0), 'data': [["78"]],
+         'test_key': (0, 0, 0), 'test_val': "78"},
+        {'tl_cell': (0, 0, 0), 'data': [[None]],
+         'test_key': (0, 0, 0), 'test_val': None},
+        {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (0, 0, 0), 'test_val': "1"},
+        {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (1, 1, 0), 'test_val': "4"},
+        {'tl_cell': (0, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (1, 1, 1), 'test_val': None},
+        {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (0, 0, 0), 'test_val': None},
+        {'tl_cell': (1, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (1, 0, 0), 'test_val': "1"},
+        {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (0, 1, 0), 'test_val': "1"},
+        {'tl_cell': (0, 1, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (0, 0, 0), 'test_val': None},
+        {'tl_cell': (123, 5, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (123, 6, 0), 'test_val': "2"},
+        {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (1, 1, 2), 'test_val': "1"},
+        {'tl_cell': (1, 1, 2), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (2, 1, 2), 'test_val': "3"},
+        {'tl_cell': (999, 0, 0), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (999, 0, 0), 'test_val': "1"},
+        {'tl_cell': (999, 99, 2), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (999, 99, 2), 'test_val': "1"},
+        {'tl_cell': (999, 98, 2), 'data': [["1", "2"], ["3", "4"]],
+         'test_key': (999, 99, 2), 'test_val': "2"},
     ]
 
     @params(param_paste)
@@ -533,12 +545,12 @@ class TestTableActions(object):
         basic_setup_test(self.grid, self.grid.actions.paste, test_key,
                          test_val, tl_cell, data)
 
-    param_change_grid_shape = [ \
-       {'shape': (1, 1, 1)},
-       {'shape': (2, 1, 3)},
-       {'shape': (1, 1, 40)},
-       {'shape': (1000, 100, 3)},
-       {'shape': (80000000, 80000000, 80000000)},
+    param_change_grid_shape = [
+        {'shape': (1, 1, 1)},
+        {'shape': (2, 1, 3)},
+        {'shape': (1, 1, 40)},
+        {'shape': (1000, 100, 3)},
+        {'shape': (80000000, 80000000, 80000000)},
     ]
 
     @params(param_change_grid_shape)
@@ -585,7 +597,7 @@ class TestUnRedoActions(object):
         assert self.grid.code_array((0, 0, 0)) == "Test"
 
 
-class TestgridActions(object):
+class TestGridActions(object):
     """self.grid level self.grid actions test class"""
 
     def setup_method(self, method):
@@ -609,9 +621,9 @@ class TestgridActions(object):
             new_shape = self.grid.GetTable().data_array.shape
             assert new_shape == dim
 
-    param_switch_to_table = [ \
-       {'tab': 2},
-       {'tab': 0},
+    param_switch_to_table = [
+        {'tab': 2},
+        {'tab': 0},
     ]
 
     @params(param_switch_to_table)
@@ -621,10 +633,10 @@ class TestgridActions(object):
         self.grid.actions.switch_to_table(event)
         assert self.grid.current_table == tab
 
-    param_cursor = [ \
-       {'key': (0, 0, 0)},
-       {'key': (0, 1, 2)},
-       {'key': (999, 99, 1)},
+    param_cursor = [
+        {'key': (0, 0, 0)},
+        {'key': (0, 1, 2)},
+        {'key': (999, 99, 1)},
     ]
 
     @params(param_cursor)
@@ -636,14 +648,112 @@ class TestgridActions(object):
 class TestSelectionActions(object):
     """Selection actions test class"""
 
-    # No tests yet because of close integration with selection in GUI
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
-    pass
+    # No tests for
+    # * get_selection
+    # * select_cell
+    # * select_slice
+    # because of close integration with selection in GUI
+
+    def test_delete_selection(self):
+        """Tests for delete_selection"""
+
+        self.grid.code_array[(0, 0, 0)] = "Test"
+
+        self.grid.actions.select_cell(0, 0)
+        self.grid.actions.delete_selection()
+
+        assert self.grid.code_array[(0, 0, 0)] is None
+
+        # Make sure that the result cache is empty
+        assert not self.grid.code_array.result_cache
 
 
 class TestFindActions(object):
     """FindActions test class"""
 
-    # No tests yet because of close integration with selection in GUI
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
 
-    pass
+        # Content for find and replace operations
+        grid_data = {
+            (0, 0, 0): u"Test",
+            (1, 0, 0): u"Test1",
+            (2, 0, 0): u"Test2",
+        }
+
+        for key in grid_data:
+            self.grid.code_array[key] = grid_data[key]
+
+    # Search flags ["UP" xor "DOWN", "WHOLE_WORD", "MATCH_CASE", "REG_EXP"]
+
+    param_find = [
+        {'gridpos': [0, 0, 0], 'find_string': "test",
+         'flags': ["DOWN"], 'res_key': (1, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "test",
+         'flags': ["UP"], 'res_key': (2, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "test",
+         'flags': ["DOWN", "MATCH_CASE"], 'res_key': None},
+        {'gridpos': [1, 0, 0], 'find_string': "test",
+         'flags': ["DOWN"], 'res_key': (2, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "Test",
+         'flags': ["DOWN", "MATCH_CASE"], 'res_key': (1, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "Test",
+         'flags': ["DOWN", "WHOLE_WORD"], 'res_key': (0, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "Test1",
+         'flags': ["DOWN", "MATCH_CASE", "WHOLE_WORD"], 'res_key': (1, 0, 0)},
+        {'gridpos': [0, 0, 0], 'find_string': "es*.2",
+         'flags': ["DOWN"], 'res_key': None},
+        {'gridpos': [0, 0, 0], 'find_string': "es*.2",
+         'flags': ["DOWN", "REG_EXP"], 'res_key': (2, 0, 0)},
+    ]
+
+    @params(param_find)
+    def test_find(self, gridpos, find_string, flags, res_key):
+        """Tests for find"""
+
+        res = self.grid.actions.find(gridpos, find_string, flags)
+        assert res == res_key
+
+    param_replace = [
+        {'findpos': (0, 0, 0), 'find_string': "Test",
+         'replace_string': "Hello", 'res': "Hello"},
+        {'findpos': (1, 0, 0), 'find_string': "Test",
+         'replace_string': "Hello", 'res': "Hello1"},
+        {'findpos': (1, 0, 0), 'find_string': "est",
+         'replace_string': "Hello", 'res': "THello1"},
+    ]
+
+    @params(param_replace)
+    def test_replace(self, findpos, find_string, replace_string, res):
+        """Tests for replace"""
+
+        self.grid.actions.replace(findpos, find_string, replace_string)
+        assert self.grid.code_array(findpos) == res
+
+
+class TestAllGridActions(object):
+    """AllGridActions test class"""
+
+    def setup_method(self, method):
+        self.main_window = MainWindow(None, -1)
+        self.grid = self.main_window.grid
+        self.code_array = self.grid.code_array
+
+    param_replace_bbox_none = [
+        {'bbox': ((0, 0), (1, 234)), 'res': ((0, 0), (1, 234))},
+        {'bbox': ((None, None), (2, 234)), 'res': ((0, 0), (2, 234))},
+        {'bbox': ((None, None), (None, None)), 'res': ((0, 0), (999, 99))},
+    ]
+
+    @params(param_replace_bbox_none)
+    def test_replace_bbox_none(self, bbox, res):
+        """Tests for _replace_bbox_none"""
+
+        assert res == self.grid.actions._replace_bbox_none(bbox)

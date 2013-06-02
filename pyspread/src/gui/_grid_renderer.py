@@ -26,12 +26,11 @@ _grid_renderer
 Provides
 --------
 
-1) TextRenderer: Draws the grid
+1) GridRenderer: Draws the grid
 2) Background: Background drawing
 
 """
 
-from cStringIO import StringIO
 from math import pi, sin, cos
 import types
 
@@ -40,10 +39,9 @@ import wx.grid
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
+from src.lib.charts import fig2bmp
 import src.lib.i18n as i18n
-
 from src.lib import xrect
 from src.lib.parsers import get_pen_from_data, get_font_from_data
 from src.config import config
@@ -111,13 +109,13 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 return __x, __y
 
             pt_ul = rotation(pt_ul[0], pt_ul[1], rot_angle,
-                              base_x=string_x, base_y=string_y)
+                             base_x=string_x, base_y=string_y)
             pt_ll = rotation(pt_ll[0], pt_ll[1], rot_angle,
-                              base_x=string_x, base_y=string_y)
+                             base_x=string_x, base_y=string_y)
             pt_ur = rotation(pt_ur[0], pt_ur[1], rot_angle,
-                              base_x=string_x, base_y=string_y)
+                             base_x=string_x, base_y=string_y)
             pt_lr = rotation(pt_lr[0], pt_lr[1], rot_angle,
-                              base_x=string_x, base_y=string_y)
+                             base_x=string_x, base_y=string_y)
 
         return pt_ul, pt_ll, pt_lr, pt_ur
 
@@ -198,7 +196,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                     yield __row, __col, tab
 
     def _get_available_space_rects(self, dc, grid, key, rect, text_pos,
-                      text_extent, res_text):
+                                   text_extent, res_text):
         """Returns rects needed by key cell that are in available space"""
 
         yield rect
@@ -214,6 +212,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         """Draws text label of cell
 
         Text is truncated at config["max_result_length"]
+
         """
 
         result_length = config["max_result_length"]
@@ -247,14 +246,14 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         # Text color attributes
 
-        textcolor = wx.Color()
+        textcolor = wx.Colour()
         textcolor.SetRGB(cell_attributes["textcolor"])
 
         # Get font from font attribute strings
 
         font = self.get_font(textfont, pointsize, fontweight, fontstyle,
                              underline)
-
+        font.SetFaceName(textfont)  # Windows hack
         dc.SetFont(font)
 
         text_x, text_y = self.get_text_position(dc, rect, res_text, angle,
@@ -271,13 +270,14 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         text_pos = text_x, text_y, angle
 
-        if all(__rect.is_point_in_rect(*textedge)
-          for textedge in self.get_textbox_edges(text_pos, text_extent)):
+        if all(__rect.is_point_in_rect(*textedge) for textedge in
+               self.get_textbox_edges(text_pos, text_extent)):
             clipping = False
         else:
             clipping = True
-            clip_rects = self._get_available_space_rects(dc, grid, key, rect,
-                                text_pos, text_extent, res_text)
+            clip_rects = \
+                self._get_available_space_rects(dc, grid, key, rect, text_pos,
+                                                text_extent, res_text)
 
         if clipping:
             for clip_rect in clip_rects:
@@ -285,18 +285,18 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                 dc.DrawRotatedText(res_text, *text_pos)
                 text_extent = dc.GetTextExtent(res_text)
                 if strikethrough:
-                    self._draw_strikethrough_line(grid, dc, rect,
-                            text_x, text_y, angle, text_extent)
+                    self._draw_strikethrough_line(grid, dc, rect, text_x,
+                                                  text_y, angle, text_extent)
                 dc.DestroyClippingRegion()
         else:
             dc.DrawRotatedText(res_text, *text_pos)
             text_extent = dc.GetTextExtent(res_text)
             if strikethrough:
-                self._draw_strikethrough_line(grid, dc, rect,
-                        text_x, text_y, angle, text_extent)
+                self._draw_strikethrough_line(grid, dc, rect, text_x, text_y,
+                                              angle, text_extent)
 
     def _draw_strikethrough_line(self, grid, dc, rect,
-                    string_x, string_y, angle, text_extent):
+                                 string_x, string_y, angle, text_extent):
         """Draws a strikethrough line"""
 
         strikethroughwidth = self.get_zoomed_size(1.5)
@@ -377,9 +377,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             string_y = rect.y + 2
 
         else:
-            err_msg = _("Vertical alignment {} not in (top, middle, bottom)")\
-                          .format(vertical_align)
-            raise ValueError(err_msg)
+            msg = _("Vertical alignment {align} not in (top, middle, bottom)")
+            msg = msg.format(align=vertical_align)
+            raise ValueError(msg)
 
         # Justification
 
@@ -404,19 +404,19 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             string_x = string_x - text_extent[0] * cos(rot_angle)
             string_y = string_y + text_extent[0] * sin(rot_angle)
         else:
-            err_msg = _("Cell justification {} not in (left, center, right)")\
-                         .format(justification)
-            raise ValueError(err_msg)
+            msg = _("Cell justification {just} not in (left, center, right)")
+            msg = msg.format(just=justification)
+            raise ValueError(msg)
 
         return string_x, string_y
 
     def _draw_cursor(self, dc, grid, row, col,
-                    pen=wx.BLACK_PEN, brush=wx.BLACK_BRUSH):
+                     pen=wx.BLACK_PEN, brush=wx.BLACK_BRUSH):
         """Draws cursor as Rectangle in lower right corner"""
 
         key = row, col, grid.current_table
         rect = grid.CellToRect(row, col)
-        rect = self._get_merged_rect(grid, key, rect)
+        rect = self.get_merged_rect(grid, key, rect)
 
         # Check if cell is invisible
         if rect is None:
@@ -474,17 +474,22 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
         old_row, old_col = self.old_cursor_row_col
 
         self._draw_cursor(dc, grid, old_row, old_col,
-                         pen=wx.WHITE_PEN, brush=wx.WHITE_BRUSH)
+                          pen=wx.WHITE_PEN, brush=wx.WHITE_BRUSH)
         self._draw_cursor(dc, grid, row, col)
 
-    def _get_merged_rect(self, grid, key, rect):
+    def get_merging_cell(self, grid, key):
+        """Returns row, col, tab of merging cell if the cell key is merged"""
+
+        return grid.code_array.cell_attributes.get_merging_cell(key)
+
+    def get_merged_rect(self, grid, key, rect):
         """Returns cell rect for normal or merged cells and None for merged"""
 
         row, col, tab = key
 
         # Check if cell is merged:
         cell_attributes = grid.code_array.cell_attributes
-        merge_area = cell_attributes[key]["merge_area"]
+        merge_area = cell_attributes[row, col, tab]["merge_area"]
 
         if merge_area is None:
             return rect
@@ -496,12 +501,13 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
             # Are we drawing the top left cell?
             if top == row and left == col:
                 # Set rect to merge area
-                rect = grid.BlockToDeviceRect((row, col), (bottom, right))
+                ul_rect = grid.CellToRect(row, col)
+                br_rect = grid.CellToRect(bottom, right)
 
-                # Adjust rect to grid scroll position
-                yunit, xunit = grid.GetScrollPixelsPerUnit()
-                rect.x += grid.GetScrollPos(wx.HORIZONTAL) * xunit
-                rect.y += grid.GetScrollPos(wx.VERTICAL) * yunit
+                width = br_rect.x - ul_rect.x + br_rect.width
+                height = br_rect.y - ul_rect.y + br_rect.height
+
+                rect = wx.Rect(ul_rect.x, ul_rect.y, width, height)
 
                 # Adjust rect to 1 pixel error
                 rect.width -= 1
@@ -536,36 +542,6 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
         """
 
-        def fig2bmp(figure, width, height, dpi, zoom):
-            """Returns wx.Bitmap from matplotlib chart
-
-            Parameters
-            ----------
-            fig: Object
-            \tMatplotlib figure
-            width: Integer
-            \tImage width in pixels
-            height: Integer
-            \tImage height in pixels
-            dpi = Float
-            \tDC resolution
-
-            """
-
-            dpi *= float(zoom)
-
-            figure.set_figwidth(width / dpi)
-            figure.set_figheight(height / dpi)
-
-            figure.set_canvas(FigureCanvas(figure))
-            png_stream = StringIO()
-            figure.savefig(png_stream, format='png', dpi=(dpi))
-
-            png_stream.seek(0)
-            img = wx.ImageFromStream(png_stream, type=wx.BITMAP_TYPE_PNG)
-
-            return wx.BitmapFromImage(img)
-
         crop_rect = wx.Rect(rect.x, rect.y, rect.width - 1, rect.height - 1)
 
         width, height = crop_rect.width, crop_rect.height
@@ -578,12 +554,17 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
     def Draw(self, grid, attr, dc, rect, row, col, isSelected, printing=False):
         """Draws the cell border and content"""
 
-        key = (row, col, grid.current_table)
+        key = row, col, grid.current_table
 
-        rect = self._get_merged_rect(grid, key, rect)
+        rect = self.get_merged_rect(grid, key, rect)
         if rect is None:
-            # Merged cell --> Draw nothing
-            return
+            # Merged cell
+            if grid.is_merged_cell_drawn(key):
+                row, col, __ = key = self.get_merging_cell(grid, key)
+                rect = grid.CellToRect(row, col)
+                rect = self.get_merged_rect(grid, key, rect)
+            else:
+                return
 
         if isSelected:
             grid.selection_present = True
@@ -599,7 +580,7 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
 
             bg_key = tuple([width, height] +
                            [self.data_array.cell_attributes[key][bgc]
-                                            for bgc in bg_components])
+                               for bgc in bg_components])
 
             try:
                 bg = self.backgrounds[bg_key]
@@ -611,9 +592,9 @@ class GridRenderer(wx.grid.PyGridCellRenderer):
                     self.backgrounds = {}
 
                 bg = self.backgrounds[bg_key] = \
-                        Background(grid, rect, self.data_array, *key)
+                    Background(grid, rect, self.data_array, *key)
 
-        if wx.Platform == "__WXGTK__" and not printing:
+        if "__WXGTK__" in wx.PlatformInfo and not printing:
             mask_type = wx.AND
         else:
             mask_type = wx.COPY

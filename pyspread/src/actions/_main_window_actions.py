@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -40,6 +40,7 @@ Provides:
 
 """
 
+import ast
 import base64
 import bz2
 import os
@@ -47,13 +48,15 @@ import os
 import wx
 import wx.html
 
+from matplotlib.figure import Figure
+
 import lib.i18n as i18n
 from src.sysvars import get_help_path
 
 from src.config import config
 from src.lib.__csv import CsvInterface, TxtGenerator
+from src.lib.charts import fig2bmp, fig2x
 from src.gui._printout import PrintCanvas, Printout
-
 from src.gui._events import post_command_event, EventMixin
 
 #use ugettext instead of getttext to avoid unicode errors
@@ -86,9 +89,8 @@ class ExchangeActions(Actions):
                 self.main_window.interfaces.get_csv_import_info(path)
 
         except IOError:
-            statustext = _("Error opening file {}.").format(path)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            msg = _("Error opening file {filepath}.").format(filepath=path)
+            post_command_event(self.main_window, self.StatusBarMsg, text=msg)
             return
 
         return CsvInterface(self.main_window,
@@ -123,13 +125,24 @@ class ExchangeActions(Actions):
             # TXT import option choice
             return self._import_txt(filepath)
         else:
-            msg = _("Unknown import choice {}.").format(filterindex)
+            msg = _("Unknown import choice {choice}.")
+            msg = msg.format(choice=filterindex)
             short_msg = _('Error reading CSV file')
 
             self.main_window.interfaces.display_warning(msg, short_msg)
 
     def _export_csv(self, filepath, data):
-        """CSV import workflow"""
+        """CSV export of code_array results
+
+        Parameters
+        ----------
+        filepath: String
+        \tPath of export file
+        data: Object
+        \tCode array result object slice, i. e. one object or iterable of
+        \tsuch objects
+
+        """
 
         # Get csv info
 
@@ -152,15 +165,66 @@ class ExchangeActions(Actions):
             csv_interface.write(data)
 
         except IOError, err:
-            msg = _("The file {} could not be fully written\n \n"
-                    "Error message:\n{}").format(filepath, err)
+            msg = _("The file {filepath} could not be fully written\n \n"
+                    "Error message:\n{msg}")
+            msg = msg.format(filepath=filepath, msg=err)
             short_msg = _('Error writing CSV file')
             self.main_window.interfaces.display_warning(msg, short_msg)
 
-    def export_file(self, filepath, filterindex, data):
-        """Exports external file. Only CSV supported yet."""
+    def _export_figure(self, filepath, data, format):
+        """Export of single cell that contains a matplotlib figure
 
-        self._export_csv(filepath, data)
+        Parameters
+        ----------
+        filepath: String
+        \tPath of export file
+        data: Matplotlib Figure
+        \tMatplotlib figure that is eported
+        format: String in ["png", "pdf", "ps", "eps", "svg"]
+
+        """
+
+        formats = ["svg", "eps", "ps", "pdf", "png"]
+        assert format in formats
+
+        data = fig2x(data, format)
+
+        try:
+            outfile = open(filepath, "wb")
+            outfile.write(data)
+
+        except IOError, err:
+            msg = _("The file {filepath} could not be fully written\n \n"
+                    "Error message:\n{msg}")
+            msg = msg.format(filepath=filepath, msg=err)
+            short_msg = _('Error writing SVG file')
+            self.main_window.interfaces.display_warning(msg, short_msg)
+
+        finally:
+            outfile.close()
+
+    def export_file(self, filepath, filterindex, data):
+        """Export data for other applications
+
+        Parameters
+        ----------
+        filepath: String
+        \tPath of export file
+        filterindex: Integer
+        \tIndex of the import filter
+        data: Object
+        \tCode array result object slice, i. e. one object or iterable of
+        \tsuch objects
+
+        """
+
+        formats = ["csv", "svg", "eps", "ps", "pdf", "png"]
+
+        if filterindex == 0:
+            self._export_csv(filepath, data)
+
+        elif filterindex >= 1:
+            self._export_figure(filepath, data, formats[filterindex])
 
 
 class PrintActions(Actions):
@@ -277,7 +341,7 @@ class ClipboardActions(Actions):
         else:
             replace_none = self.main_window.grid.actions._replace_bbox_none
             (bb_top, bb_left), (bb_bottom, bb_right) = \
-                            replace_none(selection.get_bbox())
+                replace_none(selection.get_bbox())
 
         data = []
 
@@ -326,7 +390,16 @@ class ClipboardActions(Actions):
 
         row, col, tab = key
 
-        return unicode(self.grid.code_array[row, col, tab])
+        result_obj = self.grid.code_array[row, col, tab]
+
+        try:
+            # Numpy object arrays are converted because of numpy repr bug
+            result_obj = result_obj.tolist()
+
+        except AttributeError:
+            pass
+
+        return unicode(result_obj)
 
     def copy_result(self, selection):
         """Returns result
@@ -354,9 +427,22 @@ class ClipboardActions(Actions):
             tab = self.grid.current_table
             result = self.grid.code_array[bb_top, bb_left, tab]
 
-            if type(result) is wx._gdi.Bitmap:
-                # the result is a bitmap
+            if isinstance(result, wx._gdi.Bitmap):
+                # The result is a wx.Bitmap. Return it.
                 return result
+
+            elif isinstance(result, Figure):
+                # The result is a matplotlib figure
+                # Therefore, a wx.Bitmap is returned
+                key = bb_top, bb_left, tab
+                rect = self.grid.CellToRect(bb_top, bb_left)
+                merged_rect = self.grid.grid_renderer.get_merged_rect(
+                    self.grid, key, rect)
+                dpi = float(wx.ScreenDC().GetPPI()[0])
+                zoom = self.grid.grid_renderer.zoom
+
+                return fig2bmp(result, merged_rect.width, merged_rect.height,
+                               dpi, zoom)
 
         # So we have result strings to be returned
         getter = self._get_result_string
@@ -368,35 +454,31 @@ class ClipboardActions(Actions):
 
         assert type(bmp) is wx._gdi.Bitmap
 
-        row, col, tab = key
-        width = self.grid.GetColSize(col) / self.grid.grid_renderer.zoom
-        height = self.grid.GetRowSize(row) / \
-                    self.grid.grid_renderer.zoom
-
-        code_str = ""
         code_template = \
             "wx.BitmapFromImage(wx.ImageFromData(" + \
             "{width}, {height}, bz2.decompress(base64.b64decode('{data}'))))"
 
-        # Fix length limitation of wx.TextCtrl
-        # Therefore scale down image until text length < max_textctrl_length
+        img = bmp.ConvertToImage()
 
-        while not code_str or \
-              len(code_str) > int(config["max_textctrl_length"]):
+        data = base64.b64encode(bz2.compress(img.GetData(), 9))
 
-            img = bmp.ConvertToImage()
-
-            img.Rescale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
-
-            data = base64.b64encode(bz2.compress(img.GetData(), 9))
-
-            code_str = code_template.format(width=img.GetWidth(),
-                                            height=img.GetHeight(), data=data)
-
-            width *= 0.9
-            height *= 0.9
+        code_str = code_template.format(width=img.GetWidth(),
+                                        height=img.GetHeight(), data=data)
 
         return code_str
+
+    def _get_paste_data_gen(self, key, data):
+        """Generator for paste data
+
+        Can be used in grid.actions.paste
+
+        """
+
+        if type(data) is wx._gdi.Bitmap:
+            code_str = self.bmp2code(key, data)
+            return [[code_str]]
+        else:
+            return (line.split("\t") for line in data.split("\n"))
 
     def paste(self, key, data):
         """Pastes data into grid
@@ -411,15 +493,71 @@ class ClipboardActions(Actions):
         \tor paste data image
         """
 
-        if type(data) is wx._gdi.Bitmap:
-            code_str = self.bmp2code(key, data)
-            data_gen = [[code_str]]
-        else:
-            data_gen = (line.split("\t") for line in data.split("\n"))
+        data_gen = self._get_paste_data_gen(key, data)
 
         self.grid.actions.paste(key[:2], data_gen)
 
         self.main_window.grid.ForceRefresh()
+
+    def _get_pasteas_data(self, dim, obj):
+        """Returns list of lists of obj than has dimensionality dim
+
+        Parameters
+        ----------
+        dim: Integer
+        \tDimensionality of obj
+        obj: Object
+        \tIterable object of dimensionality dim
+
+        """
+
+        if dim == 0:
+            return [[repr(obj)]]
+        elif dim == 1:
+            return [[repr(o)] for o in obj]
+        elif dim == 2:
+            return [map(repr, o) for o in obj]
+
+    def paste_as(self, key, data):
+        """Paste and transform data
+
+        Data may be given as a Python code as well as a tab separated
+        multi-line strings similar to paste.
+
+        """
+
+        def error_msg(err):
+            msg = _("Error evaluating data: ") + str(err)
+            post_command_event(self.main_window, self.StatusBarMsg, text=msg)
+
+        interfaces = self.main_window.interfaces
+        key = self.main_window.grid.actions.cursor
+
+        try:
+            obj = ast.literal_eval(data)
+
+        except (SyntaxError, AttributeError):
+            # This is no Python code so te try to interpret it as paste data
+            try:
+                obj = [map(ast.literal_eval, line.split("\t"))
+                        for line in data.split("\n")]
+
+            except Exception, err:
+                error_msg(err)
+                return
+
+        except ValueError, err:
+            error_msg(err)
+            return
+
+        parameters = interfaces.get_pasteas_parameters_from_user(obj)
+
+        paste_data = self._get_pasteas_data(parameters["dim"], obj)
+
+        if parameters["transpose"]:
+            paste_data = zip(*paste_data)
+
+        self.main_window.grid.actions.paste(key, paste_data)
 
 
 class MacroActions(Actions):
@@ -453,9 +591,8 @@ class MacroActions(Actions):
             macro_infile = open(filepath, "r")
 
         except IOError:
-            statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            msg = _("Error opening file {filepath}.").format(filepath=filepath)
+            post_command_event(self.main_window, self.StatusBarMsg, text=msg)
 
             return False
 
@@ -483,7 +620,23 @@ class MacroActions(Actions):
 
         """
 
-        macro_outfile = open(filepath, "w")
+        io_error_text = _("Error writing to file {filepath}.")
+        io_error_text = io_error_text.format(filepath=filepath)
+
+        try:
+            macro_outfile = open(filepath, "w")
+
+        except IOError:
+            txt = _("Error opening file {filepath}.").format(filepath=filepath)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=txt)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+
+            return False
+
         macro_outfile.write(macros)
         macro_outfile.close()
 
@@ -510,31 +663,40 @@ class HelpActions(Actions):
         position = config["help_window_position"]
         size = config["help_window_size"]
 
-        help_window = wx.Frame(self.main_window, -1, helpname, position, size)
-        help_htmlwindow = wx.html.HtmlWindow(help_window, -1, (0, 0), size)
+        self.help_window = wx.Frame(self.main_window, -1,
+                                    helpname, position, size)
+        self.help_htmlwindow = wx.html.HtmlWindow(self.help_window, -1,
+                                                  (0, 0), size)
 
-        help_window.Bind(wx.EVT_MOVE, self.OnHelpMove)
-        help_window.Bind(wx.EVT_SIZE, self.OnHelpSize)
+        self.help_window.Bind(wx.EVT_MOVE, self.OnHelpMove)
+        self.help_window.Bind(wx.EVT_SIZE, self.OnHelpSize)
+        self.help_htmlwindow.Bind(wx.EVT_RIGHT_DOWN, self.OnHelpBack)
 
         # Get help data
         current_path = os.getcwd()
         os.chdir(get_help_path())
 
         try:
-            help_file = open(filename, "r")
-            help_html = help_file.read()
-            help_file.close()
-            help_htmlwindow.SetPage(help_html)
+            if os.path.isfile(filename):
+                self.help_htmlwindow.LoadFile(filename)
+
+            else:
+                self.help_htmlwindow.LoadPage(filename)
 
         except IOError:
-
-            help_htmlwindow.LoadPage(filename)
+            self.help_htmlwindow.LoadPage(filename)
 
         # Show tutorial window
 
-        help_window.Show()
+        self.help_window.Show()
 
         os.chdir(current_path)
+
+    def OnHelpBack(self, event):
+        """Goes back apage if possible"""
+
+        if self.help_htmlwindow.HistoryCanBack():
+            self.help_htmlwindow.HistoryBack()
 
     def OnHelpMove(self, event):
         """Help window move event handler stores position in config"""

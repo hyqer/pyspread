@@ -10,10 +10,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: pyspread 0.2.2.99\n"
+"Project-Id-Version: pyspread 0.2.4-pre2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-01 11:00+0100\n"
-"PO-Revision-Date: 2013-01-05 09:19+0200\n"
+"POT-Creation-Date: 2013-04-08 01:05+0200\n"
+"PO-Revision-Date: 2013-04-13 09:19+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -34,628 +34,662 @@ msgstr "Fejl"
 msgid "Datatype {} unknown"
 msgstr "Datatypen {} er ukendt"
 
-#: src/lib/__csv.py:264
+#: src/lib/__csv.py:269
 msgid "Fallback type {} unknown."
 msgstr "Reservetype {} er ukendt."
 
-#: src/lib/gpg.py:88
+#: src/lib/gpg.py:63
 msgid ""
-"Choose a GPG key that you own for signing pyspread save files.\n"
-"Pressing Cancel creates a new key."
+"Choose a GPG key for signing pyspread save files.\n"
+"The GPG key must not have a passphrase set."
 msgstr ""
-"Vælg en GPG-nøgle som du ejer for underskrift af pyspreads save-filer.\n"
-"Tryk på Afbrud opretter en ny nøgle."
+"Vælg en GPG-nøgle for underskrift af pyspreads save-filer.\n"
+"GPG-nøglen må ikke have et adgangsfrasesæt."
 
-#: src/lib/gpg.py:90
+#: src/lib/gpg.py:66
 msgid "Choose key"
 msgstr "Vælg nøgle"
 
-#: src/lib/gpg.py:95
-msgid "   Store passphrase"
-msgstr "   Lagr adgangsfrase"
+#: src/lib/gpg.py:72
+msgid "Use chosen key"
+msgstr "brug valgt nøgle"
 
-#: src/lib/gpg.py:170
+#: src/lib/gpg.py:73
+msgid "Create new key"
+msgstr "Opret ny nøgle"
+
+#: src/lib/gpg.py:127
+msgid "New GPG key"
+msgstr "Ny GPG-nøgle"
+
+#: src/lib/gpg.py:128
+msgid "After confirming this dialog, a new GPG key "
+msgstr "Efter bekræftelse af denne dialog vil en ny GPG-nøgle "
+
+#: src/lib/gpg.py:129
+msgid "'{}' will be generated."
+msgstr "»{}« blive oprettet."
+
+#: src/lib/gpg.py:130
 msgid ""
-"Generating new GPG key {}.\n"
+" \n"
+" \n"
 "This may take some time.\n"
+"Please wait.\n"
 " \n"
-"Progress bar may stall. Please wait."
 msgstr ""
-"Opretter ny GPG-nøgle {}.\n"
-"Dette kan tage lidt tid.\n"
 " \n"
-"Statusbjælke kan låse. Vent venligst."
+" \n"
+"Dette kan tage lidt tid.\n"
+"Vent venligst.\n"
+" \n"
 
-#: src/lib/gpg.py:172
-msgid "GPG key generation"
-msgstr "GPG-nøgleoprettelse"
+#: src/lib/gpg.py:131
+msgid "Canceling this operation exits pyspread."
+msgstr "Afbrydelse af denne handling afslutter pyspread."
 
-#: src/pyspread.py:91
+#: src/pyspread.py:95
 msgid "usage: %prog [options] [filename]"
 msgstr "brug: %prog [tilvalg] [filnavn]"
 
-#: src/pyspread.py:92
+#: src/pyspread.py:96
 msgid "%prog {}"
 msgstr "%prog {}"
 
-#: src/pyspread.py:103
+#: src/pyspread.py:107
 #, python-format
 msgid "Dimensions of empty grid (works only without filename) rows, cols, tables [default: %default]"
 msgstr "Dimensioner for tom gitter (virker kun uden filnavn) rækker, kolonner, tabeller [standard: %default]"
 
-#: src/pyspread.py:119
+#: src/pyspread.py:123
 msgid "Cell dimension must be > 0."
 msgstr "Celledimension skal være > 0."
 
-#: src/pyspread.py:124
+#: src/pyspread.py:128
 msgid "Only one file may be opened at a time."
 msgstr "Kun en fil kan åbnes på samme tid."
+
+#: src/pyspread.py:231
+msgid "You need a unicode build of wxPython to run pyspread."
+msgstr "Du skal bruge en unicode-bygning af wxPython for at køre pyspread."
+
+#: src/gui/_menubars.py:123 src/gui/_menubars.py:196
+msgid "&Approve file"
+msgstr "&Godkend fil"
 
 #: src/gui/_menubars.py:134
 msgid "Menu item unknown"
 msgstr "Menupunkt ukendt"
 
-#: src/gui/_menubars.py:153 src/gui/_menubars.py:224
-msgid "Cu&t\tCtrl+x"
-msgstr "Kli&p\tCtrl+x"
+#: src/gui/_menubars.py:153 src/gui/_menubars.py:222
+msgid "Cu&t"
+msgstr "K&lip"
 
-#: src/gui/_menubars.py:153 src/gui/_menubars.py:225
+#: src/gui/_menubars.py:153 src/gui/_menubars.py:223
 msgid "Cut cell to clipboard"
 msgstr "Klip celler til udklipsholderen"
 
-#: src/gui/_menubars.py:155 src/gui/_menubars.py:226
-msgid "&Copy\tCtrl+c"
-msgstr "&Kopier\tCtrl+c"
+#: src/gui/_menubars.py:155 src/gui/_menubars.py:224
+msgid "&Copy"
+msgstr "&Kopier"
 
-#: src/gui/_menubars.py:156
+#: src/gui/_menubars.py:155
 msgid "Copy input strings to clipboard"
 msgstr "Kopier inddatastrenge til udklipsholderen"
 
-#: src/gui/_menubars.py:157 src/gui/_menubars.py:231
-msgid "&Paste\tCtrl+v"
-msgstr "&Indsæt\tCtrl+v"
+#: src/gui/_menubars.py:157 src/gui/_menubars.py:230
+msgid "&Paste"
+msgstr "&Indsæt"
 
-#: src/gui/_menubars.py:158 src/gui/_menubars.py:232
+#: src/gui/_menubars.py:157 src/gui/_menubars.py:231
 msgid "Paste cells from clipboard"
 msgstr "Indsæt celler far udklipsholderen"
 
-#: src/gui/_menubars.py:159
-msgid "Insert &rows\tShift+Ctrl+i"
-msgstr "Indsæt &rækker\tSkift+Ctrl+i"
-
-#: src/gui/_menubars.py:160 src/gui/_menubars.py:240
-msgid "Insert rows at cursor"
-msgstr "Indsæt rækker ved markør"
-
-#: src/gui/_menubars.py:161
-msgid "&Insert columns\tCtrl+i"
-msgstr "&Indsæt kolonner\tCtrl+i"
-
-#: src/gui/_menubars.py:162 src/gui/_menubars.py:242
-msgid "Insert columns at cursor"
-msgstr "Indsæt kolonner ved markør"
-
-#: src/gui/_menubars.py:163
-msgid "Delete rows\tShift+Ctrl+d"
-msgstr "Slet rækker\tSkift+Ctrl+d"
-
-#: src/gui/_menubars.py:164 src/gui/_menubars.py:246 src/gui/_menubars.py:247
-msgid "Delete rows"
-msgstr "Slet rækker"
-
-#: src/gui/_menubars.py:165
-msgid "Delete columns\tCtrl+Alt+d"
-msgstr "Slet kolonner\tCtrl+Alt+d"
-
-#: src/gui/_menubars.py:166 src/gui/_menubars.py:248 src/gui/_menubars.py:249
-msgid "Delete columns"
-msgstr "Slet kolonner"
-
-#: src/gui/_menubars.py:182
-msgid "&File"
-msgstr "&Fil"
-
-#: src/gui/_menubars.py:183
-msgid "&New\tCtrl+n"
-msgstr "&Ny\tCtrl+n"
-
-#: src/gui/_menubars.py:184 src/gui/_toolbars.py:109
-msgid "Create a new, empty spreadsheet"
-msgstr "Opret et nyt, tomt regneark"
-
-#: src/gui/_menubars.py:185
-msgid "&Open"
-msgstr "&Åbn"
-
-#: src/gui/_menubars.py:186 src/gui/_toolbars.py:111
-msgid "Open spreadsheet from file"
-msgstr "Åbn regneark fra fil"
-
-#: src/gui/_menubars.py:188
-msgid "&Save\tCtrl+s"
-msgstr "&Gem\tCtrl+s"
-
-#: src/gui/_menubars.py:189 src/gui/_toolbars.py:112
-msgid "Save spreadsheet"
-msgstr "Gem regneark"
-
-#: src/gui/_menubars.py:190
-msgid "Save &As\tShift+Ctrl+s"
-msgstr "Gem &Som\tSkift+Ctrl+s"
-
-#: src/gui/_menubars.py:191
-msgid "Save spreadsheet to a new file"
-msgstr "Gem regneark til en ny fil"
-
-#: src/gui/_menubars.py:193
-msgid "&Import"
-msgstr "&Importer"
-
-#: src/gui/_menubars.py:194
-msgid "Import a file and paste it into current grid"
-msgstr "Importer en fil og indsæt den i aktuel gitter"
-
-#: src/gui/_menubars.py:195
-msgid "&Export"
-msgstr "&Eksporter"
-
-#: src/gui/_menubars.py:196
-msgid "Export selection to file (Supported formats: CSV)"
-msgstr "Eksporter markering til fil (understøttede formater: CSV)"
-
-#: src/gui/_menubars.py:198
-msgid "&Approve file"
-msgstr "&Godkend fil"
-
-#: src/gui/_menubars.py:199
-msgid "Approve, unfreeze and sign the current file"
-msgstr "Godkend, optø og underskriv den aktuelle fil"
-
-#: src/gui/_menubars.py:201
-msgid "&Clear globals"
-msgstr "&Ryd globale variabler"
-
-#: src/gui/_menubars.py:202
-msgid "Deletes global veriables from memory and reloads base modules"
-msgstr "Sletter globale variabler fra hukommelsen og genindlæser grundmoduler"
-
-#: src/gui/_menubars.py:205
-msgid "Page setup"
-msgstr "Sideopsætning"
-
-#: src/gui/_menubars.py:206
-msgid "Setup printer page"
-msgstr "Printeropsætning"
-
-#: src/gui/_menubars.py:207
-msgid "Print preview\tShift+Ctrl+p"
-msgstr "Udskriv forhåndsvisning\tSkift+Ctrl+p"
-
-#: src/gui/_menubars.py:208 src/actions/_main_window_actions.py:180
-msgid "Print preview"
-msgstr "Udskriv forhåndsvisning"
-
-#: src/gui/_menubars.py:209
-msgid "&Print\tCtrl+p"
-msgstr "&Print\tCtrl+p"
-
-#: src/gui/_menubars.py:210
-msgid "Print current spreadsheet"
-msgstr "Udskriv aktuelt regneark"
-
-#: src/gui/_menubars.py:212
-msgid "Preferences..."
-msgstr "Præferencer ..."
-
-#: src/gui/_menubars.py:213
-msgid "Change preferences of pyspread"
-msgstr "Ændr præfrerencer for pyspread"
-
-#: src/gui/_menubars.py:215
-msgid "&Quit\tCtrl+q"
-msgstr "&Afslut\tCtrl+q"
-
-#: src/gui/_menubars.py:215
-msgid "Quit pyspread"
-msgstr "Afslut pyspread"
-
-#: src/gui/_menubars.py:218
-msgid "&Edit"
-msgstr "&Rediger"
-
-#: src/gui/_menubars.py:219
-msgid "&Undo\tCtrl+z"
-msgstr "&Fortryd\tCtrl+z"
-
-#: src/gui/_menubars.py:219
-msgid "Undo last step"
-msgstr "Fortryd sidste handling"
-
-#: src/gui/_menubars.py:221
-msgid "&Redo\tShift+Ctrl+z"
-msgstr "&Gendan\tSkift+Ctrl+z"
-
-#: src/gui/_menubars.py:222
-msgid "Redo last undone step"
-msgstr "Gendan sidste fortrydhandling"
-
-#: src/gui/_menubars.py:227 src/gui/_toolbars.py:128
-msgid "Copy the input strings of the cells to clipboard"
-msgstr "Kopier cellernes inddatastrenge til udklipsholder"
-
-#: src/gui/_menubars.py:229
-msgid "Copy &Results\tShift+Ctrl+c"
-msgstr "Kopier &Resultater\tSkift+Ctrl+c"
-
-#: src/gui/_menubars.py:230 src/gui/_toolbars.py:131
-msgid "Copy the result strings of the cells to the clipboard"
-msgstr ""
-
-#: src/gui/_menubars.py:234
-msgid "&Find\tCtrl+f"
-msgstr ""
-
-#: src/gui/_menubars.py:235 src/gui/_toolbars.py:121
-msgid "Find cell by content"
-msgstr "Find celle efter indhold"
-
-#: src/gui/_menubars.py:236
-msgid "Replace...\tCtrl+Shift+f"
-msgstr "Erstat ...\tCtrl+Shift+f"
-
-#: src/gui/_menubars.py:237 src/gui/_toolbars.py:123
-msgid "Replace strings in cells"
-msgstr "Erstat strenge i celler"
-
-#: src/gui/_menubars.py:239
+#: src/gui/_menubars.py:159 src/gui/_menubars.py:240
 msgid "Insert &rows"
 msgstr "Indsæt &rækker"
 
-#: src/gui/_menubars.py:241
+#: src/gui/_menubars.py:160 src/gui/_menubars.py:241
+msgid "Insert rows at cursor"
+msgstr "Indsæt rækker ved markør"
+
+#: src/gui/_menubars.py:161 src/gui/_menubars.py:242
 msgid "&Insert columns"
 msgstr "&Indsæt kolonner"
 
-#: src/gui/_menubars.py:243
+#: src/gui/_menubars.py:162 src/gui/_menubars.py:243
+msgid "Insert columns at cursor"
+msgstr "Indsæt kolonner ved markør"
+
+#: src/gui/_menubars.py:163 src/gui/_menubars.py:247 src/gui/_menubars.py:248
+msgid "Delete rows"
+msgstr "Slet rækker"
+
+#: src/gui/_menubars.py:164 src/gui/_menubars.py:249 src/gui/_menubars.py:250
+msgid "Delete columns"
+msgstr "Slet kolonner"
+
+#: src/gui/_menubars.py:180
+msgid "&File"
+msgstr "&Fil"
+
+#: src/gui/_menubars.py:181
+msgid "&New"
+msgstr "&Ny"
+
+#: src/gui/_menubars.py:182
+msgid "Create a new, empty spreadsheet"
+msgstr "Opret et nyt, tomt regneark"
+
+#: src/gui/_menubars.py:183
+msgid "&Open"
+msgstr "&Åbn"
+
+#: src/gui/_menubars.py:184
+msgid "Open spreadsheet from file"
+msgstr "Åbn regneark fra fil"
+
+#: src/gui/_menubars.py:186
+msgid "&Save"
+msgstr "&Gem"
+
+#: src/gui/_menubars.py:187
+msgid "Save spreadsheet"
+msgstr "Gem regneark"
+
+#: src/gui/_menubars.py:188
+msgid "Save &As"
+msgstr "Gem &som"
+
+#: src/gui/_menubars.py:189
+msgid "Save spreadsheet to a new file"
+msgstr "Gem regneark til en ny fil"
+
+#: src/gui/_menubars.py:191
+msgid "&Import"
+msgstr "&Importer"
+
+#: src/gui/_menubars.py:192
+msgid "Import a file and paste it into current grid"
+msgstr "Importer en fil og indsæt den i aktuel gitter"
+
+#: src/gui/_menubars.py:193
+msgid "&Export"
+msgstr "&Eksporter"
+
+#: src/gui/_menubars.py:194
+msgid "Export selection to file (Supported formats: CSV)"
+msgstr "Eksporter markering til fil (understøttede formater: CSV)"
+
+#: src/gui/_menubars.py:197
+msgid "Approve, unfreeze and sign the current file"
+msgstr "Godkend, optø og underskriv den aktuelle fil"
+
+#: src/gui/_menubars.py:199
+msgid "&Clear globals"
+msgstr "&Ryd globale variabler"
+
+#: src/gui/_menubars.py:200
+msgid "Deletes global variables from memory and reloads base modules"
+msgstr "Sletter globale variabler fra hukommelsen og genindlæser grundmoduler"
+
+#: src/gui/_menubars.py:203
+msgid "Page setup"
+msgstr "Sideopsætning"
+
+#: src/gui/_menubars.py:204
+msgid "Setup printer page"
+msgstr "Printeropsætning"
+
+#: src/gui/_menubars.py:205 src/gui/_menubars.py:206
+#: src/actions/_main_window_actions.py:245
+msgid "Print preview"
+msgstr "Udskriv forhåndsvisning"
+
+#: src/gui/_menubars.py:207
+msgid "&Print"
+msgstr "&Udskriv"
+
+#: src/gui/_menubars.py:208
+msgid "Print current spreadsheet"
+msgstr "Udskriv aktuelt regneark"
+
+#: src/gui/_menubars.py:210
+msgid "Preferences..."
+msgstr "Præferencer ..."
+
+#: src/gui/_menubars.py:211
+msgid "Change preferences of pyspread"
+msgstr "Ændr præfrerencer for pyspread"
+
+#: src/gui/_menubars.py:213
+msgid "&Quit"
+msgstr "&Afslut"
+
+#: src/gui/_menubars.py:214
+msgid "Quit pyspread"
+msgstr "Afslut pyspread"
+
+#: src/gui/_menubars.py:216
+msgid "&Edit"
+msgstr "&Rediger"
+
+#: src/gui/_menubars.py:217
+msgid "&Undo"
+msgstr "&Fortryd"
+
+#: src/gui/_menubars.py:218
+msgid "Undo last step"
+msgstr "Fortryd sidste handling"
+
+#: src/gui/_menubars.py:219
+msgid "&Redo"
+msgstr "&Gendan"
+
+#: src/gui/_menubars.py:220
+msgid "Redo last undone step"
+msgstr "Gendan sidste fortrydhandling"
+
+#: src/gui/_menubars.py:225
+msgid "Copy the input strings of the cells to clipboard"
+msgstr "Kopier cellernes inddatastrenge til udklipsholder"
+
+#: src/gui/_menubars.py:228
+msgid "Copy &Results"
+msgstr "Kopier &resultater"
+
+#: src/gui/_menubars.py:229
+msgid "Copy the result strings of the cells to the clipboard"
+msgstr "Kopier resultatstrenge for cellerne til udklipsholderen"
+
+#: src/gui/_menubars.py:232
+msgid "Paste &As..."
+msgstr "Indsæt &som ..."
+
+#: src/gui/_menubars.py:233
+msgid "Transform clipboard and paste cells into grid"
+msgstr "Transformer udklipsholder og indsæt celler i gitter"
+
+#: src/gui/_menubars.py:235
+msgid "&Find"
+msgstr "&Find"
+
+#: src/gui/_menubars.py:236
+msgid "Find cell by content"
+msgstr "Find celle efter indhold"
+
+#: src/gui/_menubars.py:237
+msgid "Replace..."
+msgstr "Erstat ..."
+
+#: src/gui/_menubars.py:238
+msgid "Replace strings in cells"
+msgstr "Erstat strenge i celler"
+
+#: src/gui/_menubars.py:244
 msgid "Insert &table"
 msgstr "Indsæt &tabel"
 
-#: src/gui/_menubars.py:244
+#: src/gui/_menubars.py:245
 msgid "Insert table before current table"
 msgstr "Indsæt tabel før aktuel tabel"
 
-#: src/gui/_menubars.py:250
+#: src/gui/_menubars.py:251
 msgid "Delete table"
 msgstr "Slet tabel"
 
-#: src/gui/_menubars.py:251
+#: src/gui/_menubars.py:252
 msgid "Delete current table"
 msgstr "Slet aktuel tabel"
 
-#: src/gui/_menubars.py:253 src/gui/_menubars.py:254
+#: src/gui/_menubars.py:254 src/gui/_menubars.py:255
 msgid "Resize grid"
 msgstr "Ændr størrelse på gitter"
 
-#: src/gui/_menubars.py:256
+#: src/gui/_menubars.py:257
 msgid "&View"
 msgstr "&Vis"
 
-#: src/gui/_menubars.py:257
+#: src/gui/_menubars.py:258
 msgid "Toolbars"
 msgstr "Værktøjsbjælker"
 
-#: src/gui/_menubars.py:258 src/gui/_main_window.py:164
+#: src/gui/_menubars.py:259 src/gui/_main_window.py:164
 msgid "Main toolbar"
 msgstr "Hovedværktøjsbjælke"
 
-#: src/gui/_menubars.py:259
+#: src/gui/_menubars.py:260
 msgid "Shows and hides the main toolbar."
 msgstr "Viser og skjuler hovedværktøjsbjælken."
 
-#: src/gui/_menubars.py:261 src/gui/_main_window.py:165
+#: src/gui/_menubars.py:262 src/gui/_main_window.py:165
 msgid "Macro toolbar"
 msgstr "Makrotøjsbjælke"
 
-#: src/gui/_menubars.py:262
+#: src/gui/_menubars.py:263
 msgid "Shows and hides the macro toolbar."
 msgstr "Viser og skjuler makroværktøjsbjælken."
 
-#: src/gui/_menubars.py:265 src/gui/_main_window.py:167
+#: src/gui/_menubars.py:266 src/gui/_main_window.py:167
 msgid "Format toolbar"
 msgstr "Formatværktøjsbjælke"
 
-#: src/gui/_menubars.py:266
+#: src/gui/_menubars.py:267
 msgid "Shows and hides the format toolbar."
 msgstr "Viser og skjuler formatværktøjsbjælken."
 
-#: src/gui/_menubars.py:268 src/gui/_main_window.py:168
+#: src/gui/_menubars.py:269 src/gui/_main_window.py:168
 msgid "Find toolbar"
 msgstr "Søgværktøjsbjælke"
 
-#: src/gui/_menubars.py:269
+#: src/gui/_menubars.py:270
 msgid "Shows and hides the find toolbar."
 msgstr "Viser og skjuler søgværktøjsbjælken."
 
-#: src/gui/_menubars.py:273 src/gui/_main_window.py:169
+#: src/gui/_menubars.py:274 src/gui/_main_window.py:169
+#: src/gui/_main_window.py:212
 msgid "Entry line"
 msgstr "Indtastningslinje"
 
-#: src/gui/_menubars.py:274
+#: src/gui/_menubars.py:275
 msgid "Shows and hides the entry line."
 msgstr "Viser og skjuler indtastningslinjen."
 
-#: src/gui/_menubars.py:275 src/gui/_main_window.py:170
+#: src/gui/_menubars.py:276
 msgid "Table choice"
 msgstr "Tabelvalg"
 
-#: src/gui/_menubars.py:276
+#: src/gui/_menubars.py:277
 msgid "Shows and hides the table choice."
 msgstr "Viser og skjuler tabelvalget."
 
-#: src/gui/_menubars.py:279
-msgid "Go to cell\tCtrl+G"
-msgstr "Gå til celle\tCtrl+G"
+#: src/gui/_menubars.py:281
+msgid "Go to cell"
+msgstr "Gå til celle"
 
-#: src/gui/_menubars.py:280
+#: src/gui/_menubars.py:282
 msgid "Moves the grid to a cell."
 msgstr "Flytter gitteret til en celle."
 
-#: src/gui/_menubars.py:282
-msgid "Zoom in\tCtrl++"
-msgstr ""
+#: src/gui/_menubars.py:284
+msgid "Zoom in"
+msgstr "Zoom ind"
 
-#: src/gui/_menubars.py:283
+#: src/gui/_menubars.py:285
 msgid "Zoom in grid."
 msgstr "Zoom ind på gitter."
 
-#: src/gui/_menubars.py:284
-msgid "Zoom out\tCtrl+-"
-msgstr "Zoom ud\tCtrl+-"
+#: src/gui/_menubars.py:286
+msgid "Zoom out"
+msgstr "Zoom ud"
 
-#: src/gui/_menubars.py:285
+#: src/gui/_menubars.py:287
 msgid "Zoom out grid."
 msgstr "Zoom ud på gitter."
 
-#: src/gui/_menubars.py:286
-msgid "Normal size\tCtrl+0"
-msgstr ""
+#: src/gui/_menubars.py:288
+msgid "Normal size"
+msgstr "Normal størrelse"
 
-#: src/gui/_menubars.py:287
+#: src/gui/_menubars.py:289
 msgid "Show grid in standard zoom."
 msgstr "Vis gitter i standardzoom."
 
-#: src/gui/_menubars.py:290
-msgid "Refresh selected cells\tF5"
-msgstr ""
+#: src/gui/_menubars.py:292
+msgid "Refresh selected cells"
+msgstr "Opdater valgte celler"
 
-#: src/gui/_menubars.py:291
+#: src/gui/_menubars.py:293
 msgid "Refresh selected cells even when frozen"
-msgstr ""
+msgstr "Opdater valgte celler selv når frosset"
 
-#: src/gui/_menubars.py:295
+#: src/gui/_menubars.py:297
 msgid "F&ormat"
 msgstr "F&ormat"
 
-#: src/gui/_menubars.py:296
+#: src/gui/_menubars.py:298
 msgid "Font..."
 msgstr "Skrifttype ..."
 
-#: src/gui/_menubars.py:297
+#: src/gui/_menubars.py:299
 msgid "Launch font dialog."
 msgstr "Start dialog for skrifttype."
 
-#: src/gui/_menubars.py:298 src/gui/_toolbars.py:404
+#: src/gui/_menubars.py:300 src/gui/_toolbars.py:413
 msgid "Underline"
-msgstr ""
-
-#: src/gui/_menubars.py:299
-msgid "Toggles underline."
-msgstr ""
-
-#: src/gui/_menubars.py:300 src/gui/_toolbars.py:406
-msgid "Strikethrough"
-msgstr ""
+msgstr "Understreg"
 
 #: src/gui/_menubars.py:301
-msgid "Toggles strikethrough."
-msgstr ""
+msgid "Toggles underline."
+msgstr "Slå understreg til/fra."
+
+#: src/gui/_menubars.py:302 src/gui/_toolbars.py:415
+msgid "Strikethrough"
+msgstr "Gennemstreg"
 
 #: src/gui/_menubars.py:303
-msgid "Frozen"
-msgstr ""
-
-#: src/gui/_menubars.py:304
-msgid "Toggles frozen state of cell. "
-msgstr ""
+msgid "Toggles strikethrough."
+msgstr "Slå gennemstreg til/fra."
 
 #: src/gui/_menubars.py:305
-msgid "Frozen cells are updated only when F5 is pressed."
-msgstr ""
+msgid "Frozen"
+msgstr "Frosset"
 
-#: src/gui/_menubars.py:306 src/gui/_toolbars.py:497
-msgid "Merge cells"
-msgstr ""
+#: src/gui/_menubars.py:306
+msgid "Toggles frozen state of cell. "
+msgstr "Slå frossen tilstand for celle til/fra. "
 
 #: src/gui/_menubars.py:307
+msgid "Frozen cells are updated only when F5 is pressed."
+msgstr "Frosne celler opdateres kun når der trykkes på F5."
+
+#: src/gui/_menubars.py:308 src/gui/_toolbars.py:509
+msgid "Merge cells"
+msgstr "Flet celler"
+
+#: src/gui/_menubars.py:309
 msgid "Merges / unmerges selected cells. "
-msgstr ""
+msgstr "Fletter / fjerne fletning for valgte celler. "
 
-#: src/gui/_menubars.py:310
+#: src/gui/_menubars.py:312
 msgid "Justification"
-msgstr ""
+msgstr "Justering"
 
-#: src/gui/_menubars.py:311
+#: src/gui/_menubars.py:313
 msgid "Left"
 msgstr "Venstre"
 
-#: src/gui/_menubars.py:313 src/gui/_menubars.py:320
+#: src/gui/_menubars.py:315 src/gui/_menubars.py:322
 msgid "Center"
-msgstr ""
+msgstr "Centreret"
 
-#: src/gui/_menubars.py:315
+#: src/gui/_menubars.py:317
 msgid "Right"
 msgstr "Højre"
 
-#: src/gui/_menubars.py:318
+#: src/gui/_menubars.py:320
 msgid "Alignment"
 msgstr "Justering"
 
-#: src/gui/_menubars.py:320
+#: src/gui/_menubars.py:322
 msgid "Top"
-msgstr ""
+msgstr "Top"
 
-#: src/gui/_menubars.py:320
+#: src/gui/_menubars.py:322
 msgid "Bottom"
-msgstr ""
+msgstr "Bund"
 
-#: src/gui/_menubars.py:323
+#: src/gui/_menubars.py:325
 msgid "Text color..."
 msgstr "Tekstfarve ..."
 
-#: src/gui/_menubars.py:324
+#: src/gui/_menubars.py:326
 msgid "Launch color dialog to specify text color."
-msgstr ""
+msgstr "Start farvedialog for at angive tekstfarve."
 
-#: src/gui/_menubars.py:325
+#: src/gui/_menubars.py:327
 msgid "Background color..."
 msgstr "Baggrundsfarve ..."
 
-#: src/gui/_menubars.py:326
-msgid "Launch color dialog to specify background color."
-msgstr ""
-
 #: src/gui/_menubars.py:328
+msgid "Launch color dialog to specify background color."
+msgstr "Start farvedialog for at angive baggrundsfarve."
+
+#: src/gui/_menubars.py:330
 msgid "Rotation..."
 msgstr "Rotation ..."
 
-#: src/gui/_menubars.py:329
+#: src/gui/_menubars.py:331
 msgid "Set text rotation."
 msgstr "Angiv tekstrotation."
 
-#: src/gui/_menubars.py:333
+#: src/gui/_menubars.py:334
 msgid "&Macro"
 msgstr "&Makro"
 
-#: src/gui/_menubars.py:334
-msgid "&Macro list\tCtrl+m"
-msgstr "&Makroliste\tCtrl+m"
-
 #: src/gui/_menubars.py:335
+msgid "&Macro list"
+msgstr "&Makroliste"
+
+#: src/gui/_menubars.py:336
 msgid "Choose, fill in, manage, and create macros"
 msgstr "Vælg, udfyld, håndter og opret makroer"
 
-#: src/gui/_menubars.py:336
+#: src/gui/_menubars.py:337
 msgid "&Load macro list"
 msgstr "&Indlæs makroliste"
 
-#: src/gui/_menubars.py:337
+#: src/gui/_menubars.py:338
 msgid "Load macro list"
 msgstr "Indlæs makroliste"
 
-#: src/gui/_menubars.py:338
+#: src/gui/_menubars.py:339
 msgid "&Save macro list"
 msgstr "&Gem makroliste"
 
-#: src/gui/_menubars.py:339
+#: src/gui/_menubars.py:340
 msgid "Save macro list"
 msgstr "Gem makroliste"
 
-#: src/gui/_menubars.py:341
+#: src/gui/_menubars.py:342
 msgid "Insert bitmap..."
 msgstr "Indsæt bitmap ..."
 
-#: src/gui/_menubars.py:342
+#: src/gui/_menubars.py:343
 msgid "Insert bitmap from file into cell"
 msgstr "Indsæt bitmap fra fil i celle"
 
-#: src/gui/_menubars.py:343
+#: src/gui/_menubars.py:344
 msgid "Link bitmap..."
 msgstr "Henvis bitmap ..."
 
-#: src/gui/_menubars.py:344
+#: src/gui/_menubars.py:345
 msgid "Link bitmap from file into cell"
 msgstr "Henvis bitmap fra fil ind i celle"
 
-#: src/gui/_menubars.py:345
+#: src/gui/_menubars.py:346
 msgid "Insert chart..."
 msgstr "Indsæt diagram ..."
 
-#: src/gui/_menubars.py:346 src/gui/_toolbars.py:151
+#: src/gui/_menubars.py:347
 msgid "Insert chart into cell"
 msgstr "Indsæt diagram i celle"
 
-#: src/gui/_menubars.py:348
+#: src/gui/_menubars.py:350
 msgid "&Help"
 msgstr "&Hjælp"
 
-#: src/gui/_menubars.py:349
+#: src/gui/_menubars.py:351
 msgid "First &Steps"
 msgstr "Første &Trin"
 
-#: src/gui/_menubars.py:350
+#: src/gui/_menubars.py:352
 msgid "Launch First Steps in pyspread"
 msgstr "Kør første trin i pyspread"
 
-#: src/gui/_menubars.py:351
+#: src/gui/_menubars.py:353
 msgid "&Tutorial"
 msgstr "&Øvelse"
 
-#: src/gui/_menubars.py:352
+#: src/gui/_menubars.py:354
 msgid "Launch tutorial"
 msgstr "Start øvelse"
 
-#: src/gui/_menubars.py:353
+#: src/gui/_menubars.py:355
 msgid "&FAQ"
 msgstr "&OSS"
 
-#: src/gui/_menubars.py:354
+#: src/gui/_menubars.py:356
 msgid "Frequently asked questions"
 msgstr "Ofte stillede spørgsmål"
 
-#: src/gui/_menubars.py:356
+#: src/gui/_menubars.py:358
 msgid "&Python tutorial"
 msgstr "&Pythonøvelse"
 
-#: src/gui/_menubars.py:357
+#: src/gui/_menubars.py:359
 msgid "Python tutorial for coding information (online)"
 msgstr "Pythonøvelse for kodningsinformation (på nettet)"
 
-#: src/gui/_menubars.py:359
+#: src/gui/_menubars.py:361
 msgid "&About"
 msgstr "&Om"
 
-#: src/gui/_menubars.py:359 src/gui/_dialogs.py:1083
+#: src/gui/_menubars.py:361 src/gui/_dialogs.py:1081
 msgid "About pyspread"
 msgstr "Om pyspread"
 
-#: src/gui/_main_window.py:94
+#: src/gui/_main_window.py:97
 msgid "Welcome to pyspread."
 msgstr "Velkommen til pyspread."
 
-#: src/gui/_main_window.py:178
+#: src/gui/_main_window.py:177
 msgid "View"
 msgstr "Vis"
 
-#: src/gui/_main_window.py:590
+#: src/gui/_main_window.py:190
+msgid "Macro Toolbar"
+msgstr "Makro-værktøjsbjælke"
+
+# Hovedværktøjsbjælke, Hoved-værktøjsbjælke
+#: src/gui/_main_window.py:196
+msgid "Main Toolbar"
+msgstr "Standard-værktøjsbjælke"
+
+#: src/gui/_main_window.py:201 src/gui/_toolbars.py:156
+msgid "Find"
+msgstr "Find"
+
+#: src/gui/_main_window.py:207
+msgid "Cell Attributes"
+msgstr "Celleattributter"
+
+#: src/gui/_main_window.py:579
 msgid "New grid with dimensions {} created."
-msgstr "Nyt gitter med dimensioneren {} oprettet."
+msgstr "Nyt gitter med dimensionerne {} oprettet."
 
-#: src/gui/_main_window.py:614 src/gui/_main_window.py:668
-msgid "Pyspread file (*.pys)|*.pys|All files (*.*)|*.*"
-msgstr "Pyspreadfil (*.pys)|*.pys|Alle filer (*.*)|*.*"
+#: src/gui/_main_window.py:604 src/gui/_main_window.py:661
+msgid "Pyspread file"
+msgstr "Pyspread-fil"
 
-#: src/gui/_main_window.py:615
+#: src/gui/_main_window.py:605 src/gui/_main_window.py:662
+#: src/gui/_main_window.py:1113 src/gui/_main_window.py:1141
+msgid "All files"
+msgstr "Alle filer"
+
+#: src/gui/_main_window.py:606
 msgid "Choose pyspread file to open."
 msgstr "Vælg pyspread-fil at åbne."
 
-#: src/gui/_main_window.py:669
+#: src/gui/_main_window.py:663
 msgid "Choose filename for saving."
 msgstr "Filnavn der skal gemmes under."
 
-#: src/gui/_main_window.py:681
+#: src/gui/_main_window.py:676
 msgid "Directory present. Save aborted."
 msgstr "Mappe til stede. Der blev ikke gemt."
 
-#: src/gui/_main_window.py:688
+#: src/gui/_main_window.py:684
 msgid ""
 "The file {filepath} is already present.\n"
 "Overwrite?"
@@ -663,31 +697,51 @@ msgstr ""
 "Filen {filepath} er allerede til stede.\n"
 "Overskriv?"
 
-#: src/gui/_main_window.py:690
+#: src/gui/_main_window.py:686
 msgid "File collision"
 msgstr "Filkollidering"
 
-#: src/gui/_main_window.py:694
+#: src/gui/_main_window.py:691
 msgid "File present. Save aborted by user."
 msgstr "Fil til stede. Brugeren afbrød."
 
-#: src/gui/_main_window.py:720
-msgid "Csv file (*.*)|*.*|Tab delimited text file (*.*)|*.*"
-msgstr "Csv-fil (*.*)|*.*|Tab-afgrænset tekstfil (*.*)|*.*"
+#: src/gui/_main_window.py:718 src/gui/_main_window.py:757
+msgid "CSV file"
+msgstr "CSV-fil"
 
-#: src/gui/_main_window.py:721
+#: src/gui/_main_window.py:719
+msgid "Tab delimited text file"
+msgstr "Tab-afgrænset tekstfil"
+
+#: src/gui/_main_window.py:720
 msgid "Choose file to import."
 msgstr "Vælg fil at importere."
 
-#: src/gui/_main_window.py:773
-msgid "CSV file (*.*)|*.*"
-msgstr "CSV-fil (*.*)|*.*"
+#: src/gui/_main_window.py:783
+msgid "SVG file"
+msgstr "SVG-fil"
 
-#: src/gui/_main_window.py:774
+#: src/gui/_main_window.py:784
+msgid "EPS file"
+msgstr "EPS-fil"
+
+#: src/gui/_main_window.py:785
+msgid "PS file"
+msgstr "PS-fil"
+
+#: src/gui/_main_window.py:786
+msgid "PDF file"
+msgstr "PDF-fil"
+
+#: src/gui/_main_window.py:787
+msgid "PNG file"
+msgstr "PNG-fil"
+
+#: src/gui/_main_window.py:789
 msgid "Choose filename for export."
 msgstr "Vælg filnavn for eksport."
 
-#: src/gui/_main_window.py:790
+#: src/gui/_main_window.py:811
 msgid ""
 "You are going to approve and trust a file that\n"
 "you have received from an untrusted source.\n"
@@ -702,38 +756,56 @@ msgid ""
 " \n"
 "Proceed and sign this file as trusted?"
 msgstr ""
+"Du er ved at godkende og stole på en fil som\n"
+"du har modtaget fra en utroværdig kilde.\n"
+"Når du fortsætter, køres filen. Det kan\n"
+"skade dit system, hvilket ethvert program kan.\n"
+"Medmindre at du har taget dine forholdsregler,\n"
+"så kan dine filer blive slettet eller sendt\n"
+"over internettet.\n"
+"KONTROLLER HVER CELLE FØR DU FORTSÆTTER.\n"
+"Glem ikke celler uden for det synlige område.\n"
+"Du er blevet advaret.\n"
+" \n"
+"Fortsæt og underskriv filen som værende troværdig?"
 
-#: src/gui/_main_window.py:801
+#: src/gui/_main_window.py:822
 msgid "Security warning"
 msgstr "Sikkerhedsadvarsel"
 
-#: src/gui/_main_window.py:809
+#: src/gui/_main_window.py:830
 msgid "Safe mode deactivated."
 msgstr "Sikker tilstand deaktiveret."
 
-#: src/gui/_main_window.py:816
+#: src/gui/_main_window.py:837
 msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
-msgstr ""
+msgstr "Sletning af globale og genindlæsning af moduler kan ikke fortrydes. Fortsæt?"
 
-#: src/gui/_main_window.py:818
+#: src/gui/_main_window.py:839
 msgid "Really delete globals and modules?"
-msgstr ""
+msgstr "Slet globale og moduler?"
 
-#: src/gui/_main_window.py:825
+#: src/gui/_main_window.py:846
 msgid "Globals cleared and base modules reloaded."
-msgstr ""
+msgstr "Globale ryddet og grundmoduler genindlæst."
 
-#: src/gui/_main_window.py:1046 src/gui/_main_window.py:1071
-msgid "Macro file (*.py)|*.py|All files (*.*)|*.*"
-msgstr "Makrofil (*.py)|*.py|Alle filer (*.*)|*.*"
+#: src/gui/_main_window.py:981
+msgid "Error evaluating data: "
+msgstr "Fejl under evaluering af data: "
 
-#: src/gui/_main_window.py:1047 src/gui/_main_window.py:1072
+#: src/gui/_main_window.py:1112 src/gui/_main_window.py:1140
+msgid "Macro file"
+msgstr "Makrofil"
+
+#: src/gui/_main_window.py:1114 src/gui/_main_window.py:1142
 msgid "Choose macro file."
 msgstr "Vælg makrofil."
 
 #: src/gui/_chart_dialog.py:456 src/gui/_chart_dialog.py:486
-msgid "Series name"
-msgstr "Serienavn"
+#: src/gui/_chart_dialog.py:534 src/gui/_chart_dialog.py:581
+#: src/gui/_chart_dialog.py:584
+msgid "Label"
+msgstr "Etiket"
 
 #: src/gui/_chart_dialog.py:457
 msgid "X"
@@ -751,7 +823,7 @@ msgstr "Stil"
 msgid "Width"
 msgstr "Bredde"
 
-#: src/gui/_chart_dialog.py:461
+#: src/gui/_chart_dialog.py:461 src/gui/_chart_dialog.py:539
 msgid "Color"
 msgstr "Farve"
 
@@ -768,6 +840,8 @@ msgid "Edge color"
 msgstr "Kantfarve"
 
 #: src/gui/_chart_dialog.py:472 src/gui/_chart_dialog.py:499
+#: src/gui/_chart_dialog.py:522 src/gui/_chart_dialog.py:546
+#: src/gui/_chart_dialog.py:568
 msgid "Data"
 msgstr "Data"
 
@@ -777,23 +851,23 @@ msgstr "Linje"
 
 #: src/gui/_chart_dialog.py:474
 msgid "Marker"
-msgstr ""
+msgstr "Markør"
 
 #: src/gui/_chart_dialog.py:487
 msgid "Left positions"
-msgstr ""
+msgstr "Venstreplaceringer"
 
 #: src/gui/_chart_dialog.py:488
 msgid "Bar heights"
-msgstr ""
+msgstr "Bjælkehøjder"
 
 #: src/gui/_chart_dialog.py:489
 msgid "Bar widths"
-msgstr ""
+msgstr "Bjælkebredder"
 
 #: src/gui/_chart_dialog.py:490
 msgid "Bar bottoms"
-msgstr ""
+msgstr "Bjælkebunde"
 
 #: src/gui/_chart_dialog.py:491
 msgid "Bar color"
@@ -803,48 +877,114 @@ msgstr "Bjælkefarve"
 msgid "Bar"
 msgstr "Bjælke"
 
-#: src/gui/_chart_dialog.py:511 src/gui/_chart_dialog.py:514
-msgid "Label"
-msgstr "Etikel"
-
-#: src/gui/_chart_dialog.py:512 src/gui/_chart_dialog.py:515
-msgid "Limits"
-msgstr "Begrænsninger"
-
-#: src/gui/_chart_dialog.py:513 src/gui/_chart_dialog.py:516
-msgid "Log"
-msgstr "Log"
-
-#: src/gui/_chart_dialog.py:523
-msgid "X-Axis"
-msgstr "X-akse"
-
-#: src/gui/_chart_dialog.py:524
-msgid "Y-Axis"
-msgstr "Y-akse"
-
-#: src/gui/_chart_dialog.py:675 src/gui/_chart_dialog.py:691
-msgid "+"
-msgstr "+"
-
-#: src/gui/_chart_dialog.py:707 src/gui/_chart_dialog.py:805
+#: src/gui/_chart_dialog.py:511 src/gui/_chart_dialog.py:535
+#: src/gui/_chart_dialog.py:558 src/gui/_chart_dialog.py:784
+#: src/gui/_chart_dialog.py:883
 msgid "Series"
 msgstr "Serier"
 
-#: src/gui/_chart_dialog.py:801 src/gui/_toolbars.py:150
-#: src/gui/_toolbars.py:151
+#: src/gui/_chart_dialog.py:512
+msgid "Box widths"
+msgstr "Boksbredder"
+
+#: src/gui/_chart_dialog.py:513
+msgid "Vertical"
+msgstr "Vertikal"
+
+# uafklaret
+#: src/gui/_chart_dialog.py:514
+msgid "Flier"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:515
+msgid "Notch"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:523
+msgid "Box plot"
+msgstr "Boksplot"
+
+#: src/gui/_chart_dialog.py:536
+msgid "Bins"
+msgstr "Områder"
+
+#: src/gui/_chart_dialog.py:537
+msgid "Normed"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:538
+msgid "Cumulative"
+msgstr "Kumulativ"
+
+#: src/gui/_chart_dialog.py:547
+msgid "Histogram"
+msgstr "Histogram"
+
+#: src/gui/_chart_dialog.py:559
+msgid "Labels"
+msgstr "Etiketter"
+
+#: src/gui/_chart_dialog.py:560
+msgid "Colors"
+msgstr "Farver"
+
+#: src/gui/_chart_dialog.py:561
+msgid "Shadow"
+msgstr "Skygge"
+
+#: src/gui/_chart_dialog.py:569
+msgid "Pie"
+msgstr "Lagkage"
+
+#: src/gui/_chart_dialog.py:580
+msgid "Title"
+msgstr "Titel"
+
+#: src/gui/_chart_dialog.py:582 src/gui/_chart_dialog.py:585
+msgid "Limits"
+msgstr "Begrænsninger"
+
+#: src/gui/_chart_dialog.py:583 src/gui/_chart_dialog.py:586
+msgid "Log. scale"
+msgstr "Logaritmisk skala"
+
+#: src/gui/_chart_dialog.py:587
+msgid "Grid"
+msgstr "Gitter"
+
+#: src/gui/_chart_dialog.py:588
+msgid "Legend"
+msgstr "Forklaring"
+
+#: src/gui/_chart_dialog.py:595
+msgid "Figure"
+msgstr "Figur"
+
+#: src/gui/_chart_dialog.py:596
+msgid "X-Axis"
+msgstr "X-akse"
+
+#: src/gui/_chart_dialog.py:597
+msgid "Y-Axis"
+msgstr "Y-akse"
+
+#: src/gui/_chart_dialog.py:752 src/gui/_chart_dialog.py:768
+msgid "+"
+msgstr "+"
+
+#: src/gui/_chart_dialog.py:879 src/gui/_toolbars.py:182
 msgid "Insert chart"
 msgstr "Indsæt diagram"
 
-#: src/gui/_chart_dialog.py:804
+#: src/gui/_chart_dialog.py:882
 msgid "Axes"
 msgstr "Akser"
 
-#: src/gui/_gui_interfaces.py:69
+#: src/gui/_gui_interfaces.py:67
 msgid "Currently, only 3D grids are supported."
 msgstr "Aktuelt er kun 3D-gitter understøttet."
 
-#: src/gui/_gui_interfaces.py:102
+#: src/gui/_gui_interfaces.py:100
 msgid ""
 "There are unsaved changes.\n"
 "Do you want to save?"
@@ -852,11 +992,12 @@ msgstr ""
 "Der er ugemte ændringer.\n"
 "Ønsker du at gemme?"
 
-#: src/gui/_gui_interfaces.py:105
+# måske Ikkegemte ændringer
+#: src/gui/_gui_interfaces.py:104
 msgid "Unsaved changes"
 msgstr "Ugemte ændringer"
 
-#: src/gui/_gui_interfaces.py:204
+#: src/gui/_gui_interfaces.py:203
 msgid ""
 "'{}' does not seem to be a valid CSV file.\n"
 " \n"
@@ -868,231 +1009,183 @@ msgstr ""
 "Åbning af den gav fejlbeskeden:\n"
 "{}"
 
-#: src/gui/_gui_interfaces.py:206 src/actions/_main_window_actions.py:123
+#: src/gui/_gui_interfaces.py:205 src/actions/_main_window_actions.py:129
 msgid "Error reading CSV file"
 msgstr "Fejl under læsning af CSV-fil"
 
-#: src/gui/_gui_interfaces.py:340
+#: src/gui/_gui_interfaces.py:352
 msgid "Real name"
 msgstr "Navn"
 
-#: src/gui/_gui_interfaces.py:341
-msgid "Passphrase"
-msgstr "Adgangsfrase"
+#: src/gui/_gui_interfaces.py:372
+msgid "Please enter a value in each field."
+msgstr "Indtast en værdi i hvert felt."
 
-#: src/gui/_gui_interfaces.py:342
-msgid "E-mail"
-msgstr "E-post"
-
-#: src/gui/_gui_interfaces.py:343
-msgid "Comment"
-msgstr "Kommentar"
-
-#: src/gui/_gui_interfaces.py:367
+#: src/gui/_gui_interfaces.py:374
 msgid "Missing value"
 msgstr "Manglende værdi"
 
-#: src/gui/_gui_interfaces.py:389
-msgid "Please enter your GPG key passphrase for {}."
-msgstr "Indtast venligst din adgangsfrase for GPG-nøglen {}."
+#: src/gui/_grid.py:380 src/gui/_grid.py:401
+msgid "Select bitmap for current cell"
+msgstr "Indsæt bitmap for aktuel celle"
 
-#: src/gui/_gui_interfaces.py:392
-msgid ""
-"\n"
-"The password will be stored in your config file."
-msgstr ""
-"\n"
-"Adgangskoden vil blive gemt i din konfigurationsfil."
-
-#: src/gui/_gui_interfaces.py:395
-msgid "Wrong password!\n"
-msgstr "Forkert adgangskode!\n"
-
-#: src/gui/_gui_interfaces.py:397 src/gui/_dialogs.py:1178
-msgid "GPG key passphrase"
-msgstr "GPG-nøgleadgangsfrase"
-
-#: src/gui/_grid.py:392
+#: src/gui/_grid.py:461
 msgid "Weight {} unknown"
 msgstr "Vægten {} er ukendt"
 
-#: src/gui/_grid.py:412
+#: src/gui/_grid.py:481
 msgid "Style {} unknown"
 msgstr "Stilen {} er ukendt"
 
-#: src/gui/_grid.py:514
+#: src/gui/_grid.py:583
 msgid "Enter text angle in degrees."
 msgstr "Indtast tekstvinkel i grader."
 
-#: src/gui/_grid.py:801
+#: src/gui/_grid.py:901
 msgid "'{}' not found."
 msgstr "»{}« blev ikke fundet."
 
-#: src/gui/_grid.py:808
+#: src/gui/_grid.py:908
 msgid "Found '{}' in cell {}."
 msgstr "Fandt »{}« i celle {}."
 
-#: src/gui/_grid.py:981
+#: src/gui/_grid.py:1081
 msgid "Grid dimensions changed to {}."
 msgstr "Gitterdimensioner ændret til {}."
 
-#: src/gui/_printout.py:199
+#: src/gui/_printout.py:198
 msgid "Page: {}"
 msgstr "Side: {}"
 
-#: src/gui/_toolbars.py:108
+#: src/gui/_toolbars.py:149
 msgid "New"
 msgstr "Ny"
 
-#: src/gui/_toolbars.py:108
-msgid "New spreadsheet"
-msgstr "Nyt regneark"
-
-#: src/gui/_toolbars.py:110
+#: src/gui/_toolbars.py:150
 msgid "Open"
 msgstr "Åbn"
 
-#: src/gui/_toolbars.py:110
-msgid "Open spreadsheet"
-msgstr "Åbn regneark"
-
-#: src/gui/_toolbars.py:112
+#: src/gui/_toolbars.py:151
 msgid "Save"
 msgstr "Gem"
 
-#: src/gui/_toolbars.py:113
-msgid "Save spreadsheet to file"
-msgstr "Gem regneark til fil"
-
-#: src/gui/_toolbars.py:115
+#: src/gui/_toolbars.py:153
 msgid "Undo"
 msgstr "Fortryd"
 
-#: src/gui/_toolbars.py:116
-msgid "Undo last operation"
-msgstr "Fortryd sidste handling"
-
-#: src/gui/_toolbars.py:117
+#: src/gui/_toolbars.py:154
 msgid "Redo"
 msgstr "Gendan"
 
-#: src/gui/_toolbars.py:118
-msgid "Redo next operation"
-msgstr "Gendan næste handling"
-
-#: src/gui/_toolbars.py:120
-msgid "Find"
-msgstr "Find"
-
-#: src/gui/_toolbars.py:122
+#: src/gui/_toolbars.py:157
 msgid "Replace"
 msgstr "Erstat"
 
-#: src/gui/_toolbars.py:125
+#: src/gui/_toolbars.py:159
 msgid "Cut"
 msgstr "Klip"
 
-#: src/gui/_toolbars.py:126
-msgid "Cut cells to clipboard"
-msgstr "Klip celler til udklipsholderen"
-
-#: src/gui/_toolbars.py:127
+#: src/gui/_toolbars.py:160
 msgid "Copy"
 msgstr "Kopier"
 
-#: src/gui/_toolbars.py:129 src/gui/_toolbars.py:130
+#: src/gui/_toolbars.py:161
 msgid "Copy Results"
 msgstr "Kopier resultater"
 
-#: src/gui/_toolbars.py:132
+#: src/gui/_toolbars.py:162
 msgid "Paste"
 msgstr "Indsæt"
 
-#: src/gui/_toolbars.py:133
-msgid "Paste cell from clipboard"
-msgstr "Indsæt celler fra udklipsholder"
-
-#: src/gui/_toolbars.py:135
+#: src/gui/_toolbars.py:164
 msgid "Print"
 msgstr "Udskriv"
 
-#: src/gui/_toolbars.py:136
-msgid "Print spreadsheet"
-msgstr "Udskriv regneark"
-
-#: src/gui/_toolbars.py:167
-msgid "Case sensitive"
-msgstr "Versalfølsom"
-
-#: src/gui/_toolbars.py:168
-msgid "Case sensitive search"
-msgstr "Versalfølsom søgning"
-
-#: src/gui/_toolbars.py:174
-msgid "Regular expression"
-msgstr "Regulært udtryk"
-
-#: src/gui/_toolbars.py:175
-msgid "Treat search string as regular expression"
-msgstr "Opfat søgestreng som et regulært udtryk"
+#: src/gui/_toolbars.py:180
+msgid "Insert bitmap"
+msgstr "Indsæt bitmap"
 
 #: src/gui/_toolbars.py:181
-msgid "Whole word"
-msgstr "Helt ord"
+msgid "Link bitmap"
+msgstr "Henvis bitmap"
 
-#: src/gui/_toolbars.py:182
-msgid "Search string is surrounded by whitespace characters"
-msgstr "Søgestreng er omgivet af mellemrumstegn"
+#: src/gui/_toolbars.py:205
+msgid "Find in code and results"
+msgstr "Find i kode og resultater"
 
-#: src/gui/_toolbars.py:199
-msgid "Searches in grid cell source code and grid cell results."
-msgstr "Søgninger i kildekode for gittercelle og gittercelleresultater."
-
-#: src/gui/_toolbars.py:238
+#: src/gui/_toolbars.py:213
 msgid "Search direction"
 msgstr "Søgeretning"
 
-#: src/gui/_toolbars.py:294
+#: src/gui/_toolbars.py:225
+msgid "Case sensitive"
+msgstr "Versalfølsom"
+
+#: src/gui/_toolbars.py:226
+msgid "Regular expression"
+msgstr "Regulært udtryk"
+
+#: src/gui/_toolbars.py:227
+msgid "Surrounded by whitespace"
+msgstr "Omringet af blanktegn"
+
+#: src/gui/_toolbars.py:298
 msgid "Neither UP nor DOWN in search_flags"
 msgstr "Hverken OP eller NED i søge-tilvalg"
 
-#: src/gui/_toolbars.py:400
+#: src/gui/_toolbars.py:409
 msgid "Bold"
 msgstr "Fed"
 
-#: src/gui/_toolbars.py:402
+#: src/gui/_toolbars.py:411
 msgid "Italics"
 msgstr "Kursiv"
 
-#: src/gui/_toolbars.py:407
+#: src/gui/_toolbars.py:416
 msgid "Freeze"
 msgstr "Frys"
 
-#: src/gui/_grid_renderer.py:380
+#: src/gui/_grid_renderer.py:379
 msgid "Vertical alignment {} not in (top, middle, bottom)"
 msgstr "Lodret justering {} er ikke i (toppen, midten, bunden)"
 
-#: src/gui/_grid_renderer.py:407
+#: src/gui/_grid_renderer.py:406
 msgid "Cell justification {} not in (left, center, right)"
 msgstr "Cellejustering {} er ikke i (venstre, centrum, højre)"
 
-#: src/gui/_widgets.py:471
+#: src/gui/_widgets.py:475
 msgid "Label {} is invalid."
 msgstr "Etiket {} er ugyldig."
 
-#: src/gui/_widgets.py:489
+#: src/gui/_widgets.py:493
 msgid "Code {} is invalid."
 msgstr "Kode {} er ugyldig."
 
-#: src/gui/_widgets.py:738
+#: src/gui/_widgets.py:703
+msgid "Toggles link insertion mode."
+msgstr "Slå indsættelsestilstand for henvisninger til/fra."
+
+#: src/gui/_widgets.py:765
+msgid "Enter Python expression here."
+msgstr "Indtast Pythonudtryk her."
+
+#: src/gui/_widgets.py:864
+msgid ""
+"Pyspread is in safe mode.\n"
+"Expressions are not evaluated."
+msgstr ""
+"Pyspread er i sikker tilstand.\n"
+"Udtryk bliver ikke evalueret."
+
+#: src/gui/_widgets.py:934
 msgid "For switching tables enter the table number or use the mouse wheel."
 msgstr "For skift af tabeller så indtast tabelnummeret eller brug musehjulet."
 
-#: src/gui/_dialogs.py:172
+#: src/gui/_dialogs.py:173
 msgid "Dialect"
 msgstr "Dialekter"
 
-#: src/gui/_dialogs.py:173
+#: src/gui/_dialogs.py:174
 msgid ""
 "To make it easier to specify the format of input and output records, specific formatting parameters are grouped together into dialects.\n"
 "'excel': Defines the usual properties of an Excel-generated CSV file.\n"
@@ -1104,67 +1197,67 @@ msgstr ""
 "»sniffer«: Udleder formatet af en CSV-fil\n"
 "»excel-tab«: Definerer de normale egenskaber for en Exceloprettet TAB-afgrænset fil."
 
-#: src/gui/_dialogs.py:179
+#: src/gui/_dialogs.py:180
 msgid "Delimiter"
 msgstr "Skilletegn"
 
-#: src/gui/_dialogs.py:180
+#: src/gui/_dialogs.py:181
 msgid "A one-character string used to separate fields."
 msgstr "En streng på et tegn brugt til at adskille felter."
 
-#: src/gui/_dialogs.py:181
+#: src/gui/_dialogs.py:182
 msgid "Doublequote"
 msgstr "Dobbelt citationstegn"
 
-#: src/gui/_dialogs.py:182
+#: src/gui/_dialogs.py:183
 msgid "Controls how instances of quotechar appearing inside a field should be themselves be quoted. When True, the character is doubled. When False, the escapechar is used as a prefix to the quotechar."
 msgstr "Kontrollerer hvordan instanser med citationstegn inden i et felt i sig selv skal citeres. Når True (sand), fordobles tegnet. Når False (falsk), så bruges Escape-tegn som præfiks til citationstegnet."
 
-#: src/gui/_dialogs.py:186
+#: src/gui/_dialogs.py:187
 msgid "Escape character"
 msgstr "Escape-tegn"
 
-#: src/gui/_dialogs.py:187
+#: src/gui/_dialogs.py:188
 msgid "A one-character string used by the writer to escape the delimiter if quoting is set to QUOTE_NONE and the quotechar if doublequote is False. On reading, the escapechar removes any special meaning from the following character."
 msgstr "En streng med et tegn brugt af forfatteren til at omslutte skilletegnet hvis citation er angivet som QUOTE_NONE og citattionstegnet hvis dobbelt citation er False (falsk). Under læsning fjerne Escape-tegnet enhver speciel betydning fra de efterfølgende tegn."
 
-#: src/gui/_dialogs.py:192
+#: src/gui/_dialogs.py:193
 msgid "Quote character"
 msgstr "Citationstegn"
 
-#: src/gui/_dialogs.py:193
+#: src/gui/_dialogs.py:194
 msgid "A one-character string used to quote fields containing special characters, such as the delimiter or quotechar, or which contain new-line characters."
-msgstr ""
-
-#: src/gui/_dialogs.py:196
-msgid "Quoting style"
-msgstr ""
+msgstr "En streng med et tegn brugt til at omslutte felter, der indeholder specielle tegn, såsom skilletegnet eller citationstegnet, eller som indeholder tegn for ny linje."
 
 #: src/gui/_dialogs.py:197
-msgid "Controls when quotes should be recognised."
-msgstr ""
+msgid "Quoting style"
+msgstr "Citationsstil"
 
 #: src/gui/_dialogs.py:198
-msgid "Header present"
-msgstr ""
+msgid "Controls when quotes should be recognised."
+msgstr "Kontrollerer hvornår citationstegn skal genkendes."
 
 #: src/gui/_dialogs.py:199
-msgid "Analyze the CSV file and treat the first row as strings if it appears to be a series of column headers."
-msgstr ""
+msgid "Header present"
+msgstr "Kolonneoverskrift til stede"
 
-#: src/gui/_dialogs.py:201
-msgid "Skip initial space"
-msgstr ""
+#: src/gui/_dialogs.py:200
+msgid "Analyze the CSV file and treat the first row as strings if it appears to be a series of column headers."
+msgstr "Analyser CSV-filen og opfat den første række som strenge, hvis det fremstår som en række af kolonneoverskrifter."
 
 #: src/gui/_dialogs.py:202
-msgid "When True, whitespace immediately following the delimiter is ignored."
-msgstr ""
+msgid "Skip initial space"
+msgstr "Udelad startmellemrum"
 
-#: src/gui/_dialogs.py:383
+#: src/gui/_dialogs.py:203
+msgid "When True, whitespace immediately following the delimiter is ignored."
+msgstr "Når True (sand), så ignoreres blanktegn lige efter skilletegnet."
+
+#: src/gui/_dialogs.py:384
 msgid "{} unknown."
 msgstr "{} ukendt."
 
-#: src/gui/_dialogs.py:391
+#: src/gui/_dialogs.py:392
 msgid ""
 "The dialect is invalid. \n"
 " \n"
@@ -1176,67 +1269,67 @@ msgstr ""
 "Fejlbesked:\n"
 "{}"
 
-#: src/gui/_dialogs.py:614
+#: src/gui/_dialogs.py:615
 msgid "CSV Import: {}"
 msgstr "CSV-import: {}"
 
-#: src/gui/_dialogs.py:817
+#: src/gui/_dialogs.py:819
 msgid "Macro list"
 msgstr "Makroliste"
 
-#: src/gui/_dialogs.py:819
+#: src/gui/_dialogs.py:821
 msgid "Enter python code here."
 msgstr "Indtast pythonkode her."
 
-#: src/gui/_dialogs.py:820
+#: src/gui/_dialogs.py:822
 msgid "Accept all changes"
 msgstr "Accepter alle ændringer"
 
-#: src/gui/_dialogs.py:821
+#: src/gui/_dialogs.py:823
 msgid "Apply changes to current macro"
 msgstr "Anvend ændringer på aktuel makro"
 
-#: src/gui/_dialogs.py:822
+#: src/gui/_dialogs.py:824
 msgid "Remove current macro"
 msgstr "Fjern aktuel makro"
 
-#: src/gui/_dialogs.py:864
+#: src/gui/_dialogs.py:866
 msgid "Rows"
 msgstr "Rækker"
 
-#: src/gui/_dialogs.py:867
+#: src/gui/_dialogs.py:869
 msgid "Columns"
 msgstr "Kolonner"
 
-#: src/gui/_dialogs.py:870
+#: src/gui/_dialogs.py:872
 msgid "Tables"
 msgstr "Tabeller"
 
-#: src/gui/_dialogs.py:984
+#: src/gui/_dialogs.py:980
 msgid "Goto cell:"
 msgstr "Gå til celle:"
 
-#: src/gui/_dialogs.py:989
+#: src/gui/_dialogs.py:985
 msgid "Row: "
 msgstr "Række: "
 
-#: src/gui/_dialogs.py:998
+#: src/gui/_dialogs.py:994
 msgid "Column: "
 msgstr "Kolonne: "
 
-#: src/gui/_dialogs.py:1006
+#: src/gui/_dialogs.py:1002
 msgid "Table: "
 msgstr "Tabel: "
 
-#: src/gui/_dialogs.py:1014
+#: src/gui/_dialogs.py:1010
 msgid "OK"
 msgstr "O.k."
 
-#: src/gui/_dialogs.py:1017
+#: src/gui/_dialogs.py:1013
 msgid "Cancel"
 msgstr "Afbryd"
 
-#: src/gui/_dialogs.py:1063
+#: src/gui/_dialogs.py:1059
 msgid ""
 "A non-traditional Python spreadsheet application.\n"
 "Pyspread is based on and written in the programming language Python."
@@ -1244,11 +1337,11 @@ msgstr ""
 "Et ikketraditionelt Pythonregnearksprogram.\n"
 "Pyspread er baseret på og skrevet i programmeringssproget Python."
 
-#: src/gui/_dialogs.py:1067
+#: src/gui/_dialogs.py:1063
 msgid "Pyspread Web site"
-msgstr "Pyspreds hjemmeside"
+msgstr "Pyspreads hjemmeside"
 
-#: src/gui/_dialogs.py:1085
+#: src/gui/_dialogs.py:1083
 msgid ""
 "pyspread {}\n"
 "Copyright Martin Manns"
@@ -1256,193 +1349,193 @@ msgstr ""
 "pyspread {}\n"
 "Ophavsret Martin Manns"
 
-#: src/gui/_dialogs.py:1136
+#: src/gui/_dialogs.py:1133
 msgid "Max. undo steps"
 msgstr "Maks antal fortryd"
 
-#: src/gui/_dialogs.py:1137
+#: src/gui/_dialogs.py:1134
 msgid "Maximum number of undo steps"
 msgstr "Maksimalt antal fortryd"
 
-#: src/gui/_dialogs.py:1143
+#: src/gui/_dialogs.py:1140
 msgid "Grid rows"
 msgstr "Gitterrækker"
 
-#: src/gui/_dialogs.py:1144
+#: src/gui/_dialogs.py:1141
 msgid "Number of grid rows when starting pyspread"
 msgstr "Antalgitterrækker når pyspread startes"
 
-#: src/gui/_dialogs.py:1150
+#: src/gui/_dialogs.py:1147
 msgid "Grid columns"
 msgstr "Gitterkolonner"
 
-#: src/gui/_dialogs.py:1151
+#: src/gui/_dialogs.py:1148
 msgid "Number of grid columns when starting pyspread"
 msgstr "Antallet af gitterkolonner når pyspread startes"
 
-#: src/gui/_dialogs.py:1157
+#: src/gui/_dialogs.py:1154
 msgid "Grid tables"
 msgstr "Gittertabeller"
 
-#: src/gui/_dialogs.py:1158
+#: src/gui/_dialogs.py:1155
 msgid "Number of grid tables when starting pyspread"
 msgstr "Antallet af gittertabeller når pyspread startes"
 
-#: src/gui/_dialogs.py:1164
+#: src/gui/_dialogs.py:1161
 msgid "Max. result length"
 msgstr "Maks resultatlængde"
 
-#: src/gui/_dialogs.py:1165
+#: src/gui/_dialogs.py:1162
 msgid "Maximum length of cell result string"
 msgstr "Maksimal længde for celleresultatstreng"
 
-#: src/gui/_dialogs.py:1171
+#: src/gui/_dialogs.py:1168
 msgid "GPG key name"
 msgstr "GPG-nøglenavn"
 
-#: src/gui/_dialogs.py:1172
+#: src/gui/_dialogs.py:1169
 msgid "Name of the GPG key for signing files"
 msgstr "Navn på GPG-nøglen for underskrivning af filer"
 
-#: src/gui/_dialogs.py:1179
-msgid "Passphrase of the GPG key for signing files"
-msgstr "Adgangsfrase for GPG-nøglen for underskrivning af filer"
-
-#: src/gui/_dialogs.py:1185
-msgid "Store passphrase in config file"
-msgstr "Lagr adgangsfrase i konfigurations"
-
-#: src/gui/_dialogs.py:1186
-msgid "If False then the passprase is not stored on exit"
-msgstr "Hvis False (falsk) så gemmes adgangsfrase ikke ved afslut"
-
-#: src/gui/_dialogs.py:1194
+#: src/gui/_dialogs.py:1177
 msgid "Preferences"
 msgstr "Præferencer"
 
-#: src/gui/_dialogs.py:1257
+#: src/gui/_dialogs.py:1245
 msgid "GPG key data"
 msgstr "GPG-nøgledata"
 
-#: src/gui/_dialogs.py:1277
-msgid "Store passphrase in keyring"
-msgstr "Lagr adgangsfrase i nøglering"
-
-#: src/gui/_dialogs.py:1284
+#: src/gui/_dialogs.py:1262
 msgid "Starts key generation."
 msgstr "Starter nøgleoprettelse."
 
-#: src/gui/_dialogs.py:1289
+#: src/gui/_dialogs.py:1267
 msgid "Exits pyspread."
 msgstr "Afslutter pyspread."
 
-#: src/actions/_grid_actions.py:100
+#: src/gui/_dialogs.py:1287
+msgid "Paste as"
+msgstr "Indsæt som"
+
+#: src/gui/_dialogs.py:1292
+msgid "Dimension of object"
+msgstr "Objektdimension"
+
+#: src/gui/_dialogs.py:1296
+msgid "Transpose"
+msgstr "Transponer"
+
+#: src/actions/_grid_actions.py:107
 msgid "{nele} elements processed. Press <Esc> to abort."
 msgstr "{nele}-elementer behandlet. Tryk <Esc> for at afbryde."
 
-#: src/actions/_grid_actions.py:102
+#: src/actions/_grid_actions.py:109
 msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
 msgstr "{nele} af {totalele} elementer behandlet. Tryk på <Esc> for at afbryde."
 
-#: src/actions/_grid_actions.py:166
+#: src/actions/_grid_actions.py:176
 msgid "Valid signature found. File is trusted."
 msgstr "Gyldig underskrift blev fundet. Der kan stoles på filen."
 
-#: src/actions/_grid_actions.py:174
+#: src/actions/_grid_actions.py:185
 msgid "File is not properly signed. Safe mode activated. Select File -> Approve to leave safe mode."
 msgstr "Filen er ikke korrekt underskrevet. Sikker tilstand aktiveret. Vælg Fil -> Godkend for at forlade sikker tilstand."
 
-#: src/actions/_grid_actions.py:194
+#: src/actions/_grid_actions.py:205
 msgid "File format unsupported."
 msgstr "Filformat er ikke understøttet."
 
-#: src/actions/_grid_actions.py:203
+#: src/actions/_grid_actions.py:214
 msgid "File loading aborted."
 msgstr "Filindlæsning afbrudt."
 
-#: src/actions/_grid_actions.py:270 src/actions/_grid_actions.py:337
-#: src/actions/_grid_actions.py:437 src/actions/_main_window_actions.py:85
-#: src/actions/_main_window_actions.py:452
+#: src/actions/_grid_actions.py:281 src/actions/_grid_actions.py:348
+#: src/actions/_grid_actions.py:453 src/actions/_main_window_actions.py:91
+#: src/actions/_main_window_actions.py:522
 msgid "Error opening file {}."
 msgstr "Fejl under åbning af fil {}."
 
-#: src/actions/_grid_actions.py:284
+#: src/actions/_grid_actions.py:295
 msgid "File version {} unsupported (not 0.1)."
 msgstr "Filversion {} er ikke understøttet (ikke 0.1)."
 
-#: src/actions/_grid_actions.py:298
+#: src/actions/_grid_actions.py:309
 msgid "No section parser present."
 msgstr "Ingen afsnitsfortolker er til stede."
 
-#: src/actions/_grid_actions.py:367
-msgid "Error signing file. File is not signed."
-msgstr "Fejl ved underskrivning af fil. Filen blev ikke underskrevet."
+#: src/actions/_grid_actions.py:383
+msgid "Error signing file. "
+msgstr "Fejl ved underskrivning af fil. "
 
-#: src/actions/_grid_actions.py:384
+#: src/actions/_grid_actions.py:400
 msgid "File saved and signed"
 msgstr "Fil gemt og underskrevet"
 
-#: src/actions/_grid_actions.py:386
+#: src/actions/_grid_actions.py:402
 msgid "File signed"
 msgstr "Fil underskrevet"
 
-#: src/actions/_grid_actions.py:398
+#: src/actions/_grid_actions.py:414
 msgid "Save aborted."
 msgstr "Gem afbrudt."
 
-#: src/actions/_grid_actions.py:430
+#: src/actions/_grid_actions.py:446
 msgid "Error writing to file {}."
 msgstr "Fejl under skrivning til fil {}."
 
-#: src/actions/_grid_actions.py:676
+#: src/actions/_grid_actions.py:537
+msgid "File saved but not signed because it is unapproved."
+msgstr "Fil gemt men ikke underskrevet da den ikke er godkendt."
+
+#: src/actions/_grid_actions.py:701
 msgid "Key length {}  not in (2, 3)"
 msgstr "Nøglelængde {} er ikke i (2, 3)"
 
-#: src/actions/_grid_actions.py:681
+#: src/actions/_grid_actions.py:706
 msgid "Paste aborted."
 msgstr "Indsæt afbrudt."
 
-#: src/actions/_grid_actions.py:692
+#: src/actions/_grid_actions.py:717
 msgid "rows and columns"
 msgstr "rækker og kolonner"
 
-#: src/actions/_grid_actions.py:694
+#: src/actions/_grid_actions.py:719
 msgid "rows"
 msgstr "rækker"
 
-#: src/actions/_grid_actions.py:696
+#: src/actions/_grid_actions.py:721
 msgid "columns"
 msgstr "kolonner"
 
-#: src/actions/_grid_actions.py:698
+#: src/actions/_grid_actions.py:723
 msgid "Import cell overflow missing"
-msgstr ""
+msgstr "Importcelleoverløb mangler"
 
-#: src/actions/_grid_actions.py:700
+#: src/actions/_grid_actions.py:726
 msgid "The imported data did not fit into the grid {cause}. It has been truncated. Use a larger grid for full import."
 msgstr "De importerede data passede ikke ind i gitteret {cause}. De er blevet beskåret. Brug et større gitter for en fuld import."
 
-#: src/actions/_grid_actions.py:709
+#: src/actions/_grid_actions.py:735
 msgid "s"
 msgstr ""
 
-#: src/actions/_grid_actions.py:711
+#: src/actions/_grid_actions.py:737
 msgid "{ncells} cell{plural} pasted at cell {topleft}"
 msgstr "{ncells} cell{plural} indsat ved celle {topleft}"
 
-#: src/actions/_grid_actions.py:746
+#: src/actions/_grid_actions.py:772
 msgid "Pasting cells... "
 msgstr "Indsætter celler ... "
 
-#: src/actions/_grid_actions.py:968
+#: src/actions/_grid_actions.py:993
 msgid "Zoomed to {0:.2f}."
 msgstr "Zoomet til {0:.2f}."
 
-#: src/actions/_grid_actions.py:1064
+#: src/actions/_grid_actions.py:1091
 msgid "Switched to table {}."
 msgstr "Skiftet ti ltabel {}."
 
-#: src/actions/_grid_actions.py:1244
+#: src/actions/_grid_actions.py:1271
 msgid "Replaced {} with {} in cell {}."
 msgstr "Erstattede {} med {} i celle {}."
 
@@ -1458,11 +1551,12 @@ msgstr "ref_type skal være »absolute« eller »relative«."
 msgid "Freezing selections is not supported."
 msgstr "Frysning af markeringer er ikke understøttet."
 
-#: src/actions/_main_window_actions.py:122
+#: src/actions/_main_window_actions.py:128
 msgid "Unknown import choice {}."
 msgstr "Ukendt importvalg {}."
 
-#: src/actions/_main_window_actions.py:151
+#: src/actions/_main_window_actions.py:167
+#: src/actions/_main_window_actions.py:195
 msgid ""
 "The file {} could not be fully written\n"
 " \n"
@@ -1474,6 +1568,10 @@ msgstr ""
 "Fejlbesked:\n"
 "{}"
 
-#: src/actions/_main_window_actions.py:153
+#: src/actions/_main_window_actions.py:169
 msgid "Error writing CSV file"
 msgstr "Fejl under skrivning af CSV-fil"
+
+#: src/actions/_main_window_actions.py:197
+msgid "Error writing SVG file"
+msgstr "Fejl under skrivning af SVG-fil"

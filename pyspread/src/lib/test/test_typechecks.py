@@ -33,7 +33,7 @@ from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.typechecks import is_slice_like, is_string_like, is_generator_like
 
-param_slc = [ \
+param_slc = [
     {"slc": slice(None, None, None), "res": True},
     {"slc": slice(None, 4, 34), "res": True},
     {"slc": -2, "res": False},
@@ -50,7 +50,7 @@ def test_is_slice_like(slc, res):
 
     assert is_slice_like(slc) == res
 
-param_str = [ \
+param_str = [
     {"string": "", "res": True},
     {"string": u"", "res": True},
     {"string": "Test", "res": True},
@@ -68,7 +68,7 @@ def test_is_string_like(string, res):
 
     assert is_string_like(string) == res
 
-param_gen = [ \
+param_gen = [
     {"gen": (i for i in [3, 4]), "res": True},
     {"gen": (str(i) for i in xrange(1000)), "res": True},
     {"gen": ((2, 3) for _ in xrange(10)), "res": True},

@@ -33,14 +33,17 @@ import ast
 import os
 
 import wx
-import wx.aui
+import wx.lib.agw.aui as aui
+
+from matplotlib.figure import Figure
 
 import src.lib.i18n as i18n
 from src.config import config
+from src.sysvars import get_python_tutorial_path
 
 from _menubars import MainMenu
 from _toolbars import MainToolbar, MacroToolbar, FindToolbar, AttributesToolbar
-from _widgets import EntryLine, StatusBar, TableChoiceIntCtrl
+from _widgets import EntryLineToolbarPanel, StatusBar
 
 from src.lib.clipboard import Clipboard
 
@@ -61,11 +64,17 @@ class MainWindow(wx.Frame, EventMixin):
     """Main window of pyspread"""
 
     def __init__(self, parent, *args, **kwargs):
+        try:
+            S = kwargs.pop("S")
+
+        except KeyError:
+            S = None
+
         wx.Frame.__init__(self, parent, *args, **kwargs)
 
         self.interfaces = GuiInterfaces(self)
 
-        self._mgr = wx.aui.AuiManager(self)
+        self._mgr = aui.AuiManager(self)
 
         self.parent = parent
 
@@ -101,7 +110,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.attributes_toolbar = AttributesToolbar(self, -1)
 
         # Entry line
-        self.entry_line = EntryLine(self, style=wx.TE_PROCESS_ENTER)
+        self.entry_line_panel = EntryLineToolbarPanel(self, -1)
 
         # Main grid
 
@@ -111,10 +120,7 @@ class MainWindow(wx.Frame, EventMixin):
             config["grid_tables"],
         )
 
-        self.grid = Grid(self, -1, dimensions=dimensions)
-
-        # IntCtrl for table choice
-        self.table_choice = TableChoiceIntCtrl(self, dimensions[2])
+        self.grid = Grid(self, -1, S=S, dimensions=dimensions)
 
         # Clipboard
         self.clipboard = Clipboard()
@@ -164,10 +170,9 @@ class MainWindow(wx.Frame, EventMixin):
             (self.main_toolbar, "main_window_toolbar", _("Main toolbar")),
             (self.macro_toolbar, "macro_toolbar", _("Macro toolbar")),
             (self.attributes_toolbar, "attributes_toolbar",
-                                                       _("Format toolbar")),
+             _("Format toolbar")),
             (self.find_toolbar, "find_toolbar", _("Find toolbar")),
-            (self.entry_line, "entry_line", _("Entry line")),
-            (self.table_choice, "table_choice", _("Table choice")),
+            (self.entry_line_panel, "entry_line_panel", _("Entry line")),
         ]
 
         for toolbar, pane_name, toggle_label in toggles:
@@ -183,41 +188,33 @@ class MainWindow(wx.Frame, EventMixin):
             toggle_item.Check(pane.IsShown())
 
     def _do_layout(self):
-        """Adds widgets to the wx.aui manager and controls the layout"""
+        """Adds widgets to the aui manager and controls the layout"""
 
         # Add the toolbars to the manager
 
-        self._mgr.AddPane(self.macro_toolbar, wx.aui.AuiPaneInfo().
-            Name("macro_toolbar").Caption("Macro Toolbar").
-            ToolbarPane().Top().Row(0).CloseButton(False).
-            LeftDockable(False).RightDockable(False))
+        self._mgr.AddPane(self.main_toolbar, aui.AuiPaneInfo().
+                          Name("main_window_toolbar").
+                          Caption(_("Main Toolbar")).
+                          ToolbarPane().Top().Row(0))
 
-        self._mgr.AddPane(self.main_toolbar, wx.aui.AuiPaneInfo().
-            Name("main_window_toolbar").Caption("Main Toolbar").
-            ToolbarPane().Top().Row(0).CloseButton(False).
-            LeftDockable(False).RightDockable(False))
+        self._mgr.AddPane(self.find_toolbar, aui.AuiPaneInfo().
+                          Name("find_toolbar").Caption(_("Find")).
+                          ToolbarPane().Top().Row(0))
 
-        self._mgr.AddPane(self.find_toolbar, wx.aui.AuiPaneInfo().
-            Name("find_toolbar").Caption("Find").
-            ToolbarPane().Top().Row(1).MaximizeButton(False).
-            LeftDockable(False).RightDockable(False))
+        self._mgr.AddPane(self.attributes_toolbar, aui.AuiPaneInfo().
+                          Name("attributes_toolbar").
+                          Caption(_("Cell Attributes")).
+                          ToolbarPane().Top().Row(1))
 
-        self._mgr.AddPane(self.attributes_toolbar, wx.aui.AuiPaneInfo().
-            Name("attributes_toolbar").Caption("Cell Attributes").
-            ToolbarPane().Top().Row(1).MaximizeButton(False).
-            LeftDockable(False).RightDockable(False))
+        self._mgr.AddPane(self.macro_toolbar, aui.AuiPaneInfo().
+                          Name("macro_toolbar").Caption(_("Macro Toolbar")).
+                          Gripper(True).ToolbarPane().Top().Row(1))
 
-        self._mgr.AddPane(self.table_choice, wx.aui.AuiPaneInfo().
-            Name("table_choice").Caption("Table choice").
-            ToolbarPane().MaxSize((50, 50)).Row(2).
-            Top().CloseButton(False).MaximizeButton(False).
-            LeftDockable(True).RightDockable(True))
-
-        self._mgr.AddPane(self.entry_line, wx.aui.AuiPaneInfo().
-            Name("entry_line").Caption("Entry line").
-            ToolbarPane().MinSize((10, 10)).Row(2).
-            Top().CloseButton(False).MaximizeButton(False).
-            LeftDockable(True).RightDockable(True))
+        self._mgr.AddPane(self.entry_line_panel, aui.AuiPaneInfo().
+                          Name("entry_line_panel").Caption(_("Entry line")).
+                          MinSize((10, 20)).Row(2).CaptionVisible(False).
+                          Top().CloseButton(True).Gripper(True).
+                          MaximizeButton(True))
 
         # Load perspective from config
         window_layout = config["window_layout"]
@@ -226,9 +223,12 @@ class MainWindow(wx.Frame, EventMixin):
             self._mgr.LoadPerspective(window_layout)
 
         # Add the main grid
-        self._mgr.AddPane(self.grid, wx.CENTER)
+        self._mgr.AddPane(self.grid, aui.AuiPaneInfo().
+                          Name("grid").Caption(_("Main grid")).CentrePane())
 
         # Tell the manager to 'commit' all the changes just made
+        self._mgr.Update()
+        self._mgr.GetPane("attributes_toolbar")
         self._mgr.Update()
 
         self._set_menu_toggles()
@@ -269,8 +269,6 @@ class MainWindow(wx.Frame, EventMixin):
                   handlers.OnFindToolbarToggle)
         self.Bind(self.EVT_CMD_ENTRYLINE_TOGGLE,
                   handlers.OnEntryLineToggle)
-        self.Bind(self.EVT_CMD_TABLECHOICE_TOGGLE,
-                  handlers.OnTableChoiceToggle)
 
         # File events
 
@@ -303,6 +301,7 @@ class MainWindow(wx.Frame, EventMixin):
         self.Bind(self.EVT_CMD_COPY, handlers.OnCopy)
         self.Bind(self.EVT_CMD_COPY_RESULT, handlers.OnCopyResult)
         self.Bind(self.EVT_CMD_PASTE, handlers.OnPaste)
+        self.Bind(self.EVT_CMD_PASTE_AS, handlers.OnPasteAs)
 
         # Help events
 
@@ -335,7 +334,7 @@ class MainWindow(wx.Frame, EventMixin):
 # End of class MainWindow
 
 
-class MainWindowEventHandlers(object):
+class MainWindowEventHandlers(EventMixin):
     """Contains main window event handlers"""
 
     def __init__(self, parent):
@@ -396,6 +395,8 @@ class MainWindowEventHandlers(object):
 
         self.main_window.grid.Refresh()
 
+        event.Skip()
+
     def OnSafeModeExit(self, event):
         """Safe mode exit event handler"""
 
@@ -408,6 +409,8 @@ class MainWindowEventHandlers(object):
         self.main_window.main_menu.enable_file_approve(False)
 
         self.main_window.grid.Refresh()
+
+        event.Skip()
 
     def OnClose(self, event):
         """Program exit event handler"""
@@ -524,18 +527,9 @@ class MainWindowEventHandlers(object):
     def OnEntryLineToggle(self, event):
         """Entry line toggle event handler"""
 
-        entry_line = self.main_window._mgr.GetPane("entry_line")
+        entry_line_panel = self.main_window._mgr.GetPane("entry_line_panel")
 
-        self._toggle_pane(entry_line)
-
-        event.Skip()
-
-    def OnTableChoiceToggle(self, event):
-        """Table choice toggle event handler"""
-
-        table_choice = self.main_window._mgr.GetPane("table_choice")
-
-        self._toggle_pane(table_choice)
+        self._toggle_pane(entry_line_panel)
 
         event.Skip()
 
@@ -587,9 +581,9 @@ class MainWindowEventHandlers(object):
         self.main_window.grid.ForceRefresh()
 
         # Display grid creation in status bar
-        statustext = _("New grid with dimensions {} created.").format(shape)
+        msg = _("New grid with dimensions {dim} created.").format(dim=shape)
         post_command_event(self.main_window, self.main_window.StatusBarMsg,
-                           text=statustext)
+                           text=msg)
 
         self.main_window.grid.ForceRefresh()
 
@@ -611,11 +605,14 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Pyspread file (*.pys)|*.pys|All files (*.*)|*.*")
+        wildcard = \
+            _("Pyspread file") + " (*.pys)|*.pys|" + \
+            _("All files") + " (*.*)|*.*"
         message = _("Choose pyspread file to open.")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         if filepath is None:
             return
@@ -665,11 +662,14 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Pyspread file (*.pys)|*.pys|All files (*.*)|*.*")
+        wildcard = \
+            _("Pyspread file") + " (*.pys)|*.pys|" + \
+            _("All files") + " (*.*)|*.*"
         message = _("Choose filename for saving.")
         style = wx.SAVE | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         if filepath is None:
             return 0
@@ -685,11 +685,13 @@ class MainWindowEventHandlers(object):
                 return 0
 
             # There is a file with the same path
-            message = _("The file {filepath} is already present.\nOverwrite?")\
-                                  .format(filepath=filepath)
-            short_message = _("File collision")
-            if not self.main_window.interfaces.get_warning_choice(
-                        message, short_message):
+            message = \
+                _("The file {filepath} is already present.\nOverwrite?")\
+                .format(filepath=filepath)
+            short_msg = _("File collision")
+
+            if not self.main_window.interfaces.get_warning_choice(message,
+                                                                  short_msg):
 
                 statustext = _("File present. Save aborted by user.")
                 post_command_event(self.main_window,
@@ -717,11 +719,14 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Csv file (*.*)|*.*|Tab delimited text file (*.*)|*.*")
+        wildcard = \
+            _("CSV file") + " (*.*)|*.*|" + \
+            _("Tab delimited text file") + " (*.*)|*.*"
         message = _("Choose file to import.")
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         if filepath is None:
             return
@@ -754,12 +759,15 @@ class MainWindowEventHandlers(object):
 
         selection_bbox = selection.get_bbox()
 
+        wildcard = _("CSV file") + " (*.*)|*.*"
+
         if selection_bbox is None:
-            # No selection --> Use current screen
+            # No selection --> Use current screen for csv export
+            (top, left), (bottom, right) = \
+                self.main_window.grid.actions.get_visible_area()
 
-            selection_bbox = self.main_window.grid.actions.get_visible_area()
-
-        (top, left), (bottom, right) = selection_bbox
+        else:
+            (top, left), (bottom, right) = selection_bbox
 
         # Generator of row and column keys in correct order
 
@@ -770,11 +778,29 @@ class MainWindowEventHandlers(object):
 
         # Get target filepath from user
 
-        wildcard = _("CSV file (*.*)|*.*")
+        # No selection --> Provide svg export of current cell
+        # if current cell is a matplotlib figure
+        if selection_bbox is None:
+            cursor = self.main_window.grid.actions.cursor
+            figure = code_array[cursor]
+            if isinstance(figure, Figure):
+                wildcard += \
+                    " |" + _("SVG file") + " (*.svg)|*.svg" + \
+                    " |" + _("EPS file") + " (*.eps)|*.eps" + \
+                    " |" + _("PS file") + " (*.ps)|*.ps" + \
+                    " |" + _("PDF file") + " (*.pdf)|*.pdf" + \
+                    " |" + _("PNG file") + " (*.png)|*.png"
+
         message = _("Choose filename for export.")
         style = wx.OPEN | wx.CHANGE_DIR
-        path, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        path, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
+
+        # If an svg is exported then the selection bbox
+        # has to be changed to the current cell
+        if filterindex >= 1:
+            data = figure
 
         # Export file
         # -----------
@@ -788,14 +814,10 @@ class MainWindowEventHandlers(object):
             return
 
         msg = _(u"You are going to approve and trust a file that\n"
-                u"you have received from an untrusted source.\n"
-                u"After proceeding, the file is executed.\n"
-                u"It can harm your system as any program can.\n"
-                u"Unless you took precautions, it can delete your\n"
-                u"files or send them away over the Internet.\n"
-                u"CHECK EACH CELL BEFORE PROCEEDING.\n \n"
-                u"Do not forget cells outside the visible range.\n"
-                u"You have been warned.\n \n"
+                u"you have not created yourself.\n"
+                u"After proceeding, the file is executed.\n \n"
+                u"It may harm your system as any program can.\n"
+                u"Please check all cells thoroughly before\nproceeding.\n \n"
                 u"Proceed and sign this file as trusted?")
 
         short_msg = _("Security warning")
@@ -814,7 +836,7 @@ class MainWindowEventHandlers(object):
         """Clear globals event handler"""
 
         msg = _("Deleting globals and reloading modules cannot be undone."
-                    " Proceed?")
+                " Proceed?")
         short_msg = _("Really delete globals and modules?")
 
         choice = self.main_window.interfaces.get_warning_choice(msg, short_msg)
@@ -887,8 +909,8 @@ class MainWindowEventHandlers(object):
             focus.Copy()
 
         else:
-            data = self.main_window.actions.copy(
-                       self.main_window.grid.selection)
+            selection = self.main_window.grid.selection
+            data = self.main_window.actions.copy(selection)
             self.main_window.clipboard.set_clipboard(data)
 
         event.Skip()
@@ -896,8 +918,8 @@ class MainWindowEventHandlers(object):
     def OnCopyResult(self, event):
         """Clipboard copy results event handler"""
 
-        data = self.main_window.actions.copy_result(
-                            self.main_window.grid.selection)
+        selection = self.main_window.grid.selection
+        data = self.main_window.actions.copy_result(selection)
 
         # Check if result is a bitmap
         if type(data) is wx._gdi.Bitmap:
@@ -924,12 +946,21 @@ class MainWindowEventHandlers(object):
 
         else:
             # We got a grid selection
-            grid = self.main_window.grid
-            key = (grid.GetGridCursorRow(),
-                   grid.GetGridCursorCol(),
-                   grid.current_table)
+            key = self.main_window.grid.actions.cursor
 
             self.main_window.actions.paste(key, data)
+
+        self.main_window.grid.ForceRefresh()
+
+        event.Skip()
+
+    def OnPasteAs(self, event):
+        """Clipboard paste as event handler"""
+
+        data = self.main_window.clipboard.get_clipboard()
+        key = self.main_window.grid.actions.cursor
+
+        self.main_window.actions.paste_as(key, data)
 
         self.main_window.grid.ForceRefresh()
 
@@ -951,8 +982,9 @@ class MainWindowEventHandlers(object):
         cursor = self.main_window.grid.actions.cursor
         attr = self.main_window.grid.code_array.cell_attributes[cursor]
 
-        size, style, weight, font = [attr[name] for name in
-            ["pointsize", "fontstyle", "fontweight", "textfont"]]
+        size, style, weight, font = \
+            [attr[name] for name in ["pointsize", "fontstyle", "fontweight",
+                                     "textfont"]]
         current_font = wx.Font(int(size), -1, style, weight, 0, font)
 
         # Get Font from dialog
@@ -977,6 +1009,10 @@ class MainWindowEventHandlers(object):
             post_command_event(self.main_window,
                                self.main_window.FontItalicsMsg,
                                style=font.GetStyleString())
+
+            wx.Yield()
+
+            self.main_window.grid.update_attribute_toolbar()
 
     def OnTextColorDialog(self, event):
         """Event handler for launching text color dialog"""
@@ -1043,12 +1079,15 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Macro file (*.py)|*.py|All files (*.*)|*.*")
+        wildcard = \
+            _("Macro file") + " (*.py)|*.py|" + \
+            _("All files") + " (*.*)|*.*"
         message = _("Choose macro file.")
 
         style = wx.OPEN | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         if filepath is None:
             return
@@ -1068,12 +1107,15 @@ class MainWindowEventHandlers(object):
 
         # Get filepath from user
 
-        wildcard = _("Macro file (*.py)|*.py|All files (*.*)|*.*")
+        wildcard = \
+            _("Macro file") + " (*.py)|*.py|" + \
+            _("All files") + " (*.*)|*.*"
         message = _("Choose macro file.")
 
         style = wx.SAVE | wx.CHANGE_DIR
-        filepath, filterindex = self.interfaces.get_filepath_findex_from_user(
-                                    wildcard, message, style)
+        filepath, filterindex = \
+            self.interfaces.get_filepath_findex_from_user(wildcard, message,
+                                                          style)
 
         # Save macros to file
 
@@ -1088,7 +1130,7 @@ class MainWindowEventHandlers(object):
         """Manual launch event handler"""
 
         self.main_window.actions.launch_help("First steps in pyspread",
-            "First steps in pyspread.html")
+                                             "First steps.html")
 
     def OnTutorial(self, event):
         """Tutorial launch event handler"""
@@ -1105,7 +1147,7 @@ class MainWindowEventHandlers(object):
         """Python tutorial launch event handler"""
 
         self.main_window.actions.launch_help("Python tutorial",
-            "http://docs.python.org/tutorial/")
+                                             get_python_tutorial_path())
 
     def OnAbout(self, event):
         """About dialog event handler"""

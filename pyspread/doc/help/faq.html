@@ -1,60 +1,91 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html dir="ltr" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"
-  lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html;
-      charset=ISO-8859-1">
-    <title>pyspread FAQ</title>
-  </head>
-  <body>
-    <h1 id="firstHeading" class="firstHeading">FAQ</h1>
-    <p><i>&copy; Martin Manns</i>
-    </p>
-    <p><b>Q:</b> What kind of expressions can a cell contain?<br>
-      <b>A:</b> A cell can contain any normal Python expression such as
-      a
-      list comprehension or a generator expression. However, it cannot
-      contain statements such as
-    </p>
-    <pre>for i in xrange(10): pass<br></pre>
-    <p>
-      If you want to program more complex algorithms then use the macro
-      editor.<br>
-      There, you can define functions that use arbitrary Python code and
-      is
-      callable from any cell.
-    </p>
-    <p><b>Example:</b><br>
-      Type in the macro editor:
-    </p>
-    <pre>def factorize(number):<br>    """Silly factorizing algorithm for demonstration purposes only"""<br>    counter = 1<br>    result = []<br>    while counter &lt;= number:<br>        if number&nbsp;% counter == 0:<br>            result.append(counter)<br>        counter += 1<br>    return result</pre>
-    <p>And in the cell:
-    </p>
-    <pre> factorize(25)</pre>
-    <p>Result is:
-    </p>
-    <pre> [1 5 25]</pre>
-    <p><b>Q:</b> What are the boundaries for the number of
-      rows/columns/sheets?<br>
-      <b>A:</b> These are limited by your memory (and maybe your stack
-      restriction
-      if any). However, the grid is restricted to a number that changes
-      with
-      row size.
-      For standard size (GTK), 80 000 000 rows can be displayed.<br>
-    </p>
-    <p><b>Q:</b> Is the new file-format considered stable, or will it
-      change again?<br>
-      <b>A:</b> The new file format is stable. This means that future
-      versions of Pyspread will be able to read the old format.<br>
-    </p>
-    <p><b>Q:</b> Can pyspread still read the old format?<br>
-      <b>A:</b> Unfortunately not. If you have old pys files, install
-      both
-      versions of pyspread and copy the cell contents via the Clipboard
-      from
-      the old to the new version. However, cell formatting cannot be
-      preserved this way.<br>
-    </p>
-  </body>
-</html>
+<h1 class="title">pyspread FAQ</h1>
+
+<table border="0" cellpadding="15" cellspacing="0" style=
+"text-align: left; width: 100%; margin-left: auto; margin-right: auto;vertical-align: top;">
+    <tbody>
+        <tr>
+            <th style=
+            "vertical-align: top; background-color: white; width: 102px;"><h3>What
+            kind of expressions can a cell contain?</h3></th>
+
+            <td style="vertical-align: top;">
+                A cell can contain any normal Python expression such as a list
+                comprehension or a generator expression. However, it cannot
+                contain statements such as
+                <pre>
+for i in xrange(10): pass<br>
+</pre>
+
+                <p>If you want to program more complex algorithms then use the
+                macro editor.<br>
+                There, you can define functions that use arbitrary Python code
+                and is callable from any cell.</p>
+
+                <p><strong>Example:</strong><br>
+                Type in the macro editor:</p>
+                <pre>
+def factorize(number):<br>    """Silly factorizing algorithm for demonstration purposes only"""<br>    counter = 1<br>    result = []<br>    while counter &lt;= number:<br>        if number % counter == 0:<br>            result.append(counter)<br>        counter += 1<br>    return result
+</pre>
+
+                <p>And in the cell:</p>
+                <pre>
+ factorize(25)
+</pre>
+
+                <p>Result is:</p>
+                <pre>
+ [1 5 25]
+</pre>
+            </td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="width: 211px;"><br></td>
+        </tr>
+
+        <tr>
+            <th style="vertical-align: top;"><h3>What are the boundaries for the
+            number of rows/columns/sheets?</h3></th>
+
+            <td style="vertical-align: top;">These are limited by your memory
+            (and maybe your stack restriction if any). However, the grid is
+            restricted to a number that changes with row size. For standard
+            size (GTK), 80 000 000 rows can be displayed.</td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="vertical-align: top;"><br></td>
+        </tr>
+
+        <tr>
+            <th style="vertical-align: top;"><h3>Is the new file-format considered
+            stable, or will it change again?</h3></th>
+
+            <td style="vertical-align: top;">The new file format is stable.
+            This means that future versions of Pyspread will be able to read
+            the old format.</td>
+
+            <td style="vertical-align: top;"><br></td>
+
+            <td style="vertical-align: top;"><br></td>
+        </tr>
+
+        <tr>
+            <th style="vertical-align: top;"><h3>Can pyspread still read the old
+            format?</h3></th>
+
+            <td style="vertical-align: top;">Unfortunately not. If you have old
+            pys files, install both versions of pyspread and copy the cell
+            contents via the Clipboard from the old to the new version.
+            However, cell formatting cannot be preserved this way.</td>
+
+        </tr>
+    </tbody>
+</table>
+
+<p><span style="font-style: italic;"><small>Copyright Martin Manns</small><br>
+Contact mmanns &lt; at &gt; gmx &lt; dot &gt; net<br style=
+"font-style: italic;"></span> <span style="font-style: italic;">Last changed:
+12. May 2013</span></p>
+
+<p><span style="font-style: italic;"><small></small></span></p>

@@ -42,6 +42,7 @@ Provides:
 """
 
 import keyword
+from copy import copy
 
 import wx
 import wx.grid
@@ -50,9 +51,12 @@ import wx.stc as stc
 from wx.lib.intctrl import IntCtrl, EVT_INT
 
 import src.lib.i18n as i18n
+from src.config import config
+from src.sysvars import get_default_font
 
 from _events import post_command_event, EntryLineEventMixin, GridCellEventMixin
 from _events import StatusBarEventMixin, GridEventMixin, GridActionEventMixin
+from _events import MainWindowEventMixin
 
 from icons import icons
 
@@ -64,6 +68,7 @@ class PythonSTC(stc.StyledTextCtrl):
     """Editor that highlights Python source code.
 
     Stolen from the wxPython demo.py
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -133,72 +138,36 @@ class PythonSTC(stc.StyledTextCtrl):
 
         """
 
-        self.faces = {'times': 'Times',
-                      'mono': 'Courier',
-                      'helv': wx.SystemSettings.GetFont(
-                               wx.SYS_DEFAULT_GUI_FONT).GetFaceName(),
-                      'other': 'new century schoolbook',
-                      'size': 10,
-                      'size2': 8,
-                     }
-
-        white = "white"
-        black = "black"
-        gray1 = "#404040"
-        gray2 = "#808080"
-
-        self.fold_symbol_styles = {
-          "arrows":
-          [
-            (stc.STC_MARKNUM_FOLDEROPEN, stc.STC_MARK_ARROWDOWN, black, black),
-            (stc.STC_MARKNUM_FOLDER, stc.STC_MARK_ARROW, black, black),
-            (stc.STC_MARKNUM_FOLDERSUB, stc.STC_MARK_EMPTY, black, black),
-            (stc.STC_MARKNUM_FOLDERTAIL, stc.STC_MARK_EMPTY, black, black),
-            (stc.STC_MARKNUM_FOLDEREND, stc.STC_MARK_EMPTY, white, black),
-            (stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_EMPTY, white, black),
-            (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_EMPTY, white, black),
-          ],
-          "plusminus":
-          [
-            (stc.STC_MARKNUM_FOLDEROPEN, stc.STC_MARK_MINUS, white, black),
-            (stc.STC_MARKNUM_FOLDER, stc.STC_MARK_PLUS,  white, black),
-            (stc.STC_MARKNUM_FOLDERSUB, stc.STC_MARK_EMPTY, white, black),
-            (stc.STC_MARKNUM_FOLDERTAIL, stc.STC_MARK_EMPTY, white, black),
-            (stc.STC_MARKNUM_FOLDEREND, stc.STC_MARK_EMPTY, white, black),
-            (stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_EMPTY, white, black),
-            (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_EMPTY, white, black),
-          ],
-          "circletree":
-          [
-            (stc.STC_MARKNUM_FOLDEROPEN, stc.STC_MARK_CIRCLEMINUS,
-                                                            white, gray1),
-            (stc.STC_MARKNUM_FOLDER, stc.STC_MARK_CIRCLEPLUS, white, gray1),
-            (stc.STC_MARKNUM_FOLDERSUB, stc.STC_MARK_VLINE, white, gray1),
-            (stc.STC_MARKNUM_FOLDERTAIL, stc.STC_MARK_LCORNERCURVE,
-                                                            white, gray1),
-            (stc.STC_MARKNUM_FOLDEREND, stc.STC_MARK_CIRCLEPLUSCONNECTED,
-                                                            white, gray1),
-            (stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_CIRCLEMINUSCONNECTED,
-                                                            white, gray1),
-            (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNERCURVE,
-                                                            white, gray1),
-          ],
-          "squaretree":
-          [
-            (stc.STC_MARKNUM_FOLDEROPEN, stc.STC_MARK_BOXMINUS, white, gray2),
-            (stc.STC_MARKNUM_FOLDER, stc.STC_MARK_BOXPLUS, white, gray2),
-            (stc.STC_MARKNUM_FOLDERSUB, stc.STC_MARK_VLINE, white, gray2),
-            (stc.STC_MARKNUM_FOLDERTAIL, stc.STC_MARK_LCORNER, white, gray2),
-            (stc.STC_MARKNUM_FOLDEREND, stc.STC_MARK_BOXPLUSCONNECTED,
-                                                            white, gray2),
-            (stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_BOXMINUSCONNECTED,
-                                                            white, gray2),
-            (stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNER,
-                                                            white, gray2),
-          ]
+        self.faces = {
+            'times': 'Times',
+            'mono': 'Courier',
+            'helv': wx.SystemSettings.GetFont(
+                    wx.SYS_DEFAULT_GUI_FONT).GetFaceName(),
+            'other': 'new century schoolbook',
+            'size': 10,
+            'size2': 8,
         }
 
-        self.fold_symbol_style = self.fold_symbol_styles["circletree"]
+        white = "white"
+        gray = "#404040"
+
+        # Fold circle tree symbol style from demo.py
+        self.fold_symbol_style = [
+            (stc.STC_MARKNUM_FOLDEROPEN,
+             stc.STC_MARK_CIRCLEMINUS, white, gray),
+            (stc.STC_MARKNUM_FOLDER,
+             stc.STC_MARK_CIRCLEPLUS, white, gray),
+            (stc.STC_MARKNUM_FOLDERSUB,
+             stc.STC_MARK_VLINE, white, gray),
+            (stc.STC_MARKNUM_FOLDERTAIL,
+             stc.STC_MARK_LCORNERCURVE, white, gray),
+            (stc.STC_MARKNUM_FOLDEREND,
+             stc.STC_MARK_CIRCLEPLUSCONNECTED, white, gray),
+            (stc.STC_MARKNUM_FOLDEROPENMID,
+             stc.STC_MARK_CIRCLEMINUSCONNECTED, white, gray),
+            (stc.STC_MARKNUM_FOLDERMIDTAIL,
+             stc.STC_MARK_TCORNERCURVE, white, gray),
+        ]
 
         """
         Text styles
@@ -211,48 +180,75 @@ class PythonSTC(stc.StyledTextCtrl):
         """
 
         self.text_styles = [
-          (stc.STC_STYLE_DEFAULT, "face:%(helv)s,size:%(size)d" % self.faces),
-          (stc.STC_STYLE_LINENUMBER, "back:#C0C0C0,face:%(helv)s,"
-                                     "size:%(size2)d" % self.faces),
-          (stc.STC_STYLE_CONTROLCHAR, "face:%(other)s" % self.faces),
-          (stc.STC_STYLE_BRACELIGHT, "fore:#FFFFFF,back:#0000FF,bold"),
-          (stc.STC_STYLE_BRACEBAD, "fore:#000000,back:#FF0000,bold"),
-          # Python styles
-          # Default
-          (stc.STC_P_DEFAULT, "fore:#000000,face:%(helv)s,size:%(size)d" %
-                                                                self.faces),
-          # Comments
-          (stc.STC_P_COMMENTLINE, "fore:#007F00,face:%(other)s,"
-                                  "size:%(size)d" % self.faces),
-          # Number
-          (stc.STC_P_NUMBER, "fore:#007F7F,size:%(size)d" % self.faces),
-          # String
-          (stc.STC_P_STRING, "fore:#7F007F,face:%(helv)s,size:%(size)d" %
-                                                                self.faces),
-          # Single quoted string
-          (stc.STC_P_CHARACTER, "fore:#7F007F,face:%(helv)s,size:%(size)d" %
-                                                                self.faces),
-          # Keyword
-          (stc.STC_P_WORD, "fore:#00007F,bold,size:%(size)d" % self.faces),
-          # Triple quotes
-          (stc.STC_P_TRIPLE, "fore:#7F0000,size:%(size)d" % self.faces),
-          # Triple double quotes
-          (stc.STC_P_TRIPLEDOUBLE, "fore:#7F0000,size:%(size)d" % self.faces),
-          # Class name definition
-          (stc.STC_P_CLASSNAME, "fore:#0000FF,bold,underline,size:%(size)d" %
-                                                                self.faces),
-          # Function or method name definition
-          (stc.STC_P_DEFNAME, "fore:#007F7F,bold,size:%(size)d" % self.faces),
-          # Operators
-          (stc.STC_P_OPERATOR, "bold,size:%(size)d" % self.faces),
-          # Identifiers
-          (stc.STC_P_IDENTIFIER, "fore:#000000,face:%(helv)s,size:%(size)d" %
-                                                                self.faces),
-          # Comment-blocks
-          (stc.STC_P_COMMENTBLOCK, "fore:#7F7F7F,size:%(size)d" % self.faces),
-          # End of line where string is not closed
-          (stc.STC_P_STRINGEOL, "fore:#000000,face:%(mono)s,"
-                                "back:#E0C0E0,eol,size:%(size)d" % self.faces),
+            (stc.STC_STYLE_DEFAULT,
+             "face:%(helv)s,size:%(size)d" % self.faces),
+            (stc.STC_STYLE_LINENUMBER,
+             "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % self.faces),
+            (stc.STC_STYLE_CONTROLCHAR,
+             "face:%(other)s" % self.faces),
+            (stc.STC_STYLE_BRACELIGHT,
+             "fore:#FFFFFF,back:#0000FF,bold"),
+            (stc.STC_STYLE_BRACEBAD,
+             "fore:#000000,back:#FF0000,bold"),
+
+            # Python styles
+            # -------------
+
+            # Default
+            (stc.STC_P_DEFAULT,
+             "fore:#000000,face:%(helv)s,size:%(size)d" % self.faces),
+
+            # Comments
+            (stc.STC_P_COMMENTLINE,
+             "fore:#007F00,face:%(other)s,size:%(size)d" % self.faces),
+
+            # Number
+            (stc.STC_P_NUMBER,
+             "fore:#007F7F,size:%(size)d" % self.faces),
+
+            # String
+            (stc.STC_P_STRING,
+             "fore:#7F007F,face:%(helv)s,size:%(size)d" % self.faces),
+
+            # Single quoted string
+            (stc.STC_P_CHARACTER,
+             "fore:#7F007F,face:%(helv)s,size:%(size)d" % self.faces),
+
+            # Keyword
+            (stc.STC_P_WORD,
+             "fore:#00007F,bold,size:%(size)d" % self.faces),
+
+            # Triple quotes
+            (stc.STC_P_TRIPLE,
+             "fore:#7F0000,size:%(size)d" % self.faces),
+
+            # Triple double quotes
+            (stc.STC_P_TRIPLEDOUBLE,
+             "fore:#7F0000,size:%(size)d" % self.faces),
+
+            # Class name definition
+            (stc.STC_P_CLASSNAME,
+             "fore:#0000FF,bold,underline,size:%(size)d" % self.faces),
+
+            # Function or method name definition
+            (stc.STC_P_DEFNAME,
+             "fore:#007F7F,bold,size:%(size)d" % self.faces),
+
+            # Operators
+            (stc.STC_P_OPERATOR, "bold,size:%(size)d" % self.faces),
+
+            # Identifiers
+            (stc.STC_P_IDENTIFIER,
+             "fore:#000000,face:%(helv)s,size:%(size)d" % self.faces),
+
+            # Comment-blocks
+            (stc.STC_P_COMMENTBLOCK,
+             "fore:#7F7F7F,size:%(size)d" % self.faces),
+
+            # End of line where string is not closed
+            (stc.STC_P_STRINGEOL,
+             "fore:#000000,face:%(mono)s,back:#E0C0E0,eol,size:%(size)d"
+             % self.faces),
         ]
 
     def OnUpdateUI(self, evt):
@@ -400,9 +396,11 @@ class ImageComboBox(wx.combo.OwnerDrawnComboBox):
 
         if (item & 1 == 0 or flags & (wx.combo.ODCB_PAINTING_CONTROL |
                                       wx.combo.ODCB_PAINTING_SELECTED)):
-            wx.combo.OwnerDrawnComboBox.OnDrawBackground(self, dc,
-                                                         rect, item, flags)
-            return
+            try:
+                wx.combo.OwnerDrawnComboBox.OnDrawBackground(self, dc,
+                                                             rect, item, flags)
+            finally:
+                return
 
         # Otherwise, draw every other background with
         # different color.
@@ -468,7 +466,8 @@ class MatplotlibStyleChoice(wx.Choice):
             if style[0] == label:
                 return style[1]
 
-        raise ValueError(_("Label {} is invalid.".format(label)))
+        msg = _("Label {label} is invalid.").format(label=label)
+        raise ValueError(msg)
 
     def get_label(self, code):
         """Returns string label for given code string
@@ -486,7 +485,8 @@ class MatplotlibStyleChoice(wx.Choice):
             if style[1] == code:
                 return style[0]
 
-        raise ValueError(_("Code {} is invalid.".format(code)))
+        msg = _("Code {code} is invalid.").format(code=code)
+        raise ValueError(msg)
 
 
 class LineStyleComboBox(MatplotlibStyleChoice):
@@ -530,6 +530,22 @@ class MarkerStyleComboBox(MatplotlibStyleChoice):
     ]
 
 
+class CoordinatesComboBox(MatplotlibStyleChoice):
+    """Combo box for choosing annotation coordinates for matplotlib charts"""
+
+    styles = [
+        ("Figure points", "figure points"),
+        ("Figure pixels", "figure pixels"),
+        ("Figure fraction", "figure fraction"),
+        ("Axes points", "axes points"),
+        ("Axes pixels", "axes pixels"),
+        ("Axes fraction", "axes fraction"),
+        ("Data", "data"),
+        ("Offset points", "offset points"),
+        ("Polar", "polar"),
+    ]
+
+
 # End of chart dialog widgets for matplotlib interaction
 # ------------------------------------------------------
 
@@ -546,10 +562,12 @@ class FontChoiceCombobox(ImageComboBox):
         __rect.Deflate(3, 5)
 
         font_string = self.GetString(item)
-        font = wx.Font(wx.DEFAULT, wx.DEFAULT, wx.NORMAL, wx.NORMAL,
-                       False, font_string)
-        font.SetPointSize(font.GetPointSize() - 2)
+
+        font = get_default_font()
+        font.SetFaceName(font_string)
+        font.SetFamily(wx.FONTFAMILY_SWISS)
         dc.SetFont(font)
+
         text_width, text_height = dc.GetTextExtent(font_string)
         text_x = __rect.x
         text_y = __rect.y + int((__rect.height - text_height) / 2.0)
@@ -610,14 +628,18 @@ class BitmapToggleButton(wx.BitmapButton):
 
         self.bitmap_list = []
         for bmp in bitmap_list:
-            mask = wx.Mask(bmp, wx.BLUE)
-            bmp.SetMask(mask)
+            if '__WXMSW__' not in wx.PlatformInfo:
+                # Setting a mask fails on Windows.
+                # Therefore transparency is set only for other platforms
+                mask = wx.Mask(bmp, wx.BLUE)
+                bmp.SetMask(mask)
+
             self.bitmap_list.append(bmp)
 
         self.state = 0
 
-        super(BitmapToggleButton, self).__init__(parent, -1,
-                    self.bitmap_list[0], style=wx.BORDER_NONE)
+        super(BitmapToggleButton, self).__init__(
+            parent, -1, self.bitmap_list[0], style=wx.BORDER_NONE)
 
         # For compatibility with toggle buttons
         setattr(self, "GetToolState", lambda x: self.state)
@@ -645,21 +667,122 @@ class BitmapToggleButton(wx.BitmapButton):
 # end of class BitmapToggleButton
 
 
-class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
+class EntryLineToolbarPanel(wx.Panel):
+    """Panel that contains an EntryLinePanel and a TableChoiceIntCtrl"""
+
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        # Panel with EntryLine and button
+        self.entry_line_panel = EntryLinePanel(self, parent, -1)
+
+        # IntCtrl for table choice
+        self.table_choice = TableChoiceIntCtrl(self, parent,
+                                               config["grid_tables"])
+
+        self.__do_layout()
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+
+        main_sizer.Add(self.entry_line_panel, 1, wx.ALL | wx.EXPAND, 1)
+        main_sizer.Add(self.table_choice, 1, wx.ALL | wx.EXPAND, 1)
+
+        main_sizer.AddGrowableRow(0)
+        main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+# end of class EntryLineToolbarPanel
+
+
+class EntryLinePanel(wx.Panel, GridEventMixin, GridActionEventMixin):
+    """Panel that contains an EntryLine and a bitmap toggle button
+
+    The button changes the state of the grid. If pressed, a grid selection
+    is inserted into the EntryLine.
+
+    """
+
+    def __init__(self, parent, main_window, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+        self.main_window = main_window
+
+        style = wx.TE_PROCESS_ENTER | wx.TE_MULTILINE
+        self.entry_line = EntryLine(self, main_window, style=style)
+        self.selection_toggle_button = \
+            wx.ToggleButton(self, -1, size=(24, -1), label=u"\u25F0")
+
+        tooltip = wx.ToolTip(_("Toggles link insertion mode."))
+        self.selection_toggle_button.SetToolTip(tooltip)
+        self.selection_toggle_button.Bind(wx.EVT_TOGGLEBUTTON, self.OnToggle)
+
+        self.__do_layout()
+
+    def __do_layout(self):
+        main_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+
+        main_sizer.Add(self.entry_line, 1, wx.ALL | wx.EXPAND, 1)
+        main_sizer.Add(self.selection_toggle_button, 1, wx.ALL | wx.EXPAND, 1)
+
+        main_sizer.AddGrowableRow(0)
+        main_sizer.AddGrowableCol(0)
+
+        self.SetSizer(main_sizer)
+
+        self.Layout()
+
+    def OnToggle(self, event):
+        """Toggle button event handler"""
+
+        if self.selection_toggle_button.GetValue():
+            self.entry_line.last_selection = self.entry_line.GetSelection()
+            self.entry_line.last_selection_string = \
+                self.entry_line.GetStringSelection()
+            self.entry_line.last_table = self.main_window.grid.current_table
+            self.entry_line.Disable()
+            post_command_event(self, self.EnterSelectionModeMsg)
+
+        else:
+            self.entry_line.Enable()
+            post_command_event(self, self.GridActionTableSwitchMsg,
+                               newtable=self.entry_line.last_table)
+            post_command_event(self, self.ExitSelectionModeMsg)
+
+# end of class EntryLinePanel
+
+
+class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin,
+                GridEventMixin, GridActionEventMixin):
     """"The line for entering cell code"""
 
-    def __init__(self, parent, id=-1, *args, **kwargs):
+    def __init__(self, parent, main_window, id=-1, *args, **kwargs):
+        kwargs["style"] = wx.TE_PROCESS_ENTER | wx.TE_MULTILINE
         wx.TextCtrl.__init__(self, parent, id, *args, **kwargs)
 
+        self.SetSize((700, 25))
+
         self.parent = parent
+        self.main_window = main_window
         self.ignore_changes = False
 
-        parent.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
+        # Store last text selection of self before going into selection mode
+        self.last_selection = None
+        self.last_selection_string = None
+        # The current table has to be stored on entering selection mode
+        self.last_table = None
 
-        self.SetToolTip(wx.ToolTip("Enter Python expression here."))
+        main_window.Bind(self.EVT_ENTRYLINE_MSG, self.OnContentChange)
+        main_window.Bind(self.EVT_CMD_SELECTION, self.OnGridSelection)
+
+        self.SetToolTip(wx.ToolTip(_("Enter Python expression here.")))
 
         self.Bind(wx.EVT_TEXT, self.OnText)
         self.Bind(wx.EVT_CHAR, self.OnChar)
+        self.main_window.Bind(self.EVT_CMD_TABLE_CHANGED, self.OnTableChanged)
 
     def OnContentChange(self, event):
         """Event handler for updating the content"""
@@ -670,6 +793,26 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
             self.SetValue(event.text)
 
         event.Skip()
+
+    def OnGridSelection(self, event):
+        """Event handler for grid selection in selection mode adds text"""
+
+        current_table = copy(self.main_window.grid.current_table)
+
+        post_command_event(self, self.GridActionTableSwitchMsg,
+                           newtable=self.last_table)
+        wx.Yield()
+        sel_start, sel_stop = self.last_selection
+
+        shape = self.main_window.grid.code_array.shape
+        selection_string = event.selection.get_access_string(shape,
+                                                             current_table)
+
+        self.Replace(sel_start, sel_stop, selection_string)
+        self.last_selection = sel_start, sel_start + len(selection_string)
+
+        post_command_event(self, self.GridActionTableSwitchMsg,
+                           newtable=current_table)
 
     def OnText(self, event):
         """Text event method evals the cell and updates the grid"""
@@ -694,31 +837,96 @@ class EntryLine(wx.TextCtrl, EntryLineEventMixin, GridCellEventMixin):
 
             if keycode == 13:
                 # <Enter> pressed --> Focus on grid
-                self.parent.grid.SetFocus()
+                self.main_window.grid.SetFocus()
 
                 # Ignore <Ctrl> + <Enter> and Quote content
                 if event.ControlDown():
                     self.SetValue('"' + self.GetValue() + '"')
+
+                return
+
+        event.Skip()
+
+    def OnTableChanged(self, event):
+        """Table changed event handler"""
+
+        current_cell = self.main_window.grid.actions.cursor
+        current_cell_code = self.main_window.grid.code_array(current_cell)
+
+        if current_cell_code is None:
+            self.SetValue(u"")
+        else:
+            self.SetValue(current_cell_code)
 
         event.Skip()
 
 # end of class EntryLine
 
 
-class StatusBar(wx.StatusBar, StatusBarEventMixin):
+class StatusBar(wx.StatusBar, StatusBarEventMixin, MainWindowEventMixin):
     """Main window statusbar"""
 
     def __init__(self, parent):
         wx.StatusBar.__init__(self, parent, -1)
 
-        self.SetToolTip(wx.ToolTip("Watch the status bar."))
+        self.SetFieldsCount(2)
+
+        self.size_changed = False
+
+        safemode_bmp = icons["safe_mode"]
+
+        self.safemode_staticbmp = wx.StaticBitmap(self, 1001, safemode_bmp)
+        tooltip = wx.ToolTip(
+            _("Pyspread is in safe mode.\nExpressions are not evaluated."))
+        self.safemode_staticbmp.SetToolTip(tooltip)
+
+        self.SetStatusWidths([-1, safemode_bmp.GetWidth() + 4])
+
+        self.safemode_staticbmp.Hide()
 
         parent.Bind(self.EVT_STATUSBAR_MSG, self.OnMessage)
+        parent.Bind(self.EVT_CMD_SAFE_MODE_ENTRY, self.OnSafeModeEntry)
+        parent.Bind(self.EVT_CMD_SAFE_MODE_EXIT, self.OnSafeModeExit)
+        self.Bind(wx.EVT_SIZE, self.OnSize)
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
 
     def OnMessage(self, event):
         """Statusbar message event handler"""
 
         self.SetStatusText(event.text)
+
+    def OnSize(self, evt):
+        self.Reposition()  # for normal size events
+
+        # Set a flag so the idle time handler will also do the repositioning.
+        # It is done this way to get around a buglet where GetFieldRect is not
+        # accurate during the EVT_SIZE resulting from a frame maximize.
+        self.size_changed = True
+
+    def OnIdle(self, event):
+        if self.size_changed:
+            self.Reposition()
+
+    def Reposition(self):
+        """Reposition the checkbox"""
+
+        rect = self.GetFieldRect(1)
+        self.safemode_staticbmp.SetPosition((rect.x, rect.y))
+        self.size_changed = False
+
+    def OnSafeModeEntry(self, event):
+        """Safe mode entry event handler"""
+
+        self.safemode_staticbmp.Show(True)
+
+        event.Skip()
+
+    def OnSafeModeExit(self, event):
+        """Safe mode exit event handler"""
+
+        self.safemode_staticbmp.Hide()
+
+        event.Skip()
 
 # end of class StatusBar
 
@@ -726,8 +934,9 @@ class StatusBar(wx.StatusBar, StatusBarEventMixin):
 class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
     """ComboBox for choosing the current grid table"""
 
-    def __init__(self, parent, no_tabs):
+    def __init__(self, parent, main_window, no_tabs):
         self.parent = parent
+        self.main_window = main_window
         self.no_tabs = no_tabs
 
         IntCtrl.__init__(self, parent, limited=True, allow_long=True)
@@ -744,7 +953,8 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
 
         self.Bind(EVT_INT, self.OnInt)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
-        self.parent.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
+        self.main_window.Bind(self.EVT_CMD_RESIZE_GRID, self.OnResizeGrid)
+        self.main_window.Bind(self.EVT_CMD_TABLE_CHANGED, self.OnTableChanged)
 
     def change_max(self, no_tabs):
         """Updates to a new number of tables
@@ -805,6 +1015,13 @@ class TableChoiceIntCtrl(IntCtrl, GridEventMixin, GridActionEventMixin):
         """Grid shape change event handler"""
 
         self.change_max(event.shape[2])
+
+        event.Skip()
+
+    def OnTableChanged(self, event):
+        """Table changed event handler"""
+
+        self.SetValue(event.table)
 
         event.Skip()
 

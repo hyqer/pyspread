@@ -41,7 +41,7 @@ import src.lib.i18n as i18n
 
 from _dialogs import MacroDialog, DimensionsEntryDialog, AboutDialog
 from _dialogs import CsvImportDialog, CellEntryDialog, CsvExportDialog
-from _dialogs import PreferencesDialog, GPGParamsDialog
+from _dialogs import PreferencesDialog, GPGParamsDialog, PasteAsDialog
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -99,7 +99,8 @@ class ModalDialogInterfaceMixin(object):
 
         msg = _("There are unsaved changes.\nDo you want to save?")
 
-        dlg = GMD.GenericMessageDialog(self.main_window, msg,
+        dlg = GMD.GenericMessageDialog(
+            self.main_window, msg,
             _("Unsaved changes"), wx.YES_NO | wx.ICON_QUESTION | wx.CANCEL)
 
         save_choice = dlg.ShowModal()
@@ -139,7 +140,7 @@ class ModalDialogInterfaceMixin(object):
         return filepath, filter_index
 
     def display_warning(self, message, short_message,
-                              style=wx.OK | wx.ICON_WARNING):
+                        style=wx.OK | wx.ICON_WARNING):
         """Displays a warning message"""
 
         dlg = GMD.GenericMessageDialog(self.main_window, message,
@@ -148,7 +149,7 @@ class ModalDialogInterfaceMixin(object):
         dlg.Destroy()
 
     def get_warning_choice(self, message, short_message,
-                        style=wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING):
+                           style=wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING):
         """Launches proceeding dialog and returns True if ok to proceed"""
 
         dlg = GMD.GenericMessageDialog(self.main_window, message,
@@ -199,8 +200,9 @@ class ModalDialogInterfaceMixin(object):
         except csv.Error, err:
             # Display modal warning dialog
 
-            msg = _("'{}' does not seem to be a valid CSV file.\n \nOpening it"
-                    " yielded the error:\n{}").format(csvfilename, err)
+            msg = _("'{filepath}' does not seem to be a valid CSV file.\n \n"
+                    "Opening it yielded the error:\n{error}")
+            msg = msg.format(filepath=csvfilename, error=err)
             short_msg = _('Error reading CSV file')
 
             self.display_warning(msg, short_msg)
@@ -286,6 +288,22 @@ class ModalDialogInterfaceMixin(object):
                 pass
 
         return integer
+
+    def get_pasteas_parameters_from_user(self, obj):
+        """Opens a PasteAsDialog and returns parameters dict"""
+
+        dlg = PasteAsDialog(None, -1, obj)
+        dlg_choice = dlg.ShowModal()
+
+        if dlg_choice != wx.ID_OK:
+            dlg.Destroy()
+            return None
+
+        parameters = {}
+        parameters.update(dlg.parameters)
+        dlg.Destroy()
+
+        return parameters
 
 
 class DialogInterfaceMixin(object):

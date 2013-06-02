@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -113,8 +113,9 @@ class CellActions(Actions):
                 return u"+" + str(diff_key_ele)
 
             else:
-                errmsg = _("{} seems to be no Integer").format(diff_key_ele)
-                raise ValueError(errmsg)
+                msg = _("{key} seems to be no Integer")
+                msg = msg.format(key=diff_key_ele)
+                raise ValueError(msg)
 
         key_strings = []
 
@@ -189,8 +190,8 @@ class CellActions(Actions):
                            changed=True)
 
         if selection is not None:
-            self.code_array.cell_attributes.undoable_append(
-                                            (selection, table, attr))
+            cell_attributes = self.code_array.cell_attributes
+            cell_attributes.undoable_append((selection, table, attr))
 
     def set_attr(self, attr, value, selection=None):
         """Sets attr of current selection to value"""
@@ -378,7 +379,7 @@ class CellActions(Actions):
         "vertical_align": ["top", "middle", "bottom"],
         "justification": ["left", "center", "right"],
         "frozen": [True, False],
-        }
+    }
 
     def get_new_cell_attr_state(self, key, attr_key):
         """Returns new attr cell state for toggles

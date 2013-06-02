@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Unit test for unredo.py"""
+# Copyright Martin Manns
+# Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
 # pyspread is free software: you can redistribute it and/or modify
@@ -15,8 +16,17 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+# along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
+
+
+"""
+test_unredo
+===========
+
+Unit tests for unredo.py
+
+"""
 
 import os
 import sys

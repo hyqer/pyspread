@@ -1,19 +1,196 @@
+Changelog for pyspread
+======================
+
+Note: This changelog starts at version 0.2.0
+
+0.2.4
+-----
+
+Fix some typos and offline tutorial
+Pie charts added to chart_dialog
+Charts fit better in figure
+Multiline EntryLine implemented
+Large bitmaps that are pasted from the clipboard are not scaled down any more
+Legend support added to chart_dialog
+troff file for man page updated
+man page updated
+Changed initial module order to gain Windows compatibility
+TableChoiceIntCtrl is now in EntryLineToolbarPanel
+Selection mode introduced, that is toggled by new ToggleButton in EntryLine
+Copy results of figure now copies bitmap into clipboard
+man page file added to setup.py
+SVG export for matplotlib figures added
+Old config files are now updated correctly (window geometry always and GPG key uid for pre 0.2.4 files)
+Title added to charts in chart_dialog
+The font choice widget now uses the system GUI default font as basis
+Statusbar tooltip removed
+Signing pys files made more robust
+man page moved into the docs folder
+Pyspread can now be started from other Python applications
+Stock icons for Windows replaced by Tango icons
+Find and Find/Replace icon added to Windows stock item replacement
+Attributes toolbar now refreshes after update so that status changes are visible
+GPG key choice dialog buttons have new labels
+Cells with matplotlib figure can now also be exported to png, pdf, eps and ps
+Safe mode status icon added to status bar
+Copy results of numpy arrays now creates lists
+Paste As menu item added
+Paste As Dialog unrolls iterables to grid
+Transpose operation added to Paste As dialog
+Color attribute added to pie chart dialog
+Chart grid added
+Boxplots added to chart dialog
+All columns in chart dialog are now growable
+Histograms added to chart dialog
+Some bug fixes on chart dialog
+Toolbars switched to wx.lib.agw.aui to fix display bug
+Merged cells are now redrawn correctly even when they are only partly visible
+Python tutorial path upadated and moved to sysvars
+Errors are now redirected to the shell on Windows (no extra window)
+Pyspread now also starts if python-gupg is installed but gnupg is not
+Testing via py.test can now be called via setup.py test
+Behavior on invalid background in Windows fixed
+Translations updated
+Help now shows up on non UTF-8 systems (e. g. Windows)
+Bug in csv import fixed by reverting to type comparisons
+Batch file for Windows added
+Bash shell script now keeps pre-defiend PYTHONPATH
+Fixed bug that made ChartDialog ignore its code parameter
+CartDialog now parses checkboxes correctly
+Windows icon added, Windows bat and icon added to setup.py
+Unit tests extended
+runtests is now executable
+Clipboard data from multiple cells can now be transposed
+Paste as from multiple cells is now done with the correct type
+Format string variables are changed to named variables to ease translation.
+Error message removed when closing bitmap macro filechoice without choosing a file.
+Chart dialog now supports dates as x axis labels
+Dependency restriction to wxPython 2.8 added because 2.9.x has GUI issues
+File approval warning made less severe
+Tooltip labels added for plot attributes
+Figure and axes parameter tooltips added to chart dialog
+Chart dialog now supports annotations
+Icon added to .desktop file
+First step document adjusted to Jekyll
+FAQ updated
+Help html window now goes back with right click
+UTF-8 symbols removed from tutorial
+Assignment identification in model.py changed to ast
+Year numbers removed from Copyright notices
+
 0.2.3
- * PIP install now works
- * Cell merging and unmerging added
+-----
+
+Pivot table example added
+i18n.py added in lib directory
+Metadata for pypi updated
+Package info changed to Python 2.7 required
+INSTALL file made version independent
+setup.py modified for pip
+All unit tests are now directory independent
+Developer documentation extended
+Merge cell functionailty added
+Fixed bug that results in incomplete saves
+Bitmap rendering added
+Pasting bitmaps now works
+TextCtrl length limit now stored in config
+Bitmaps can now be copied as results
+Bugfix: Passwd was stored even though user did opt for not storing it
+Globals are now cleared when a new spreadsheet is created or opened
+Initial globals state is now reset upon File->New
+Modules are now reloaded when globals are cleared.
+Matplotlib charts basically work
+PEP 8 code polish for event.py
+Chart dialog added
+X-axis added to chart dialog
+Pasting into selection implemented
+Chart code generation added
+gitignore file extended to ignore dist builds and the MANIFEST
+Recursion limit increased to 10**6
+Chart data now evaluates like grid cell
+Matplotlib added to dependencies
+Pasting is now undone in one step per pasting operation not in one step per cell
+Fixed csv import dialog
+Shellscript added to start pyspread from top directory
+Situation handled when getdefaultlocale returns None in i18n.py
+Signature files added to gitignore
+Signature files in examples removed
+Marker colors now work in chart dialog
+Marker styles can now be set from chart dialog
+Line styles now work in chart dialog
+Charts are now correctly parsed when globals are referenced
+Added how to start hacking to README
+Two icons added to menubar; menubar code formatting
+Macro toolbar with chart insert tool adeded
+Pasting into EntryLine is now possible
+Copying from EntryLine is now possible
+Menus for image and image link insertion added
+Axes panel added to chart dialog
+Bar chart entry added to chart_dialog
+xscale and yscale work in chart dialog
+Fixed a bug when loading files with inconsistent row widths
+Images and charts example added
+Dependencies removed from example files
+Danish translation file added
+GPG key creation switched to python-gnupg
+Passwords removed. GPG keys with passwords cannot be used any longer.
+Removed pyme from gpg.py comments and from setup.py dependencies
+Unit tests adapted for python-gnupg
+Locale directory added
+Dutch po file added and converted to mo file
+Added a message when choosing GPG keys that a password must not be set
+Help documents are updated for changes and new features
+Ukranion po file added, Danish po file updated
+German po file added
+Authors for uk and de added
+Englich localde dir added, pyspread now does not start without unicode wxPython
+setup.py changed for PKG-INFO compatibility
+
 
 0.2.2
- * Fixed bug switching tables
- * Menubar icons added
- * Internationalization preparation (po file is available)
+-----
+
+XLS import macro added in examples, Macros can now access S again
+Grid switching bug fixed
+Pyspread is now internationalized with gettext
+Switched from gettext to i18n for unicode support
+Event system switched to mixin classes
+Menubar icons added
+Tried out wallet but switched back to file based passwd storage
 
 0.2.1
- * Format menu added
- * Printing bug (first line not printed) fixed
- * GPG key choice dialog added
- * Secret key generation dialog added
- * Password saving in pyspreadrc is now optional
- * Preferences dialog entries are now validated
- * Toolbar positions are now saved on exit
- * Absolute addressing with mouse changed to <Shift> + <Ctrl>
- * Relative addressing with mouse changed to <Alt> + <Ctrl>
+-----
+
+Setup modified
+Preferences dialog added
+Fixed test case for frozen cells
+Adjusted run_tests so that gpg key is created if not present
+run_tests patch so that signatures are created before test run
+Changes from Andreas Noteng for run_test.py path identification
+Format menu added
+Text and backgound color added to Format menu
+Fixed print bug that ommits first row and first col on selection prints
+Password generation moved to setup.py
+changelog added
+Fixed bug that made events disappear
+Added progress dialog for GPG key generation
+Password entry for existing GPG keys added
+Moved GPG dialogs to _gui_interfaces
+Option for not storing GPG passphrases added
+Config bug fixed
+String conversions added for gpg key and uid
+Save password option added to GPG dialogs
+About dialog modified.
+Toolbar positions are now remembered on next start
+Toggle menus now are checked correctly when toolbars are invisible on startup
+eval removed from config.py
+Config bug for help window fixed
+Help window now resizes correctly again
+Grid is now initially focused on start
+pyc files excluded from pacakging in test folders
+Password is stored note is now shown in passwd dialog only when stored flag is True
+Switched configuration dialog to IntCtrl widgets and Checkboxes for input validation
+First steps document updated for format menu changes in 0.2.1
+Absolute and relative addressing documentation corrected in help
+changelog updated
+INSTALL file added

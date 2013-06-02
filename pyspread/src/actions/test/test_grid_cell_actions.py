@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -53,11 +53,11 @@ class TestCellActions(object):
         self.grid = self.main_window.grid
         self.code_array = self.grid.code_array
 
-    param_set_code = [ \
-       {'key': (0, 0, 0), 'code': "'Test'", 'result': "'Test'"},
-       {'key': (0, 0, 0), 'code': "", 'result': None},
-       {'key': (0, 0, 1), 'code': None, 'result': None},
-       {'key': (999, 99, 2), 'code': "4", 'result': "4"},
+    param_set_code = [
+        {'key': (0, 0, 0), 'code': "'Test'", 'result': "'Test'"},
+        {'key': (0, 0, 0), 'code': "", 'result': None},
+        {'key': (0, 0, 1), 'code': None, 'result': None},
+        {'key': (999, 99, 2), 'code': "4", 'result': "4"},
     ]
 
     @params(param_set_code)
@@ -86,17 +86,17 @@ class TestCellActions(object):
 
         assert self.grid.code_array(key) is None
 
-    param_get_reference = [ \
-       {'cursor': (0, 0, 0), 'ref_key': (0, 0, 0), 'abs_ref': "S[0, 0, 0]",
-        'rel_ref': "S[X, Y, Z]"},
-       {'cursor': (0, 0, 1), 'ref_key': (0, 0, 1), 'abs_ref': "S[0, 0, 1]",
-        'rel_ref': "S[X, Y, Z]"},
-       {'cursor': (0, 0, 0), 'ref_key': (0, 0, 1), 'abs_ref': "S[0, 0, 1]",
-        'rel_ref': "S[X, Y, Z+1]"},
-       {'cursor': (9, 0, 0), 'ref_key': (0, 0, 0), 'abs_ref': "S[0, 0, 0]",
-        'rel_ref': "S[X-9, Y, Z]"},
-       {'cursor': (23, 2, 1), 'ref_key': (2, 2, 2), 'abs_ref': "S[2, 2, 2]",
-        'rel_ref': "S[X-21, Y, Z+1]"},
+    param_get_reference = [
+        {'cursor': (0, 0, 0), 'ref_key': (0, 0, 0), 'abs_ref': "S[0, 0, 0]",
+         'rel_ref': "S[X, Y, Z]"},
+        {'cursor': (0, 0, 1), 'ref_key': (0, 0, 1), 'abs_ref': "S[0, 0, 1]",
+         'rel_ref': "S[X, Y, Z]"},
+        {'cursor': (0, 0, 0), 'ref_key': (0, 0, 1), 'abs_ref': "S[0, 0, 1]",
+         'rel_ref': "S[X, Y, Z+1]"},
+        {'cursor': (9, 0, 0), 'ref_key': (0, 0, 0), 'abs_ref': "S[0, 0, 0]",
+         'rel_ref': "S[X-9, Y, Z]"},
+        {'cursor': (23, 2, 1), 'ref_key': (2, 2, 2), 'abs_ref': "S[2, 2, 2]",
+         'rel_ref': "S[X-21, Y, Z+1]"},
     ]
 
     @params(param_get_reference)
@@ -119,19 +119,21 @@ class TestCellActions(object):
     def test_append_reference_code(self, cursor, ref_key, abs_ref, rel_ref):
         """Unit test for append_reference_code"""
 
+        actions = self.grid.actions
+
         params = [
             # Normal initial code, absolute reference
             {'initial_code': "3 + ", 'ref_type': "absolute",
-             "res": self.grid.actions._get_absolute_reference(ref_key)},
+             "res": actions._get_absolute_reference(ref_key)},
             # Normal initial code, relative reference
             {'initial_code': "3 + ", 'ref_type': "relative",
-             "res": self.grid.actions._get_relative_reference(cursor, ref_key)},
+             "res": actions._get_relative_reference(cursor, ref_key)},
             # Initial code with reference, absolute reference
             {'initial_code': "3 + S[2, 3, 1]", 'ref_type': "absolute",
-             "res": self.grid.actions._get_absolute_reference(ref_key)},
+             "res": actions._get_absolute_reference(ref_key)},
             # Initial code with reference, relative reference
             {'initial_code': "3 + S[2, 3, 1]", 'ref_type': "relative",
-             "res": self.grid.actions._get_relative_reference(cursor, ref_key)},
+             "res": actions._get_relative_reference(cursor, ref_key)},
         ]
 
         for param in params:
@@ -141,8 +143,8 @@ class TestCellActions(object):
 
             self.grid.actions.set_code(cursor, initial_code)
 
-            result_code = self.grid.actions.append_reference_code(cursor,
-                                                          ref_key, ref_type)
+            result_code = \
+                actions.append_reference_code(cursor, ref_key, ref_type)
 
             if "S[" in initial_code:
                 assert result_code == initial_code[:4] + res
@@ -150,7 +152,7 @@ class TestCellActions(object):
             else:
                 assert result_code == initial_code + res
 
-    param_set_cell_attr = [ \
+    param_set_cell_attr = [
         {'selection': Selection([], [], [], [], [(2, 5)]), 'tab': 1,
          'attr': ('bordercolor_right', wx.RED), 'testcell': (2, 5, 1)},
         {'selection': Selection([(0, 0)], [(99, 99)], [], [], []), 'tab': 0,
@@ -188,7 +190,7 @@ class TestCellActions(object):
         attr = "borderwidth"
         value = 5
         borders = ["top", "inner"]
-        tests = { \
+        tests = {
             (13, 14, 0): 5,
             (53, 14, 0): 1,
         }
@@ -213,7 +215,7 @@ class TestCellActions(object):
             res = self.grid.code_array.cell_attributes[cell]["underline"]
             assert res == tests[cell]
 
-    param_change_frozen_attr = [ \
+    param_change_frozen_attr = [
         {'cell': (0, 0, 0), 'code': None, 'result': None},
         {'cell': (0, 0, 0), 'code': "'Test'", 'result': 'Test'},
         {'cell': (2, 1, 1), 'code': "'Test'", 'result': 'Test'},
@@ -238,9 +240,9 @@ class TestCellActions(object):
 
         res2 = self.grid.code_array.cell_attributes[cell]["frozen"]
 
-        assert res2 == False
+        assert not res2
 
-    param_get_new_cell_attr_state = [ \
+    param_get_new_cell_attr_state = [
         {'cell': (0, 0, 0), 'attr': "fontweight",
          'before': wx.NORMAL, 'next': wx.BOLD},
         {'cell': (2, 1, 3), 'attr': "fontweight",
@@ -263,7 +265,7 @@ class TestCellActions(object):
 
         assert res == next
 
-    param_get_new_selection_attr_state = [ \
+    param_get_new_selection_attr_state = [
         {'selection': Selection([], [], [], [], [(0, 0)]), 'cell': (0, 0, 0),
          'attr': "fontweight", 'before': wx.NORMAL, 'next': wx.BOLD},
         {'selection': Selection([], [], [], [], [(2, 1)]), 'cell': (2, 1, 2),

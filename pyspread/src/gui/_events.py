@@ -162,6 +162,13 @@ class GridEventMixin(object):
     CopyMsg, EVT_CMD_COPY = new_command_event()
     CopyResultMsg, EVT_CMD_COPY_RESULT = new_command_event()
     PasteMsg, EVT_CMD_PASTE = new_command_event()
+    PasteAsMsg, EVT_CMD_PASTE_AS = new_command_event()
+
+    # Grid edit mode events
+
+    EnterSelectionModeMsg, EVT_CMD_ENTER_SELECTION_MODE = new_command_event()
+    ExitSelectionModeMsg, EVT_CMD_EXIT_SELECTION_MODE = new_command_event()
+    SelectionMsg, EVT_CMD_SELECTION = new_command_event()
 
     # Grid view events
 
@@ -190,6 +197,8 @@ class GridEventMixin(object):
 
     ShowResizeGridDialogMsg, EVT_CMD_SHOW_RESIZE_GRID_DIALOG = \
                                                     new_command_event()
+
+    TableChangedMsg, EVT_CMD_TABLE_CHANGED = new_command_event()
 
     InsertBitmapMsg, EVT_CMD_INSERT_BMP = new_command_event()
     LinkBitmapMsg, EVT_CMD_LINK_BMP = new_command_event()

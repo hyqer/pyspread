@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -33,6 +33,8 @@ Provides
 
 import wx
 import wx.grid
+
+from src.config import config
 
 
 class GridTable(wx.grid.PyGridTableBase):
@@ -83,19 +85,32 @@ class GridTable(wx.grid.PyGridTableBase):
             return value
 
     def GetValue(self, row, col, table=None):
-        """Return the result value of a cell"""
+        """Return the result value of a cell, line split if too much data"""
 
         if table is None:
             table = self.grid.current_table
 
         wx.BeginBusyCursor()
-        result = self.data_array((row, col, table))
+
+        cell_code = self.data_array((row, col, table))
+
+        # Put EOLs into result if it is too long
+        maxlength = int(config["max_textctrl_length"])
+
+        if cell_code is not None and len(cell_code) > maxlength:
+            chunk = 80
+            cell_code = "\n".join(cell_code[i:i + chunk]
+                                for i in xrange(0, len(cell_code), chunk))
+
         wx.EndBusyCursor()
 
-        return result
+        return cell_code
 
     def SetValue(self, row, col, value, refresh=True):
-        """Set the value of a cell"""
+        """Set the value of a cell, merge line breaks"""
+
+        # Join code that has been split because of long line issue
+        value = "".join(value.split("\n"))
 
         key = row, col, self.grid.current_table
         self.grid.actions.set_code(key, value)

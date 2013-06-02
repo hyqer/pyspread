@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -46,6 +46,19 @@ def get_help_path():
     """Returns the pyspread help path"""
 
     return get_program_path() + "doc/help/"
+
+
+def get_python_tutorial_path():
+    """Returns the Python tutorial path"""
+
+    # If the OS has the Python tutorial installed locally, use it.
+    # the current path is for Debian
+
+    if os.path.isfile("/usr/share/doc/python-doc/html/tutorial/index.html"):
+        return "/usr/share/doc/python-doc/html/tutorial/index.html"
+
+    else:
+        return "http://docs.python.org/2/tutorial/"
 
 # System settings
 

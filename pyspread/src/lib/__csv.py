@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -59,9 +59,11 @@ def sniff(filepath):
 
     """
 
-    csvfile = open(filepath, "rb")
-    sample = csvfile.read(config["sniff_size"])
-    csvfile.close()
+    try:
+        csvfile = open(filepath, "rb")
+        sample = csvfile.read(config["sniff_size"])
+    finally:
+        csvfile.close()
 
     sniffer = csv.Sniffer()
     dialect = sniffer.sniff(sample)()
@@ -73,15 +75,39 @@ def sniff(filepath):
 def get_first_line(filepath, dialect):
     """Returns List of first line items of file filepath"""
 
-    csvfile = open(filepath, "rb")
-    csvreader = csv.reader(csvfile, dialect=dialect)
+    try:
+        csvfile = open(filepath, "rb")
+        csvreader = csv.reader(csvfile, dialect=dialect)
 
-    for first_line in csvreader:
-        break
+        for first_line in csvreader:
+            break
 
-    csvfile.close()
+    finally:
+        csvfile.close()
 
     return first_line
+
+
+def digested_line(line, digest_types):
+    """Returns list of digested values in line"""
+
+    digested_line = []
+    for i, ele in enumerate(line):
+        try:
+            digest_key = digest_types[i]
+
+        except IndexError:
+            digest_key = digest_types[0]
+
+        digest = Digest(acceptable_types=[digest_key])
+
+        try:
+            digested_line.append(repr(digest(ele)))
+
+        except Exception, err:
+            digested_line.append(str(err))
+
+    return digested_line
 
 
 def csv_digest_gen(filepath, dialect, has_header, digest_types):
@@ -98,34 +124,20 @@ def csv_digest_gen(filepath, dialect, has_header, digest_types):
 
     """
 
-    csvfile = open(filepath, "rb")
-    csvreader = csv.reader(csvfile, dialect=dialect)
+    try:
+        csvfile = open(filepath, "rb")
+        csvreader = csv.reader(csvfile, dialect=dialect)
 
-    if has_header:
-        # Ignore first line
+        if has_header:
+            # Ignore first line
+            for line in csvreader:
+                break
+
         for line in csvreader:
-            break
+            yield digested_line(line, digest_types)
 
-    for line in csvreader:
-        digested_line = []
-        for i, ele in enumerate(line):
-            try:
-                digest_key = digest_types[i]
-
-            except IndexError:
-                digest_key = digest_types[0]
-
-            digest = Digest(acceptable_types=[digest_key])
-
-            try:
-                digested_line.append(repr(digest(ele)))
-
-            except Exception, err:
-                digested_line.append(str(err))
-
-        yield digested_line
-
-    csvfile.close()
+    finally:
+        csvfile.close()
 
 
 def cell_key_val_gen(iterable, shape, topleft=(0, 0)):
@@ -261,8 +273,9 @@ class Digest(object):
         if self.fallback_type is not None and \
            self.fallback_type not in self.typehandlers:
 
-            err_msg = _("Fallback type {} unknown.").format(
-                                str(self.fallback_type))
+            err_msg = _("Fallback type {type} unknown.").\
+                format(type=str(self.fallback_type))
+
             raise NotImplementedError(err_msg)
 
     def __call__(self, orig_obj):
@@ -385,7 +398,23 @@ class CsvInterface(StatusBarEventMixin):
     def write(self, iterable):
         """Writes values from iterable into CSV file"""
 
-        csvfile = open(self.path, "wb")
+        io_error_text = _("Error writing to file {filepath}.")
+        io_error_text = io_error_text.format(filepath=self.path)
+
+        try:
+            csvfile = open(self.path, "wb")
+
+        except IOError:
+            txt = \
+                _("Error opening file {filepath}.").format(filepath=self.path)
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=txt)
+            except TypeError:
+                # The main window does not exist any more
+                pass
+            return False
+
         csv_writer = csv.writer(csvfile, self.dialect)
 
         for line in iterable:
@@ -400,7 +429,7 @@ class TxtGenerator(StatusBarEventMixin):
     def __init__(self, main_window, path):
         self.main_window = main_window
         try:
-            self.infile = open(path, "r")
+            self.infile = open(path)
 
         except IOError:
             statustext = "Error opening file " + path + "."

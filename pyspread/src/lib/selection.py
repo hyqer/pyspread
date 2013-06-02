@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -26,8 +26,6 @@ Selection
 Grid selection representation
 
 """
-
-from copy import copy
 
 from itertools import izip
 
@@ -70,14 +68,18 @@ class Selection(object):
     def __repr__(self):
         """String output for printing selection"""
 
-        return "Selection" + repr(
-                   (self.block_tl,
-                    self.block_br,
-                    self.rows,
-                    self.cols,
-                    self.cells))
+        params = self.block_tl, self.block_br, self.rows, self.cols, self.cells
+
+        return "Selection" + repr(params)
 
     def __eq__(self, other):
+        """Returns True if self and other selection are equal
+
+        Selections are equal iif the order of each attribute is equal
+        because order precedence may change the selection outcome in the grid.
+
+        """
+
         assert type(other) is type(self)
 
         attrs = ("block_tl", "block_br", "rows", "cols", "cells")
@@ -131,22 +133,13 @@ class Selection(object):
 
         delta_row, delta_col = value
 
-        selection = copy(self)
+        block_tl = [(t + delta_row, l + delta_col) for t, l in self.block_tl]
+        block_br = [(t + delta_row, l + delta_col) for t, l in self.block_br]
+        rows = [row + delta_row for row in self.rows]
+        cols = [col + delta_col for col in self.cols]
+        cells = [(r + delta_row, c + delta_col) for r, c in self.cells]
 
-        selection.block_tl = [(t + delta_row, l + delta_col)
-                                    for t, l in selection.block_tl]
-
-        selection.block_br = [(t + delta_row, l + delta_col)
-                                    for t, l in selection.block_br]
-
-        selection.rows = [row + delta_row for row in selection.rows]
-
-        selection.cols = [col + delta_col for col in selection.cols]
-
-        selection.cells = [(r + delta_row, c + delta_col)
-                                    for r, c in selection.cells]
-
-        return selection
+        return Selection(block_tl, block_br, rows, cols, cells)
 
     def insert(self, point, number, axis):
         """Inserts number of rows/cols/tabs into selection at point on axis
@@ -162,10 +155,8 @@ class Selection(object):
 
         """
 
-        assert axis in [0, 1]
-
         def build_tuple_list(source_list, point, number, axis):
-            """"""
+            """Returns adjusted tuple list for single cells"""
 
             target_list = []
 
@@ -182,11 +173,13 @@ class Selection(object):
         self.block_br = build_tuple_list(self.block_br, point, number, axis)
 
         if axis == 0:
-            self.rows = [row + number if row > point else row
-                            for row in self.rows]
+            self.rows = \
+                [row + number if row > point else row for row in self.rows]
         elif axis == 1:
-            self.cols = [col + number if col > point else col
-                            for col in self.cols]
+            self.cols = \
+                [col + number if col > point else col for col in self.cols]
+        else:
+            raise ValueError("Axis not in [0, 1]")
 
         self.cells = build_tuple_list(self.cells, point, number, axis)
 
@@ -274,3 +267,57 @@ class Selection(object):
             bb_right = shape[1]
 
         return ((bb_top, bb_left), (bb_bottom, bb_right))
+
+    def get_access_string(self, shape, table):
+        """Returns a string, with which the selection can be accessed
+
+        Parameters
+        ----------
+        shape: 3-tuple of Integer
+        \tShape of grid, for which the generated keys are valid
+        table: Integer
+        \tThird component of all returned keys. Must be in dimensions
+
+        """
+
+        rows, columns, tables = shape
+
+        # Negative dimensions cannot be
+        assert all(dim > 0 for dim in shape)
+
+        # Current table has to be in dimensions
+        assert 0 <= table < tables
+
+        string_list = []
+
+        # Block selections
+        templ = "[(r, c, {}) for r in xrange({}, {}) for c in xrange({}, {})]"
+        for (top, left), (bottom, right) in izip(self.block_tl, self.block_br):
+            string_list += [templ.format(table, top, bottom + 1,
+                                         left, right + 1)]
+
+        # Fully selected rows
+        template = "[({}, c, {}) for c in xrange({})]"
+        for row in self.rows:
+            string_list += [template.format(row, table, columns)]
+
+        # Fully selected columns
+        template = "[(r, {}, {}) for r in xrange({})]"
+        for column in self.cols:
+            string_list += [template.format(column, table, rows)]
+
+        # Single cells
+        for row, column in self.cells:
+            string_list += [repr([(row, column, table)])]
+
+        key_string = " + ".join(string_list)
+
+        if len(string_list) == 0:
+            return ""
+
+        elif len(self.cells) == 1 and len(string_list) == 1:
+            return "S[{}]".format(string_list[0][1:-1])
+
+        else:
+            template = "[S[key] for key in {} if S[key] is not None]"
+            return template.format(key_string)

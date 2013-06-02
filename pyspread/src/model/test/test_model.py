@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Unit test for model.py"""
+# Copyright Martin Manns
+# Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
 # pyspread is free software: you can redistribute it and/or modify
@@ -15,14 +16,25 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+# along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+
+"""
+test_model
+========
+
+Unit tests for model.py
+
+"""
+
+import ast
+import fractions  ## Yes, it is required
+import math  ## Yes, it is required
 import os
 import sys
 
 import py.test as pytest
-import gmpy
 import numpy
 
 import wx
@@ -33,10 +45,14 @@ sys.path.insert(0, TESTPATH)
 sys.path.insert(0, TESTPATH + "/../../..")
 sys.path.insert(0, TESTPATH + "/../..")
 
+from src.lib.testlib import params, pytest_generate_tests
+
 from src.model.model import KeyValueStore, CellAttributes, DictGrid
 from src.model.model import DataArray, CodeArray
 
 from src.lib.selection import Selection
+
+from src.model.unredo import UnRedo
 
 
 class TestKeyValueStore(object):
@@ -65,11 +81,21 @@ class TestCellAttributes(object):
         """Creates empty CellAttributes"""
 
         self.cell_attr = CellAttributes()
+        self.cell_attr.unredo = UnRedo()
 
     def test_undoable_append(self):
         """Test undoable_append"""
 
-        pass
+        selection = Selection([], [], [], [], [(23, 12)])
+        table = 0
+        attr = {"angle": 0.2}
+
+        self.cell_attr.undoable_append((selection, table, attr))
+
+        # Check if 2 items - the actual action and the marker - have been added
+        assert len(self.cell_attr.unredo.undolist) == 2
+        assert len(self.cell_attr.unredo.redolist) == 0
+        assert not self.cell_attr._attr_cache
 
     def test_getitem(self):
         """Test __getitem__"""
@@ -82,6 +108,25 @@ class TestCellAttributes(object):
 
         assert self.cell_attr[32, 53, 0]["testattr"] == 2
         assert self.cell_attr[2, 2, 0]["testattr"] == 3
+
+    def test_get_merging_cell(self):
+        """Test get_merging_cell"""
+
+        selection_1 = Selection([], [], [], [], [(2, 2)])
+        selection_2 = Selection([], [], [], [], [(3, 2)])
+
+        self.cell_attr.append((selection_1, 0, {"merge_area": (2, 2, 5, 5)}))
+        self.cell_attr.append((selection_2, 0, {"merge_area": (3, 2, 9, 9)}))
+        self.cell_attr.append((selection_1, 1, {"merge_area": (2, 2, 9, 9)}))
+
+        # Cell 1. 1, 0 is not merged
+        assert self.cell_attr.get_merging_cell((1, 1, 0)) is None
+
+        # Cell 3. 3, 0 is merged to cell 3, 2, 0
+        assert self.cell_attr.get_merging_cell((3, 3, 0)) == (3, 2, 0)
+
+        # Cell 2. 2, 0 is merged to cell 2, 2, 0
+        assert self.cell_attr.get_merging_cell((2, 2, 0)) == (2, 2, 0)
 
 
 class TestParserMixin(object):
@@ -117,8 +162,8 @@ class TestParserMixin(object):
 
         self.dict_grid.parse_to_attribute(line)
 
-        assert self.dict_grid.cell_attributes[(3, 4, 0)]\
-                                ['borderwidth_bottom'] == 42
+        attrs = self.dict_grid.cell_attributes[(3, 4, 0)]
+        assert attrs['borderwidth_bottom'] == 42
 
     def test_parse_to_height(self):
         """Unit test for parse_to_height"""
@@ -162,11 +207,11 @@ class TestStringGeneratorMixin(object):
         self.dict_grid[(3, 2, 1)] = "42"
         grid_string_list = list(self.dict_grid.grid_to_strings())
 
-        expected_res = [ \
-        "[shape]\n",
-        "100\t100\t100\n",
-        "[grid]\n",
-        '3\t2\t1\t42\n',
+        expected_res = [
+            "[shape]\n",
+            "100\t100\t100\n",
+            "[grid]\n",
+            '3\t2\t1\t42\n',
         ]
         assert grid_string_list == expected_res
 
@@ -178,9 +223,9 @@ class TestStringGeneratorMixin(object):
 
         attr_string_list = list(self.dict_grid.attributes_to_strings())
 
-        expected_res = [ \
-        "[attributes]\n",
-        "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
+        expected_res = [
+            "[attributes]\n",
+            "[]\t[]\t[]\t[]\t[(3, 4)]\t0\t'borderwidth_bottom'\t42\n",
         ]
 
         assert attr_string_list == expected_res
@@ -190,9 +235,9 @@ class TestStringGeneratorMixin(object):
 
         self.dict_grid.row_heights[(2, 0)] = 77
 
-        expected_res = [ \
-        "[row_heights]\n",
-        "2\t0\t77\n",
+        expected_res = [
+            "[row_heights]\n",
+            "2\t0\t77\n",
         ]
 
         height_string_list = list(self.dict_grid.heights_to_strings())
@@ -204,9 +249,9 @@ class TestStringGeneratorMixin(object):
 
         self.dict_grid.col_widths[(2, 0)] = 77
 
-        expected_res = [ \
-        "[col_widths]\n",
-        "2\t0\t77\n",
+        expected_res = [
+            "[col_widths]\n",
+            "2\t0\t77\n",
         ]
 
         width_string_list = list(self.dict_grid.widths_to_strings())
@@ -218,9 +263,9 @@ class TestStringGeneratorMixin(object):
 
         self.dict_grid.macros = "Test"
 
-        expected_res = [ \
-        "[macros]\n",
-        "Test\n",
+        expected_res = [
+            "[macros]\n",
+            "Test\n",
         ]
 
         macros_string_list = list(self.dict_grid.macros_to_strings())
@@ -310,9 +355,7 @@ class TestDataArray(object):
         """Unit test for __getitem__ and __setitem__"""
 
         self.data_array[0, 0, 0] = "'Test'"
-        ##assert len(self.grid.unredo.undolist) == 1
         self.data_array[0, 0, 0] = "'Tes'"
-        ##assert len(self.grid.unredo.undolist) == 2
 
         assert self.data_array[0, 0, 0] == "'Tes'"
 
@@ -330,7 +373,7 @@ class TestDataArray(object):
         cell_array = self.data_array[:5, :5, :5]
 
         assert [[list(e) for e in c] for c in cell_array] == \
-                                            [[[None] * 5] * 5] * 5
+            [[[None] * 5] * 5] * 5
 
     def test_adjust_shape(self):
         """Unit test for _adjust_shape"""
@@ -342,12 +385,37 @@ class TestDataArray(object):
     def test_set_cell_attributes(self):
         """Unit test for _set_cell_attributes"""
 
-        pass
+        cell_attributes = ["Test"]
+        self.data_array._set_cell_attributes(cell_attributes)
+        assert self.data_array.cell_attributes == cell_attributes
 
-    def test_adjust_cell_attributes(self):
+    param_adjust_cell_attributes = [
+        {'inspoint': 0, 'noins': 5, 'axis': 0,
+         'src': (4, 3, 0), 'target': (9, 3, 0)},
+        {'inspoint': 34, 'noins': 5, 'axis': 0,
+         'src': (4, 3, 0), 'target': (4, 3, 0)},
+        {'inspoint': 0, 'noins': 0, 'axis': 0,
+         'src': (4, 3, 0), 'target': (4, 3, 0)},
+        {'inspoint': 1, 'noins': 5, 'axis': 1,
+         'src': (4, 3, 0), 'target': (4, 8, 0)},
+        {'inspoint': 1, 'noins': 5, 'axis': 1,
+         'src': (4, 3, 1), 'target': (4, 8, 1)},
+    ]
+
+    @params(param_adjust_cell_attributes)
+    def test_adjust_cell_attributes(self, inspoint, noins, axis, src, target):
         """Unit test for _adjust_cell_attributes"""
 
-        pass
+        row, col, tab = src
+
+        val = {"angle": 0.2}
+
+        attrs = [(Selection([], [], [], [], [(row, col)]), tab, val)]
+        self.data_array._set_cell_attributes(attrs)
+        self.data_array._adjust_cell_attributes(inspoint, noins, axis)
+
+        for key in val:
+            assert self.data_array.cell_attributes[target][key] == val[key]
 
     def test_insert(self):
         """Unit test for insert operation"""
@@ -371,15 +439,23 @@ class TestDataArray(object):
         print self.data_array.shape
         assert self.data_array.shape == (99, 100, 100)
 
+        try:
+            self.data_array.delete(1, 1000, 0)
+            assert False
+        except ValueError:
+            pass
+
     def test_set_row_height(self):
         """Unit test for set_row_height"""
 
-        pass
+        self.data_array.set_row_height(7, 1, 22.345)
+        assert self.data_array.row_heights[7, 1] == 22.345
 
     def test_set_col_width(self):
         """Unit test for set_col_width"""
 
-        pass
+        self.data_array.set_col_width(7, 1, 22.345)
+        assert self.data_array.col_widths[7, 1] == 22.345
 
 
 class TestCodeArray(object):
@@ -400,7 +476,7 @@ class TestCodeArray(object):
         y_list = [0, shape[1]-1]
         z_list = [0, shape[2]-1]
         for x, y, z in zip(x_list, y_list, z_list):
-            assert self.code_array[x, y, z] == None
+            assert self.code_array[x, y, z] is None
             self.code_array[:x, :y, :z]
             self.code_array[:x:2, :y:2, :z:-1]
 
@@ -421,20 +497,21 @@ class TestCodeArray(object):
                 assert filled_grid[j, 1, 0] == i + j
                 assert filled_grid[j, 2, 0] == i * j
 
-            for j, funcname in enumerate(['int', 'gmpy.mpz', 'gmpy.mpq']):
-                filled_grid[0, 0, 0] = "gmpy = __import__('gmpy')"
+            for j, funcname in enumerate(['int', 'math.ceil',
+                                          'fractions.Fraction']):
+                filled_grid[0, 0, 0] = "fractions = __import__('fractions')"
                 filled_grid[0, 0, 0]
                 filled_grid[1, 0, 0] = "math = __import__('math')"
                 filled_grid[1, 0, 0]
                 filled_grid[j, 3, 0] = funcname + ' (' + str(i) + ')'
+                #res = eval(funcname + "(" + "i" + ")")
 
-                res = eval(funcname + "(" + "i" + ")")
                 assert filled_grid[j, 3, 0] == eval(funcname + "(" + "i" + ")")
         #Test X, Y, Z
         for i in xrange(10):
             self.code_array[i, 0, 0] = str(i)
         assert [self.code_array((i, 0, 0)) for i in xrange(10)] == \
-                    map(str, xrange(10))
+            map(str, xrange(10))
 
         assert [self.code_array[i, 0, 0] for i in xrange(10)] == range(10)
 
@@ -451,22 +528,65 @@ class TestCodeArray(object):
     def test_make_nested_list(self):
         """Unit test for _make_nested_list"""
 
-        pass
+        def gen():
+            """Nested generator"""
 
-    def test_has_assignment(self):
-        """Unit test for _has_assignment"""
+            yield (("Test" for _ in xrange(2)) for _ in xrange(2))
 
-        pass
+        res = self.code_array._make_nested_list(gen())
 
-    def test_eval_cell(self):
+        assert res == [[["Test" for _ in xrange(2)] for _ in xrange(2)]]
+
+    param_get_assignment_target_end = [
+        {'code': "a=5", 'res': 1},
+        {'code': "a = 5", 'res': 1},
+        {'code': "5", 'res': -1},
+        {'code': "a == 5", 'res': -1},
+        {'code': "", 'res': -1},
+        {'code': "fractions = __import__('fractions')", 'res': 9},
+        {'code': "math = __import__('math')", 'res': 4},
+        {'code': "a = 3==4", 'res': 1},
+        {'code': "a == 3 < 44", 'res': -1},
+        {'code': "a != 3 < 44", 'res': -1},
+        {'code': "a >= 3 < 44", 'res': -1},
+        {'code': "a = 3 ; a < 44", 'res': None},
+    ]
+
+    @params(param_get_assignment_target_end)
+    def test_get_assignment_target_end(self, code, res):
+        """Unit test for _get_assignment_target_end"""
+
+        module = ast.parse(code)
+
+        if res is None:
+            try:
+                self.code_array._get_assignment_target_end(module)
+                raise ValueError("Multiple expressions cell not identified")
+            except ValueError:
+                pass
+        else:
+            assert self.code_array._get_assignment_target_end(module) == res
+
+    param_eval_cell = [
+        {'key': (0, 0, 0), 'code': "2 + 4", 'res': 6},
+        {'key': (1, 0, 0), 'code': "S[0, 0, 0]", 'res': None},
+        {'key': (43, 2, 1), 'code': "X, Y, Z", 'res': (43, 2, 1)},
+    ]
+
+    @params(param_eval_cell)
+    def test_eval_cell(self, key, code, res):
         """Unit test for _eval_cell"""
 
-        pass
+        self.code_array[key] = code
+        assert self.code_array._eval_cell(key, code) == res
 
     def test_execute_macros(self):
         """Unit test for execute_macros"""
 
-        pass
+        self.code_array.macros = "a = 5\ndef f(x): return x ** 2"
+        self.code_array.execute_macros()
+        assert self.code_array._eval_cell((0, 0, 0), "a") == 5
+        assert self.code_array._eval_cell((0, 0, 0), "f(2)") == 4
 
     def test_sorted_keys(self):
         """Unit test for _sorted_keys"""
@@ -476,19 +596,21 @@ class TestCodeArray(object):
         keys = [(1, 0, 0), (2, 0, 0), (0, 1, 0), (0, 99, 0), (0, 0, 0),
                 (0, 0, 99), (1, 2, 3)]
         assert list(code_array._sorted_keys(keys, (0, 1, 0))) == \
-             [(0, 1, 0), (0, 99, 0), (1, 2, 3), (0, 0, 99), (0, 0, 0),
-              (1, 0, 0), (2, 0, 0)]
+            [(0, 1, 0), (0, 99, 0), (1, 2, 3), (0, 0, 99), (0, 0, 0),
+             (1, 0, 0), (2, 0, 0)]
         sk = list(code_array._sorted_keys(keys, (0, 3, 0), reverse=True))
         assert sk == [(0, 1, 0), (2, 0, 0), (1, 0, 0), (0, 0, 0), (0, 0, 99),
-              (1, 2, 3), (0, 99, 0)]
+                      (1, 2, 3), (0, 99, 0)]
 
     def test_string_match(self):
         """Tests creation of _string_match"""
 
         code_array = self.code_array
 
-        test_strings = ["", "Hello", " Hello", "Hello ", " Hello ", "Hello\n",
-            "THelloT", " HelloT", "THello ", "hello", "HELLO", "sd"]
+        test_strings = [
+            "", "Hello", " Hello", "Hello ", " Hello ", "Hello\n",
+            "THelloT", " HelloT", "THello ", "hello", "HELLO", "sd"
+        ]
 
         search_string = "Hello"
 
@@ -503,13 +625,13 @@ class TestCodeArray(object):
         results = [None, 0, 1, 0, 1, 0, 1, 1, 1, None, None, None]
         for test_string, result in zip(test_strings, results):
             res = code_array._string_match(test_string, search_string, flags)
-            assert  res == result
+            assert res == result
 
         flags = ["WHOLE_WORD"]
         results = [None, 0, 1, 0, 1, 0, None, None, None, 0, 0, None]
         for test_string, result in zip(test_strings, results):
             res = code_array._string_match(test_string, search_string, flags)
-            assert  res == result
+            assert res == result
 
     def test_findnextmatch(self):
         """Find method test"""

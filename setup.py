@@ -19,10 +19,30 @@
 # along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-from distutils.core import setup
+
+from distutils.core import setup, Command
+import sys
+import subprocess
+
+
+class PyTest(Command):
+    """Class for running py.test via setup.py"""
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        errno = subprocess.call([sys.executable, 'runtests.py'])
+        raise SystemExit(errno)
+
 
 setup(name='pyspread',
-      version='0.2.3',
+      version='0.2.4',
       description='Python spreadsheet',
       long_description='Pyspread is a non-traditional spreadsheet application'
                        ' that is based on and written in the programming '
@@ -31,41 +51,48 @@ setup(name='pyspread',
       keywords=['spreadsheet', 'pyspread'],
       author='Martin Manns',
       author_email='mmanns@gmx.net',
-      url='http://manns.github.com/pyspread/',
-      requires=['numpy (>=1.1)', 'wx (>=2.8.10)', 'matplotlib (>=1.1.1)',
-                'python_gnupg (>=0.3.0)'],
+      url='http://manns.github.io/pyspread/',
+      requires=['numpy (>=1.1)', 'wx (>=2.8.10, <2.9)',
+                'matplotlib (>=1.1.1)', 'python_gnupg (>=0.3.0)'],
       packages=['pyspread'],
       scripts=['pyspread/pyspread'],
       package_data={'pyspread':
-        ['*.py',
-         '../pyspread.sh',
-         'src/*.py',
-         'src/pyspread',
-         'src/*/*.py',
-         'src/*/test/*.py',
-         'src/*/test/*.pys*',
-         'src/*/test/*.sig',
-         'src/*/test/*.csv',
-         'src/*/test/*.txt',
-         'src/*/test/*.pys*',
-         'share/icons/*.png',
-         'share/icons/Tango/24x24/actions/*.png',
-         'share/icons/Tango/24x24/toggles/*.png',
-         'share/icons/Tango/24x24/toggles/*.xpm',
-         'doc/help/*.html',
-         'doc/help/images/*.png',
-         'locale/*/*/*.mo',
-         'examples/*',
-         'COPYING', 'thanks', 'faq',
-         'authors', '../pyspread.pth', '../README', '../changelog']},
+          [
+              '*.py',
+              '../pyspread.sh',
+              '../pyspread.bat',
+              'src/*.py',
+              'src/pyspread',
+              'src/*/*.py',
+              'src/*/test/*.py',
+              'src/*/test/*.pys*',
+              'src/*/test/*.sig',
+              'src/*/test/*.csv',
+              'src/*/test/*.txt',
+              'src/*/test/*.pys*',
+              'share/icons/*.png',
+              'share/icons/*.ico',
+              'share/icons/Tango/24x24/actions/*.png',
+              'share/icons/Tango/24x24/toggles/*.png',
+              'share/icons/Tango/24x24/toggles/*.xpm',
+              'share/icons/Tango/24x24/status/*.png',
+              'doc/help/*.html',
+              'doc/help/images/*.png',
+              'locale/*/*/*.mo',
+              'examples/*',
+              'COPYING', 'thanks', 'faq', '*.1',
+              'authors', '../pyspread.pth', '../README', '../changelog'
+          ],
+      },
       classifiers=[
-        'Development Status :: 4 - Beta',
-        'Environment :: X11 Applications :: GTK',
-        'Intended Audience :: End Users/Desktop',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
-        'Natural Language :: English',
-        'Operating System :: POSIX',
-        'Programming Language :: Python :: 2.7',
-        'Topic :: Office/Business :: Financial :: Spreadsheet',
+          'Development Status :: 4 - Beta',
+          'Environment :: X11 Applications :: GTK',
+          'Intended Audience :: End Users/Desktop',
+          'License :: OSI Approved :: GNU General Public License (GPL)',
+          'Natural Language :: English',
+          'Operating System :: POSIX',
+          'Programming Language :: Python :: 2.7',
+          'Topic :: Office/Business :: Financial :: Spreadsheet',
       ],
-)
+      cmdclass={'test': PyTest}
+      )

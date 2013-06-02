@@ -68,6 +68,9 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
 
     def __init__(self, parent, *args, **kwargs):
 
+        # Toolbars should be able to overflow
+        kwargs["agwStyle"] = aui.AUI_TB_OVERFLOW
+
         aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
         self.SetToolBitmapSize(icons.icon_size)
@@ -123,6 +126,12 @@ class ToolbarBase(aui.AuiToolBar, EventMixin):
             else:
                 raise ValueError("Unknown tooltype " + str(data[0]))
 
+        self.SetCustomOverflowItems([], [])
+        self.Realize()
+
+        # Adjust Toolbar size
+        self.SetSize(self.DoGetBestSize())
+
     def OnTool(self, event):
         """Toolbar event handler"""
 
@@ -158,8 +167,6 @@ class MainToolbar(ToolbarBase):
 
         self.add_tools()
 
-        self.Realize()
-
 # end of class MainToolbar
 
 
@@ -177,8 +184,6 @@ class MacroToolbar(ToolbarBase):
         ]
 
         self.add_tools()
-
-        self.Realize()
 
 # end of class MainToolbar
 
@@ -200,7 +205,7 @@ class FindToolbar(ToolbarBase):
         # Search entry control
         search_tooltip = _("Find in code and results")
         self.search = wx.SearchCtrl(self, size=(140, -1),
-                        style=wx.TE_PROCESS_ENTER | wx.NO_BORDER)
+                                    style=wx.TE_PROCESS_ENTER | wx.NO_BORDER)
         self.search.SetToolTip(wx.ToolTip(search_tooltip))
         self.menu = self.make_menu()
         self.search.SetMenu(self.menu)
@@ -230,14 +235,12 @@ class FindToolbar(ToolbarBase):
 
         self._bindings()
 
-        self.Realize()
-
     def _bindings(self):
         self.Bind(wx.EVT_SEARCHCTRL_SEARCH_BTN, self.OnSearch, self.search)
         self.Bind(wx.EVT_TEXT_ENTER, self.OnSearch, self.search)
         self.Bind(wx.EVT_MENU_RANGE, self.OnSearchFlag)
         self.Bind(wx.EVT_BUTTON, self.OnSearchDirectionButton,
-                                 self.search_direction_tb)
+                  self.search_direction_tb)
         self.Bind(wx.EVT_MENU, self.OnMenu)
 
     def make_menu(self):
@@ -349,7 +352,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
     }
 
     def __init__(self, parent, *args, **kwargs):
-        kwargs["style"] = wx.TB_FLAT | wx.TB_NODIVIDER
+        kwargs["style"] = aui.AUI_TB_OVERFLOW
         aui.AuiToolBar.__init__(self, parent, *args, **kwargs)
 
         self.parent = parent
@@ -369,6 +372,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         self.Realize()
 
+        # Adjust Toolbar size
+        self.SetSize(self.DoGetBestSize())
+
     # Create toolbar widgets
     # ----------------------
 
@@ -376,9 +382,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         """Creates font choice combo box"""
 
         self.fonts = get_font_list()
-        self.font_choice_combo = _widgets.FontChoiceCombobox(self,
-                                    choices=self.fonts, style=wx.CB_READONLY,
-                                    size=(125, -1))
+        self.font_choice_combo = \
+            _widgets.FontChoiceCombobox(self, choices=self.fonts,
+                                        style=wx.CB_READONLY, size=(125, -1))
         self.AddControl(self.font_choice_combo)
 
         self.Bind(wx.EVT_COMBOBOX, self.OnTextFont, self.font_choice_combo)
@@ -389,9 +395,10 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         self.std_font_sizes = config["font_default_sizes"]
         font_size = str(get_default_font().GetPointSize())
-        self.font_size_combo = wx.ComboBox(self, -1, value=font_size,
-            size=(60, -1), choices=map(unicode, self.std_font_sizes),
-            style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
+        self.font_size_combo = \
+            wx.ComboBox(self, -1, value=font_size, size=(60, -1),
+                        choices=map(unicode, self.std_font_sizes),
+                        style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
         self.AddControl(self.font_size_combo)
         self.Bind(wx.EVT_COMBOBOX, self.OnTextSize, self.font_size_combo)
         self.Bind(wx.EVT_TEXT_ENTER, self.OnTextSize, self.font_size_combo)
@@ -402,7 +409,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         font_face_buttons = [
             (wx.FONTFLAG_BOLD, "OnBold", "FormatTextBold", _("Bold")),
             (wx.FONTFLAG_ITALIC, "OnItalics", "FormatTextItalic",
-                 _("Italics")),
+             _("Italics")),
             (wx.FONTFLAG_UNDERLINED, "OnUnderline", "FormatTextUnderline",
                 _("Underline")),
             (wx.FONTFLAG_STRIKETHROUGH, "OnStrikethrough",
@@ -439,8 +446,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         """Create border choice combo box"""
 
         choices = [c[0] for c in self.border_toggles]
-        self.borderchoice_combo = _widgets.BorderEditChoice(self,
-                 choices=choices, style=wx.CB_READONLY, size=(50, -1))
+        self.borderchoice_combo = \
+            _widgets.BorderEditChoice(self, choices=choices,
+                                      style=wx.CB_READONLY, size=(50, -1))
 
         self.borderstate = self.border_toggles[0][0]
 
@@ -455,8 +463,9 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         """Create pen width combo box"""
 
         choices = map(unicode, xrange(12))
-        self.pen_width_combo = _widgets.PenWidthComboBox(self,
-                choices=choices, style=wx.CB_READONLY, size=(50, -1))
+        self.pen_width_combo = \
+            _widgets.PenWidthComboBox(self, choices=choices,
+                                      style=wx.CB_READONLY, size=(50, -1))
 
         self.AddControl(self.pen_width_combo)
         self.Bind(wx.EVT_COMBOBOX, self.OnLineWidth, self.pen_width_combo)
@@ -498,7 +507,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         bmp = icons["Merge"]
         self.mergetool_id = wx.NewId()
         self.AddCheckTool(self.mergetool_id, "Merge", bmp, bmp,
-                               short_help_string=_("Merge cells"))
+                          short_help_string=_("Merge cells"))
         self.Bind(wx.EVT_TOOL, self.OnMerge, id=self.mergetool_id)
 
     def _create_textrotation_spinctrl(self):
@@ -560,7 +569,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         """
 
-        toggle_state = font_weight == wx.FONTWEIGHT_BOLD
+        toggle_state = font_weight & wx.FONTWEIGHT_BOLD == wx.FONTWEIGHT_BOLD
 
         self.ToggleTool(wx.FONTFLAG_BOLD, toggle_state)
 
@@ -575,7 +584,7 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
 
         """
 
-        toggle_state = font_style == wx.FONTSTYLE_ITALIC
+        toggle_state = font_style & wx.FONTSTYLE_ITALIC == wx.FONTSTYLE_ITALIC
 
         self.ToggleTool(wx.FONTFLAG_ITALIC, toggle_state)
 
@@ -728,6 +737,8 @@ class AttributesToolbar(aui.AuiToolBar, EventMixin):
         self._update_bgbrush(attributes["bgcolor"])
         self._update_bordercolor(attributes["bordercolor_bottom"])
         self._update_borderwidth(attributes["borderwidth_bottom"])
+
+        self.Refresh()
 
     def OnBorderChoice(self, event):
         """Change the borders that are affected by color and width changes"""

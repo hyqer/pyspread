@@ -25,7 +25,7 @@ icons
 
 Provides:
 ---------
-  1) _ArtProvider: Provides stock and custom icons
+  1) GtkArtProvider: Provides stock and custom icons
   2) Icons: Provides pyspread's icons
 
 """
@@ -35,7 +35,7 @@ import wx
 from src.sysvars import get_program_path
 
 
-class _ArtProvider(wx.ArtProvider):
+class GtkArtProvider(wx.ArtProvider):
     """Provides extra icons in addition to the standard ones
 
     Used only by Icons class
@@ -46,47 +46,60 @@ class _ArtProvider(wx.ArtProvider):
 
         wx.ArtProvider.__init__(self)
 
-        _size_str = "x".join(map(str, icon_size))
-
-        _theme_path = get_program_path() + "share/icons/"
-        _icon_path = _theme_path + theme + "/" + _size_str + "/"
-        _action_path = _icon_path + "actions/"
-        _toggle_path = _icon_path + "toggles/"
+        theme_path, icon_path, action_path, toggle_path = \
+            self.get_paths(theme, icon_size)
 
         self.extra_icons = {
-            "PyspreadLogo": _theme_path + "pyspread.png",
-            "EditCopyRes": _action_path + "edit-copy-results.png",
-            "FormatTextBold": _action_path + "format-text-bold.png",
-            "FormatTextItalic": _action_path + "format-text-italic.png",
-            "FormatTextUnderline": _action_path +
+            "PyspreadLogo": theme_path + "pyspread.png",
+            "EditCopyRes": action_path + "edit-copy-results.png",
+            "FormatTextBold": action_path + "format-text-bold.png",
+            "FormatTextItalic": action_path + "format-text-italic.png",
+            "FormatTextUnderline": action_path +
                                             "format-text-underline.png",
-            "FormatTextStrikethrough": _action_path +
+            "FormatTextStrikethrough": action_path +
                                             "format-text-strikethrough.png",
-            "JustifyRight": _action_path + "format-justify-right.png",
-            "JustifyCenter": _action_path + "format-justify-center.png",
-            "JustifyLeft": _action_path + "format-justify-left.png",
-            "AlignTop": _action_path + "format-text-aligntop.png",
-            "AlignCenter": _action_path + "format-text-aligncenter.png",
-            "AlignBottom": _action_path + "format-text-alignbottom.png",
-            "Freeze": _action_path + "frozen_small.png",
-            "Merge": _action_path + "format-merge-table-cells.png",
-            "AllBorders": _toggle_path + "border_all.xpm",
-            "LeftBorders": _toggle_path + "border_left.xpm",
-            "RightBorders": _toggle_path + "border_right.xpm",
-            "TopBorders": _toggle_path + "border_top.xpm",
-            "BottomBorders": _toggle_path + "border_bottom.xpm",
-            "InsideBorders": _toggle_path + "border_inside.xpm",
-            "OutsideBorders": _toggle_path + "border_outside.xpm",
-            "TopBottomBorders": _toggle_path + "border_top_n_bottom.xpm",
-            "MATCH_CASE": _toggle_path + "aA.png",
-            "REG_EXP": _toggle_path + "regex.png",
-            "WHOLE_WORD": _toggle_path + "wholeword.png",
-            "InsertBitmap": _action_path + "insert_bmp.png",
-            "LinkBitmap": _action_path + "link_bmp.png",
-            "InsertChart": _action_path + "chart_line.png",
-            "plot": _action_path + "chart_line.png",  # matplotlib plot chart
-            "bar": _action_path + "chart_column.png",  # matplotlib bar chart
-            }
+            "JustifyRight": action_path + "format-justify-right.png",
+            "JustifyCenter": action_path + "format-justify-center.png",
+            "JustifyLeft": action_path + "format-justify-left.png",
+            "AlignTop": action_path + "format-text-aligntop.png",
+            "AlignCenter": action_path + "format-text-aligncenter.png",
+            "AlignBottom": action_path + "format-text-alignbottom.png",
+            "Freeze": action_path + "frozen_small.png",
+            "Merge": action_path + "format-merge-table-cells.png",
+            "AllBorders": toggle_path + "border_all.xpm",
+            "LeftBorders": toggle_path + "border_left.xpm",
+            "RightBorders": toggle_path + "border_right.xpm",
+            "TopBorders": toggle_path + "border_top.xpm",
+            "BottomBorders": toggle_path + "border_bottom.xpm",
+            "InsideBorders": toggle_path + "border_inside.xpm",
+            "OutsideBorders": toggle_path + "border_outside.xpm",
+            "TopBottomBorders": toggle_path + "border_top_n_bottom.xpm",
+            "MATCH_CASE": toggle_path + "aA.png",
+            "REG_EXP": toggle_path + "regex.png",
+            "WHOLE_WORD": toggle_path + "wholeword.png",
+            "InsertBitmap": action_path + "insert_bmp.png",
+            "LinkBitmap": action_path + "link_bmp.png",
+            "InsertChart": action_path + "chart_line.png",
+            "plot": action_path + "chart_line.png",  # matplotlib plot chart
+            "bar": action_path + "chart_column.png",  # matplotlib bar chart
+            "boxplot": action_path + "chart_boxplot.png",  # matplotlib boxplot
+            "pie": action_path + "chart_pie.png",  # matplotlib pie chart
+            "hist": action_path + "chart_histogram.png",  # matplotlib hist
+            "annotate": action_path + "chart_annotate.png",  # matplotlib
+            "safe_mode": icon_path + "status/dialog-warning.png",
+        }
+
+    def get_paths(self, theme, icon_size):
+        """Returns tuple of theme, icon, action and toggle paths"""
+
+        _size_str = "x".join(map(str, icon_size))
+
+        theme_path = get_program_path() + "share/icons/"
+        icon_path = theme_path + theme + "/" + _size_str + "/"
+        action_path = icon_path + "actions/"
+        toggle_path = icon_path + "toggles/"
+
+        return theme_path, icon_path, action_path, toggle_path
 
     def CreateBitmap(self, artid, client, size):
         """Adds custom images to Artprovider"""
@@ -96,6 +109,36 @@ class _ArtProvider(wx.ArtProvider):
 
         else:
             return wx.ArtProvider.GetBitmap(artid, client, size)
+
+
+class WindowsArtProvider(GtkArtProvider):
+    """Provides extra icons for the Windows platform"""
+
+    def __init__(self, theme, icon_size):
+        GtkArtProvider.__init__(self, theme, icon_size)
+
+        theme_path, icon_path, action_path, toggle_path = \
+            self.get_paths(theme, icon_size)
+
+        windows_icons = {
+            wx.ART_NEW: action_path + "document-new.png",
+            wx.ART_FILE_OPEN: action_path + "document-open.png",
+            wx.ART_FILE_SAVE: action_path + "document-save.png",
+            wx.ART_FILE_SAVE_AS: action_path + "document-save-as.png",
+            wx.ART_PRINT: action_path + "document-print.png",
+            wx.ART_GO_UP: action_path + "go-up.png",
+            wx.ART_GO_DOWN: action_path + "go-down.png",
+            wx.ART_COPY: action_path + "edit-copy.png",
+            wx.ART_CUT: action_path + "edit-cut.png",
+            wx.ART_PASTE: action_path + "edit-paste.png",
+            wx.ART_UNDO: action_path + "edit-undo.png",
+            wx.ART_REDO: action_path + "edit-redo.png",
+            wx.ART_FIND: action_path + "edit-find.png",
+            wx.ART_FIND_AND_REPLACE: action_path + "edit-find-replace.png",
+
+        }
+
+        self.extra_icons.update(windows_icons)
 
 
 class Icons(object):
@@ -133,7 +176,7 @@ class Icons(object):
         "GoDown": wx.ART_GO_DOWN,
         "Add": wx.ART_ADD_BOOKMARK,
         "Remove": wx.ART_DEL_BOOKMARK,
-        }
+    }
 
     def __init__(self, icon_set=wx.ART_OTHER, icon_theme="Tango",
                  icon_size=(24, 24)):
@@ -142,7 +185,12 @@ class Icons(object):
         self.icon_theme = icon_theme
         self.icon_size = icon_size
 
-        wx.ArtProvider.Push(_ArtProvider(icon_theme, icon_size))
+        if "__WXMSW__" in wx.PlatformInfo:
+            # Windows lacks good quality stock items
+            wx.ArtProvider.Push(WindowsArtProvider(icon_theme, icon_size))
+        else:
+            # Use the platform generic themed icons instead
+            wx.ArtProvider.Push(GtkArtProvider(icon_theme, icon_size))
 
     def __getitem__(self, icon_name):
         """Returns by bitmap
@@ -158,6 +206,6 @@ class Icons(object):
             icon_name = self.icons[icon_name]
 
         return wx.ArtProvider.GetBitmap(icon_name, self.icon_set,
-                                       self.icon_size)
+                                        self.icon_size)
 
 icons = Icons()

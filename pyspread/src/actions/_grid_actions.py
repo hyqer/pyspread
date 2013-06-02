@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -53,10 +53,17 @@ import os
 import wx
 
 from src.config import config
+from src.sysvars import get_default_font
 
 from src.gui._grid_table import GridTable
-from src.lib.parsers import get_font_from_data
-from src.lib.gpg import sign, verify
+
+try:
+    from src.lib.gpg import sign, verify
+    GPG_PRESENT = True
+
+except ImportError:
+    GPG_PRESENT = False
+
 from src.lib.selection import Selection
 
 from src.actions._main_window_actions import Actions
@@ -85,10 +92,10 @@ class FileActions(Actions):
         Parameters
         ----------
 
-        statustext: String
-        \tLeft text in statusbar to be displayed
         cycle: Integer
         \tThe current operation cycle
+        statustext: String
+        \tLeft text in statusbar to be displayed
         total_elements: Integer:
         \tThe number of elements that have to be processed
         freq: Integer, defaults to 1000
@@ -125,6 +132,9 @@ class FileActions(Actions):
 
     def validate_signature(self, filename):
         """Returns True if a valid signature is present for filename"""
+
+        if not GPG_PRESENT:
+            return False
 
         sigfilename = filename + '.sig'
 
@@ -171,8 +181,9 @@ class FileActions(Actions):
             self.enter_safe_mode()
             post_command_event(self.main_window, self.SafeModeEntryMsg)
 
-            statustext = _("File is not properly signed. Safe mode "
-                "activated. Select File -> Approve to leave safe mode.")
+            statustext = \
+                _("File is not properly signed. Safe mode "
+                  "activated. Select File -> Approve to leave safe mode.")
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=statustext)
 
@@ -267,9 +278,8 @@ class FileActions(Actions):
             infile = bz2.BZ2File(filepath, "r")
 
         except IOError:
-            statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            txt = _("Error opening file {filepath}.").format(filepath=filepath)
+            post_command_event(self.main_window, self.StatusBarMsg, text=txt)
 
             return False
 
@@ -280,10 +290,11 @@ class FileActions(Actions):
         try:
             version = self._get_file_version(infile)
             if version != "0.1":
-                statustext = \
-                    _("File version {} unsupported (not 0.1).").format(version)
+                text = _("File version {version} unsupported (not 0.1).")
+                text = text.format(version=version)
                 post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=statustext)
+                                   text=text)
+
                 return False
 
         except (IOError, ValueError), errortext:
@@ -334,9 +345,8 @@ class FileActions(Actions):
                     return False
 
         except IOError:
-            statustext = _("Error opening file {}.").format(filepath)
-            post_command_event(self.main_window, self.StatusBarMsg,
-                               text=statustext)
+            txt = _("Error opening file {filepath}.").format(filepath=filepath)
+            post_command_event(self.main_window, self.StatusBarMsg, text=txt)
 
             return False
 
@@ -362,9 +372,14 @@ class FileActions(Actions):
     def sign_file(self, filepath):
         """Signs file if possible"""
 
-        signature = sign(filepath)
-        if signature is None:
-            statustext = _('Error signing file. File is not signed.')
+        if not GPG_PRESENT:
+            return
+
+        signed_data = sign(filepath)
+        signature = signed_data.data
+
+        if signature is None or not signature:
+            statustext = _('Error signing file. ') + signed_data.stderr
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
                                    text=statustext)
@@ -387,7 +402,7 @@ class FileActions(Actions):
 
         try:
             post_command_event(self.main_window, self.StatusBarMsg,
-                           text=statustext)
+                               text=statustext)
         except TypeError:
             # The main window does not exist any more
             pass
@@ -427,17 +442,18 @@ class FileActions(Actions):
         self.saving = True
         self.need_abort = False
 
-        io_error_text = _("Error writing to file {}.").format(filepath)
+        io_error_text = _("Error writing to file {filepath}.")
+        io_error_text = io_error_text.format(filepath=filepath)
 
         # Save file is compressed
         try:
             outfile = bz2.BZ2File(filepath, "wb")
 
         except IOError:
-            statustext = _("Error opening file {}.").format(filepath)
+            txt = _("Error opening file {filepath}.").format(filepath=filepath)
             try:
                 post_command_event(self.main_window, self.StatusBarMsg,
-                                   text=statustext)
+                                   text=txt)
             except TypeError:
                 # The main window does not exist any more
                 pass
@@ -517,8 +533,17 @@ class FileActions(Actions):
             pass
 
         # Sign so that the new file may be retrieved without safe mode
+        if self.code_array.safe_mode:
+            msg = _("File saved but not signed because it is unapproved.")
+            try:
+                post_command_event(self.main_window, self.StatusBarMsg,
+                                   text=msg)
+            except TypeError:
+                # The main window does not exist any more
+                pass
 
-        self.sign_file(filepath)
+        else:
+            self.sign_file(filepath)
 
 
 class TableRowActionsMixin(Actions):
@@ -556,7 +581,12 @@ class TableRowActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(row, no_rows, axis=0)
+        try:
+            self.code_array.delete(row, no_rows, axis=0)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableColumnActionsMixin(Actions):
@@ -594,7 +624,12 @@ class TableColumnActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(col, no_cols, axis=1)
+        try:
+            self.code_array.delete(col, no_cols, axis=1)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableTabActionsMixin(Actions):
@@ -624,11 +659,17 @@ class TableTabActionsMixin(Actions):
         post_command_event(self.main_window, self.ContentChangedMsg,
                            changed=True)
 
-        self.code_array.delete(tab, no_tabs, axis=2)
+        try:
+            self.code_array.delete(tab, no_tabs, axis=2)
 
-        # Update TableChoiceIntCtrl
-        shape = self.grid.code_array.shape
-        post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
+            # Update TableChoiceIntCtrl
+            shape = self.grid.code_array.shape
+            post_command_event(self.main_window, self.ResizeGridMsg,
+                               shape=shape)
+
+        except ValueError, err:
+            post_command_event(self.main_window, self.StatusBarMsg,
+                               text=err.message)
 
 
 class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
@@ -673,7 +714,8 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
             return row, col, tab
 
         else:
-            raise ValueError(_("Key length {}  not in (2, 3)".format(length)))
+            msg = _("Key length {length}  not in (2, 3)").format(length=length)
+            raise ValueError(msg)
 
     def _abort_paste(self):
         """Aborts import"""
@@ -697,9 +739,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         else:
             raise AssertionError(_("Import cell overflow missing"))
 
-        statustext = _("The imported data did not fit into the grid {cause}. "
-            "It has been truncated. Use a larger grid for full import.").\
-                format(cause=overflow_cause)
+        statustext = \
+            _("The imported data did not fit into the grid {cause}. "
+              "It has been truncated. Use a larger grid for full import.").\
+            format(cause=overflow_cause)
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)
 
@@ -860,6 +903,10 @@ class TableActions(TableRowActionsMixin, TableColumnActionsMixin,
         # Update TableChoiceIntCtrl
         post_command_event(self.main_window, self.ResizeGridMsg, shape=shape)
 
+        # Clear caches
+        self.code_array.unredo.reset()
+        self.code_array.result_cache.clear()
+
 
 class UnRedoActions(Actions):
     """Undo and redo operations"""
@@ -907,6 +954,10 @@ class GridActions(Actions):
         _grid_table = GridTable(self.grid, self.grid.code_array)
         self.grid.SetTable(_grid_table, True)
 
+        # Update toolbars
+        self.grid.update_entry_line()
+        self.grid.update_attribute_toolbar()
+
     # Zoom actions
 
     def _zoom_rows(self, zoom):
@@ -938,8 +989,7 @@ class GridActions(Actions):
         """Adjust grid label font to zoom factor"""
 
         labelfont = self.grid.GetLabelFont()
-        default_fontsize = \
-            get_font_from_data(config["font"]).GetPointSize() - 2
+        default_fontsize = get_default_font().GetPointSize()
         labelfont.SetPointSize(max(1, int(round(default_fontsize * zoom))))
         self.grid.SetLabelFont(labelfont)
 
@@ -1054,14 +1104,16 @@ class GridActions(Actions):
 
         if 0 <= newtable <= no_tabs:
             self.grid.current_table = newtable
-            self.main_window.table_choice.SetMax(newtable + 1)
-            self.main_window.table_choice.SetValue(newtable)
+
+            # Change value of entry_line and table choice
+            post_command_event(self.main_window, self.TableChangedMsg,
+                               table=newtable)
 
             # Reset row heights and column widths by zooming
 
             self.zoom()
 
-            statustext = _("Switched to table {}.").format(newtable)
+            statustext = _("Switched to table {table}.").format(table=newtable)
 
             post_command_event(self.main_window, self.StatusBarMsg,
                                text=statustext)
@@ -1070,7 +1122,7 @@ class GridActions(Actions):
         """Returns current grid cursor cell (row, col, tab)"""
 
         return self.grid.GetGridCursorRow(), self.grid.GetGridCursorCol(), \
-               self.grid.current_table
+            self.grid.current_table
 
     def set_cursor(self, value):
         """Changes the grid cursor cell.
@@ -1165,8 +1217,8 @@ class SelectionActions(Actions):
 
         selection = self.get_selection()
 
-        del_keys = [key for key in self.grid.code_array
-                        if key[:2] in selection]
+        del_keys = \
+            [key for key in self.grid.code_array if key[:2] in selection]
 
         for key in del_keys:
             self.grid.actions.delete_cell(key)
@@ -1186,8 +1238,9 @@ class FindActions(Actions):
         \tPosition at which the search starts
         find_string: String
         \tString to find in grid
-        flags: Int
-        \twx.wxEVT_COMMAND_FIND flags
+        flags: List of strings
+        \t Search flag out of
+        \t ["UP" xor "DOWN", "WHOLE_WORD", "MATCH_CASE", "REG_EXP"]
 
         """
 
@@ -1241,8 +1294,8 @@ class FindActions(Actions):
         self.grid.code_array[findpos] = new_code
         self.grid.actions.cursor = findpos
 
-        statustext = _("Replaced {} with {} in cell {}.").format(\
-                        old_code, new_code, findpos)
+        statustext = _("Replaced {old} with {new} in cell {key}.")
+        statustext = statustext.format(old=old_code, new=new_code, key=findpos)
 
         post_command_event(self.main_window, self.StatusBarMsg,
                            text=statustext)

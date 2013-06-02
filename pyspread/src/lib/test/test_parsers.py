@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Unit test for parsers.py"""
+# Copyright Martin Manns
+# Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
 # pyspread is free software: you can redistribute it and/or modify
@@ -15,8 +16,17 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+# along with pyspread.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
+
+
+"""
+test_parsers
+============
+
+Unit tests for parsers.py
+
+"""
 
 import os
 import sys
@@ -33,7 +43,7 @@ from src.lib.testlib import params, pytest_generate_tests
 
 from src.lib.parsers import get_font_from_data, get_pen_from_data
 
-param_font = [ \
+param_font = [
     {"fontdata": "Sans 13", "face": "Sans", "size": 13},
     {"fontdata": "Serif 43", "face": "Serif", "size": 43},
 ]
@@ -48,7 +58,7 @@ def test_get_font_from_data(fontdata, face, size):
     assert font.GetFaceName() == face
     assert font.GetPointSize() == size
 
-param_pen = [ \
+param_pen = [
     {"pendata": [wx.RED.GetRGB(), 4], "width": 4,
      "color": wx.Colour(255, 0, 0, 255)},
     {"pendata": [wx.BLUE.GetRGB(), 1], "width": 1,

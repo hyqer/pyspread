@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Martin Manns
+# Copyright Martin Manns
 # Distributed under the terms of the GNU General Public License
 
 # --------------------------------------------------------------------
@@ -38,12 +38,14 @@ Provides
 """
 
 import sys
-from sysvars import get_program_path
 import optparse
 
+import wx
+__ = wx.App(False)  # Windows Hack
+
+from sysvars import get_program_path
 import lib.i18n as i18n
 
-import wx
 
 #use ugettext instead of getttext to avoid unicode errors
 _ = i18n.language.ugettext
@@ -66,10 +68,6 @@ except KeyError:
     except ImportError:
         pass
 
-from wx import App
-from wx import InitAllImageHandlers
-
-
 from src.gui._events import post_command_event, GridActionEventMixin
 
 DEBUG = False
@@ -90,9 +88,11 @@ class Commandlineparser(object):
         from src.config import config
         self.config = config
 
-        usage = _("usage: %prog [options] [filename]")
-        version = _("%prog {}").format(config["version"])
-        self.parser = optparse.OptionParser(usage=usage, version=version)
+        usage_str = _("usage: %prog [options] [filename]")
+        version = config["version"]
+        version_str = _("%prog {version}").format(version=version)
+        self.parser = optparse.OptionParser(usage=usage_str,
+                                            version=version_str)
 
         grid_shape = (
             config["grid_rows"],
@@ -100,10 +100,12 @@ class Commandlineparser(object):
             config["grid_tables"],
         )
 
-        self.parser.add_option("-d", "--dimensions", type="int", nargs=3,
+        self.parser.add_option(
+            "-d", "--dimensions", type="int", nargs=3,
             dest="dimensions", default=grid_shape,
             help=_("Dimensions of empty grid (works only without filename) "
-                   "rows, cols, tables [default: %default]"))
+                   "rows, cols, tables [default: %default]")
+        )
 
     def parse(self):
         """
@@ -136,12 +138,22 @@ class Commandlineparser(object):
 # end of class Commandlineparser
 
 
-class MainApplication(App, GridActionEventMixin):
+class MainApplication(wx.App, GridActionEventMixin):
     """Main application class for pyspread."""
 
     dimensions = (1, 1, 1)  # Will be overridden anyways
     options = {}
     filename = None
+
+    def __init__(self, *args, **kwargs):
+
+        try:
+            self.S = kwargs.pop("S")
+        except KeyError:
+            self.S = None
+
+        # call parent class initializer
+        wx.App.__init__(self, *args, **kwargs)
 
     def OnInit(self):
         """Init class that is automatically run on __init__"""
@@ -150,22 +162,28 @@ class MainApplication(App, GridActionEventMixin):
         self.get_cmd_args()
 
         # Initialize the prerequisitions to construct the main window
-        InitAllImageHandlers()
+        wx.InitAllImageHandlers()
 
         # Main window creation
         from src.gui._main_window import MainWindow
 
-        self.main_window = MainWindow(None, title="pyspread")
-
-        ## Set dimensions
+        self.main_window = MainWindow(None, title="pyspread", S=self.S)
 
         ## Initialize file loading via event
 
         # Create GPG key if not present
 
-        from src.lib.gpg import genkey
+        try:
+            from src.lib.gpg import genkey
+            genkey()
 
-        genkey()
+        except ImportError:
+            pass
+
+        except ValueError:
+            # python-gnupg is installed but gnupg is not insatlled
+
+            pass
 
         # Show application window
         self.SetTopWindow(self.main_window)
@@ -204,22 +222,22 @@ class MainApplication(App, GridActionEventMixin):
             cmdp.config["grid_tables"] = str(tables)
 
 
-def main():
+def pyspread(S=None):
     """Parses command line and starts pyspread"""
 
     # Initialize main application
-    app = MainApplication(redirect=False)
+    app = MainApplication(S=S, redirect=False)
 
     app.MainLoop()
 
 
 if __name__ == "__main__":
     if 'unicode' not in wx.PlatformInfo:
-        print "You need a unicode build of wxPython to run this application."
+        print _("You need a unicode build of wxPython to run pyspread.")
 
     else:
         if DEBUG:
             import cProfile
-            cProfile.run('main()')
+            cProfile.run('pyspread()')
         else:
-            main()
+            pyspread()

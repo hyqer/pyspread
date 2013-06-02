@@ -81,9 +81,8 @@ class PrintCanvas(wx.ScrolledWindow):
     def draw_func(self, dc, rect, row, col):
         """Redirected Draw function from main grid"""
 
-        return self.grid.grid_renderer.Draw( \
-            self.grid, self.grid_attr, dc, rect,
-            row, col, False, printing=True)
+        return self.grid.grid_renderer.Draw(self.grid, self.grid_attr,
+                                dc, rect, row, col, False, printing=True)
 
     def get_print_rect(self, grid_rect):
         """Returns wx.Rect that is correctly positioned on the print canvas"""
@@ -196,6 +195,7 @@ class Printout(wx.Printout):
         #-------------------------------------------
 
         self.canvas.DoDrawing(dc)
-        dc.DrawText(_("Page: {}").format(page), marginX/2, maxY-marginY)
+        page_text = _("Page: {page}").format(page=page)
+        dc.DrawText(page_text, marginX / 2, maxY - marginY)
 
         return True

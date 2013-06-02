@@ -72,6 +72,7 @@ from wx.lib.intctrl import IntCtrl, EVT_INT
 import wx.lib.agw.flatnotebook as fnb
 
 from _widgets import LineStyleComboBox, MarkerStyleComboBox
+from _widgets import CoordinatesComboBox
 from _events import post_command_event, ChartDialogEventMixin
 import src.lib.i18n as i18n
 import src.lib.charts as charts
@@ -114,6 +115,12 @@ class BoolEditor(wx.CheckBox, ChartDialogEventMixin):
         \tCode representation of bool value
 
         """
+
+        # If string representations of False are in the code
+        # then it has to be converted explicitly
+
+        if code == "False" or code == "0":
+            code = False
 
         self.SetValue(bool(code))
 
@@ -321,9 +328,19 @@ class LineStyleEditor(LineStyleComboBox, ChartDialogEventMixin,
         self.bindings()
 
 
+class CoordinatesEditor(CoordinatesComboBox, ChartDialogEventMixin,
+                        StyleEditorMixin):
+    """Editor widget for line style string values"""
+
+    def __init__(self, *args, **kwargs):
+        CoordinatesComboBox.__init__(self, *args, **kwargs)
+
+        self.bindings()
+
 # -------------
 # Panel widgets
 # -------------
+
 
 class SeriesBoxPanel(wx.Panel):
     """Box panel that contains labels and widgets
@@ -340,20 +357,24 @@ class SeriesBoxPanel(wx.Panel):
 
     """
 
-    def __init__(self, parent, box_label, labels, widget_clss, widget_codes):
+    def __init__(self, parent, box_label, labels, widget_clss, widget_codes,
+                 tooltips):
 
         wx.Panel.__init__(self, parent, -1)
 
         self.staticbox = wx.StaticBox(self, -1, box_label)
 
-        self.labels = labels
+        self.labels = [wx.StaticText(self, -1, label) for label in labels]
 
         self.widgets = []
 
-        for widget_cls, widget_code in zip(widget_clss, widget_codes):
+        for widget_cls, widget_code, label, tooltip in \
+                zip(widget_clss, widget_codes, self.labels, tooltips):
             widget = widget_cls(self, -1)
             widget.code = widget_code
             self.widgets.append(widget)
+            if tooltip:
+                widget.SetToolTipString(tooltip)
 
         self.__do_layout()
 
@@ -362,8 +383,7 @@ class SeriesBoxPanel(wx.Panel):
         grid_sizer = wx.FlexGridSizer(1, 2, 0, 0)
 
         for label, widget in zip(self.labels, self.widgets):
-            grid_sizer.Add(wx.StaticText(self, -1, label), 1,
-                           wx.ALL | wx.EXPAND, 2)
+            grid_sizer.Add(label, 1, wx.ALL | wx.EXPAND, 2)
             grid_sizer.Add(widget, 1, wx.ALL | wx.EXPAND, 2)
 
         grid_sizer.AddGrowableCol(1)
@@ -388,10 +408,10 @@ class SeriesAttributesPanelBase(wx.Panel):
         self.box_panels = []
 
         for box_label, keys in self.boxes:
-
             labels = []
             widget_clss = []
             widget_codes = []
+            tooltips = []
 
             for key in keys:
                 widget_label, widget_cls, widget_default = self.data[key]
@@ -399,9 +419,14 @@ class SeriesAttributesPanelBase(wx.Panel):
                 widget_clss.append(widget_cls)
                 widget_codes.append(widget_default)
                 labels.append(widget_label)
+                try:
+                    tooltips.append(self.tooltips[key])
+                except KeyError:
+                    tooltips.append("")
 
             self.box_panels.append(SeriesBoxPanel(self, box_label, labels,
-                                                  widget_clss, widget_codes))
+                                                  widget_clss, widget_codes,
+                                                  tooltips))
 
         self.__do_layout()
 
@@ -453,14 +478,14 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "name": (_("Series name"), StringEditor, ""),
-        "xdata":  (_("X"), StringEditor, ""),
-        "ydata":  (_("Y"), StringEditor, ""),
-        "linestyle":  (_("Style"), LineStyleEditor, '-'),
-        "linewidth":  (_("Width"), IntegerEditor, "1"),
-        "color":  (_("Color"), ColorEditor, "(0, 0, 0)"),
-        "marker":  (_("Style"), MarkerStyleEditor, ""),
-        "markersize":  (_("Size"), IntegerEditor, "5"),
+        "label": (_("Label"), StringEditor, ""),
+        "xdata": (_("X"), StringEditor, ""),
+        "ydata": (_("Y"), StringEditor, ""),
+        "linestyle": (_("Style"), LineStyleEditor, '-'),
+        "linewidth": (_("Width"), IntegerEditor, "1"),
+        "color": (_("Color"), ColorEditor, "(0, 0, 0)"),
+        "marker": (_("Style"), MarkerStyleEditor, ""),
+        "markersize": (_("Size"), IntegerEditor, "5"),
         "markerfacecolor": (_("Face color"), ColorEditor, "(0, 0, 0)"),
         "markeredgecolor": (_("Edge color"), ColorEditor, "(0, 0, 0)"),
     }
@@ -469,11 +494,22 @@ class PlotAttributesPanel(SeriesAttributesPanelBase):
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Data"), ["xdata", "ydata"]),
+        (_("Data"), ["label", "xdata", "ydata"]),
         (_("Line"), ["linestyle", "linewidth", "color"]),
         (_("Marker"), ["marker", "markersize", "markerfacecolor",
                        "markeredgecolor"]),
     ]
+
+    tooltips = {
+        "label": _(u"String or anything printable with ‘%s’ conversion"),
+        "xdata": _(u"The data np.array for x\n"
+                   u"Code must eval to 1D array."),
+        "ydata": _(u"The data np.array for y\n"
+                   u"Code must eval to 1D array."),
+        "linewidth": _(u"The line width in points"),
+        "marker": _(u"The line marker"),
+        "markersize": _(u"The marker size in points"),
+    }
 
 
 class BarAttributesPanel(SeriesAttributesPanelBase):
@@ -483,7 +519,7 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "name": (_("Series name"), StringEditor, ""),
+        "label": (_("Label"), StringEditor, ""),
         "left": (_("Left positions"), StringEditor, ""),
         "height": (_("Bar heights"), StringEditor, ""),
         "width": (_("Bar widths"), StringEditor, ""),
@@ -496,33 +532,218 @@ class BarAttributesPanel(SeriesAttributesPanelBase):
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("Data"), ["left", "height", "width", "bottom"]),
+        (_("Data"), ["label", "left", "height", "width", "bottom"]),
         (_("Bar"), ["color", "edgecolor"]),
     ]
 
+    tooltips = {
+        "label": _(u"String or anything printable with ‘%s’ conversion"),
+        "left": _(u"The x coordinates of the left sides of the bars"),
+        "height": _(u"The heights of the bars"),
+        "width": _(u"The widths of the bars"),
+        "bottom": _(u"The y coordinates of the bottom edges of the bars"),
+    }
 
-class FigureAttributesPanel(SeriesAttributesPanelBase):
-    """Panel that provides figure attributes in multiple boxed panels"""
 
-    # Data for figure
+class BoxplotAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides bar series attributes in multiple boxplot panels"""
+
+    # Data for boxplot
     # matplotlib_key, label, widget_cls, default_code
 
     default_data = {
-        "xlabel": (_("Label"), StringEditor, ""),
-        "xlim": (_("Limits"), StringEditor, ""),
-        "xscale": (_("Log"), BoolEditor, False),
-        "ylabel": (_("Label"), StringEditor, ""),
-        "ylim": (_("Limits"), StringEditor, ""),
-        "yscale": (_("Log"), BoolEditor, False),
+        "x": (_("Series"), StringEditor, ""),
+        "widths": (_("Box widths"), StringEditor, "0.5"),
+        "vert": (_("Vertical"), BoolEditor, True),
+        "sym":  (_("Flier"), MarkerStyleEditor, "+"),
+        "notch": (_("Notch"), BoolEditor, False),
     }
 
     # Boxes and their widgets' matplotlib_keys
     # label, [matplotlib_key, ...]
 
     boxes = [
-        (_("X-Axis"), ["xlabel", "xlim", "xscale"]),
+        (_("Data"), ["x"]),
+        (_("Box plot"), ["widths", "vert", "sym", "notch"]),
+    ]
+
+    tooltips = {
+        "x": _(u"An array or a sequence of vectors"),
+        "widths": _(u"Either a scalar or a vector and sets the width of each "
+                    u"box\nThe default is 0.5, or\n0.15*(distance between "
+                    u"extreme positions)\nif that is smaller"),
+        "vert": _(u"If True then boxes are drawn vertical\n"
+                  u"If False then boxes are drawn horizontal"),
+        "sym": _(u"The symbol for flier points\nEnter an empty string (‘’)\n"
+                 u"if you don’t want to show fliers"),
+        "notch": _(u"False produces a rectangular box plot\n"
+                   u"True produces a notched box plot"),
+    }
+
+
+class HistogramAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides bar series attributes in histogram panels"""
+
+    # Data for histogram
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "label": (_("Label"), StringEditor, ""),
+        "x": (_("Series"), StringEditor, ""),
+        "bins": (_("Bins"), IntegerEditor, "10"),
+        "normed": (_("Normed"), BoolEditor, False),
+        "cumulative": (_("Cumulative"), BoolEditor, False),
+        "color": (_("Color"), ColorEditor, "(0, 0, 1)"),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Data"), ["label", "x"]),
+        (_("Histogram"), ["bins", "normed", "cumulative", "color"]),
+    ]
+
+    tooltips = {
+        "label": _(u"String or anything printable with ‘%s’ conversion"),
+        "x": _(u"Histogram data series\nMultiple data sets can be provided "
+               u"as a list or as a 2-D ndarray in which each column"
+               u"is a dataset. Note that the ndarray form is transposed "
+               u"relative to the list form."),
+        "bins": _(u"Either an integer number of bins or a bin sequence"),
+        "normed": _(u"If True then the first element is the counts normalized"
+                    u"to form a probability density, i.e., n/(len(x)*dbin)."),
+        "cumulative": _(u"If True then each bin gives the counts in that bin"
+                        u"\nplus all bins for smaller values."),
+    }
+
+
+class PieAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides pie series attributes in multiple boxed panels"""
+
+    # Data for pie plot
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "x": (_("Series"), StringEditor, ""),
+        "labels": (_("Labels"), StringEditor, ""),
+        "colors": (_("Colors"), StringEditor, ""),
+        "shadow": (_("Shadow"), BoolEditor, False),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Data"), ["x"]),
+        (_("Pie"), ["labels", "colors", "shadow"]),
+    ]
+
+    tooltips = {
+        "x": _(u"Pie chart data\nThe fractional area of each wedge is given "
+               u"by x/sum(x)\nThe wedges are plotted counterclockwise"),
+        "labels": _(u"Sequence of wedge label strings"),
+        "colors": _(u"Sequence of matplotlib color args through which the pie "
+                    u"cycles"),
+        "shadow": _(u"If True then a shadow beneath the pie is drawn"),
+    }
+
+
+class FigureAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides figure attributes in multiple boxed panels"""
+
+    # strftime doc taken from Python documentation
+
+    strftime_doc = _(u"""
+Code 	Meaning
+%a 	Locale’s abbreviated weekday name.
+%A 	Locale’s full weekday name.
+%b 	Locale’s abbreviated month name.
+%B 	Locale’s full month name.
+%c 	Locale’s appropriate date and time representation.
+%d 	Day of the month as a decimal number [01,31].
+%f 	Microsecond as a decimal number [0,999999], zero-padded on the left
+%H 	Hour (24-hour clock) as a decimal number [00,23].
+%I 	Hour (12-hour clock) as a decimal number [01,12].
+%j 	Day of the year as a decimal number [001,366].
+%m 	Month as a decimal number [01,12].
+%M 	Minute as a decimal number [00,59].
+%p 	Locale’s equivalent of either AM or PM.
+%S 	Second as a decimal number [00,61].
+%U 	Week number (Sunday first weekday) as a decimal number [00,53].
+%w 	Weekday as a decimal number [0(Sunday),6]. 	4
+%W 	Week number (Monday first weekday) as a decimal number [00,53].
+%x 	Locale’s appropriate date representation.
+%X 	Locale’s appropriate time representation.
+%y 	Year without century as a decimal number [00,99].
+%Y 	Year with century as a decimal number.
+%z 	UTC offset in the form +HHMM or -HHMM.
+%Z 	Time zone name.
+%% 	A literal '%' character.""")
+
+    # Data for figure
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "title": (_("Title"), StringEditor, ""),
+        "xlabel": (_("Label"), StringEditor, ""),
+        "xlim": (_("Limits"), StringEditor, ""),
+        "xscale": (_("Log. scale"), BoolEditor, False),
+        "ylabel": (_("Label"), StringEditor, ""),
+        "ylim": (_("Limits"), StringEditor, ""),
+        "yscale": (_("Log. scale"), BoolEditor, False),
+        "grid": (_("Grid"), BoolEditor, False),
+        "legend": (_("Legend"), BoolEditor, False),
+        "xdate_format": (_("Date format"), StringEditor, ""),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Figure"), ["title", "grid", "legend"]),
+        (_("X-Axis"), ["xlabel", "xlim", "xscale", "xdate_format"]),
         (_("Y-Axis"), ["ylabel", "ylim", "yscale"]),
     ]
+
+    tooltips = {
+        "title": _(u"The figure title"),
+        "xlabel": _(u"The label for the x axis"),
+        "xlim": _(u"The data limits for the x axis\nFormat: (xmin, xmax)"),
+        "ylabel": _(u"The label for the y axis"),
+        "ylim": _(u"The data limits for the y axis\nFormat: (ymin, ymax)"),
+        "xdate_format": _(u"If non-empty then the x axis is displays dates.\n"
+                          u"Enter an unquoted strftime() format string."
+                          u"\n") + strftime_doc,
+    }
+
+
+class AnnotateAttributesPanel(SeriesAttributesPanelBase):
+    """Panel that provides annotation attributes in multiple boxed panels"""
+
+    # Data for annotation
+    # matplotlib_key, label, widget_cls, default_code
+
+    default_data = {
+        "s": (_("Text"), StringEditor, ""),
+        "xy": (_("Point"), StringEditor, ""),
+        "xycoords": (_("Point coordinates"), CoordinatesEditor, "data"),
+    }
+
+    # Boxes and their widgets' matplotlib_keys
+    # label, [matplotlib_key, ...]
+
+    boxes = [
+        (_("Annotation"), ["s", "xy", "xycoords"]),
+    ]
+
+    tooltips = {
+        "s": _(u"Annotation text"),
+        "xy": _(u"Point that is annotated"),
+        "xycoords": _(u"String that indicates the coordinates of xy"),
+        "xytext": _(u"Location of annotation text"),
+        "textcoords": _(u"String that indicates the coordinates of xytext."),
+    }
 
 
 class SeriesPanel(wx.Panel):
@@ -531,6 +752,10 @@ class SeriesPanel(wx.Panel):
     plot_types = [
         {"type": "plot", "panel_class": PlotAttributesPanel},
         {"type": "bar", "panel_class": BarAttributesPanel},
+        {"type": "hist", "panel_class": HistogramAttributesPanel},
+        {"type": "boxplot", "panel_class": BoxplotAttributesPanel},
+        {"type": "pie", "panel_class": PieAttributesPanel},
+        {"type": "annotate", "panel_class": AnnotateAttributesPanel},
     ]
 
     def __init__(self, grid, series_dict):
@@ -550,9 +775,11 @@ class SeriesPanel(wx.Panel):
 
             series_data = {}
             if plot_type == series_dict["type"]:
-                series_data.update(series_dict)
+                for key in series_dict:
+                    series_data[key] = charts.object2code(key,
+                                                          series_dict[key])
 
-            plot_panel = PlotPanelClass(self, series_data, -1)
+            plot_panel = PlotPanelClass(self.chart_type_book, series_data, -1)
 
             self.chart_type_book.AddPage(plot_panel, plot_type, imageId=i)
             self.il.Add(icons[plot_type_dict["type"]])
@@ -620,8 +847,7 @@ class AllSeriesPanel(wx.Panel, ChartDialogEventMixin):
     """Panel that holds series panels for all series of the chart"""
 
     def __init__(self, grid):
-        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | \
-                        wx.THICK_FRAME
+        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
 
         self.grid = grid
 
@@ -756,6 +982,7 @@ class FigurePanel(wx.Panel):
         self.figure_canvas = self._get_figure_canvas(figure)
 
         self.figure_canvas.SetSize(self.GetSize())
+        figure.subplots_adjust()
 
         self.main_sizer.Add(self.figure_canvas, 1,
                             wx.EXPAND | wx.FIXED_MINSIZE, 0)
@@ -767,13 +994,12 @@ class FigurePanel(wx.Panel):
 class ChartDialog(wx.Dialog, ChartDialogEventMixin):
     """Chart dialog for generating chart generation strings"""
 
-    def __init__(self, grid, code):
-        style = wx.RESIZE_BORDER | wx.CLOSE_BOX
-        wx.Dialog.__init__(self, grid, -1, style=style)
+    def __init__(self, main_window, key, code):
+        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.THICK_FRAME
+        wx.Dialog.__init__(self, main_window, -1, style=style)
 
-        self.grid = grid
-        self.key = self.grid.actions.cursor
-        code = self.grid.code_array(self.key)
+        self.grid = main_window.grid
+        self.key = key
 
         self.figure_attributes_panel = FigureAttributesPanel(self, {}, -1)
         self.all_series_panel = AllSeriesPanel(self)
@@ -786,7 +1012,8 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
         self.cancel_button = wx.Button(self, wx.ID_CANCEL)
         self.ok_button = wx.Button(self, wx.ID_OK)
 
-        self.set_code(code)
+        # The code has to be set after all widgets are created
+        self.code = code
 
         self.__set_properties()
         self.__do_layout()
@@ -799,17 +1026,17 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     def __set_properties(self):
         self.SetTitle(_("Insert chart"))
-        self.SetSize((1000, 400))
+        self.SetSize((1000, 500))
 
         self.figure_attributes_staticbox = wx.StaticBox(self, -1, _(u"Axes"))
         self.series_staticbox = wx.StaticBox(self, -1, _(u"Series"))
 
     def __do_layout(self):
         main_sizer = wx.FlexGridSizer(2, 3, 2, 2)
-        figure_attributes_box_sizer = wx.StaticBoxSizer(
-                        self.figure_attributes_staticbox, wx.HORIZONTAL)
-        series_box_sizer = wx.StaticBoxSizer(
-                        self.series_staticbox, wx.VERTICAL)
+        figure_attributes_box_sizer = \
+            wx.StaticBoxSizer(self.figure_attributes_staticbox, wx.HORIZONTAL)
+        series_box_sizer = \
+            wx.StaticBoxSizer(self.series_staticbox, wx.VERTICAL)
         button_sizer = wx.FlexGridSizer(1, 3, 0, 3)
 
         main_sizer.Add(figure_attributes_box_sizer, 1, wx.EXPAND, 0)
@@ -819,16 +1046,17 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
         main_sizer.AddGrowableRow(0)
         main_sizer.SetItemMinSize(1, (300, 300))
-        main_sizer.AddGrowableCol(2)
+        main_sizer.AddGrowableCol(0, proportion=1)
+        main_sizer.AddGrowableCol(1, proportion=1)
+        main_sizer.AddGrowableCol(2, proportion=1.5)
 
         figure_attributes_box_sizer.Add(self.figure_attributes_panel,
                                         1, wx.EXPAND, 0)
         series_box_sizer.Add(self.all_series_panel, 1, wx.EXPAND, 0)
 
-        button_sizer.Add(self.ok_button, 0,
-            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 3)
-        button_sizer.Add(self.cancel_button, 0,
-            wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 3)
+        style = wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL
+        button_sizer.Add(self.ok_button, 0, style, 3)
+        button_sizer.Add(self.cancel_button, 0, style, 3)
         button_sizer.AddGrowableCol(2)
 
         self.SetSizer(main_sizer)
@@ -871,10 +1099,15 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
     # Tuple keys have to be put in parentheses
     tuple_keys = ["xdata", "ydata", "left", "height", "width", "bottom",
-                  "xlim", "ylim"]
+                  "xlim", "ylim", "x", "labels", "colors", "xy", "xytext"]
 
     # String keys need to be put in "
-    string_keys = ["type", "linestyle", "marker"]
+    string_keys = ["type", "linestyle", "marker", "shadow", "vert", "grid",
+                   "notch", "sym", "normed", "cumulative", "xdate_format",
+                   "xycoords", "textcoords", "s"]
+
+    # Keys, which have to be None if empty
+    empty_none_keys = ["colors", "color"]
 
     def set_code(self, code):
         """Update widgets from code"""
@@ -928,6 +1161,7 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
 
                 elif code and key in self.tuple_keys and \
                      not (code[0] in ["[", "("] and code[-1] in ["]", ")"]):
+
                     code = "(" + code + ")"
 
                 elif key in ["xscale", "yscale"]:
@@ -936,8 +1170,17 @@ class ChartDialog(wx.Dialog, ChartDialogEventMixin):
                     else:
                         code = '"linear"'
 
+                elif key in ["legend"]:
+                    if code:
+                        code = '1'
+                    else:
+                        code = '0'
+
                 if not code:
-                    code = 'u""'
+                    if key in self.empty_none_keys:
+                        code = "None"
+                    else:
+                        code = 'u""'
 
                 result += repr(key) + ": " + code + ", "
 

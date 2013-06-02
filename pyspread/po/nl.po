@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyspread-0.2.2.99\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-01 11:00+0100\n"
+"POT-Creation-Date: 2013-04-08 01:05+0200\n"
 "PO-Revision-Date: 2013-01-02 22:15+0100\n"
 "Last-Translator: Mark Haanen <i18n@haanen.net>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -28,656 +28,752 @@ msgstr "Fout"
 msgid "Datatype {} unknown"
 msgstr ""
 
-#: src/lib/__csv.py:264
+#: src/lib/__csv.py:269
 msgid "Fallback type {} unknown."
 msgstr ""
 
-#: src/lib/gpg.py:88
+#: src/lib/gpg.py:63
 msgid ""
-"Choose a GPG key that you own for signing pyspread save files.\n"
-"Pressing Cancel creates a new key."
+"Choose a GPG key for signing pyspread save files.\n"
+"The GPG key must not have a passphrase set."
 msgstr ""
 
-#: src/lib/gpg.py:90
+#: src/lib/gpg.py:66
 msgid "Choose key"
 msgstr "Sleutel kiezen"
 
-#: src/lib/gpg.py:95
-msgid "   Store passphrase"
+#: src/lib/gpg.py:72
+#, fuzzy
+#| msgid "Choose key"
+msgid "Use chosen key"
+msgstr "Sleutel kiezen"
+
+#: src/lib/gpg.py:73
+msgid "Create new key"
 msgstr ""
 
-#: src/lib/gpg.py:170
+#: src/lib/gpg.py:127
+msgid "New GPG key"
+msgstr ""
+
+#: src/lib/gpg.py:128
+msgid "After confirming this dialog, a new GPG key "
+msgstr ""
+
+#: src/lib/gpg.py:129
+msgid "'{}' will be generated."
+msgstr ""
+
+#: src/lib/gpg.py:130
 msgid ""
-"Generating new GPG key {}.\n"
-"This may take some time.\n"
 " \n"
-"Progress bar may stall. Please wait."
+" \n"
+"This may take some time.\n"
+"Please wait.\n"
+" \n"
 msgstr ""
 
-#: src/lib/gpg.py:172
-msgid "GPG key generation"
+#: src/lib/gpg.py:131
+msgid "Canceling this operation exits pyspread."
 msgstr ""
 
-#: src/pyspread.py:91
+#: src/pyspread.py:95
 msgid "usage: %prog [options] [filename]"
 msgstr "gebruik: %prog [opties] [bestandsnaam]"
 
-#: src/pyspread.py:92
+#: src/pyspread.py:96
 msgid "%prog {}"
 msgstr "%prog {}"
 
-#: src/pyspread.py:103
+#: src/pyspread.py:107
 #, python-format
 msgid "Dimensions of empty grid (works only without filename) rows, cols, tables [default: %default]"
 msgstr ""
 
-#: src/pyspread.py:119
+#: src/pyspread.py:123
 msgid "Cell dimension must be > 0."
 msgstr ""
 
-#: src/pyspread.py:124
+#: src/pyspread.py:128
 msgid "Only one file may be opened at a time."
 msgstr ""
+
+#: src/pyspread.py:231
+msgid "You need a unicode build of wxPython to run pyspread."
+msgstr ""
+
+#: src/gui/_menubars.py:123 src/gui/_menubars.py:196
+msgid "&Approve file"
+msgstr "Bestand &goedkeuren"
 
 #: src/gui/_menubars.py:134
 msgid "Menu item unknown"
 msgstr ""
 
-#: src/gui/_menubars.py:153 src/gui/_menubars.py:224
-msgid "Cu&t\tCtrl+x"
-msgstr "K&nippen\tCtrl+x"
+#: src/gui/_menubars.py:153 src/gui/_menubars.py:222
+msgid "Cu&t"
+msgstr ""
 
-#: src/gui/_menubars.py:153 src/gui/_menubars.py:225
+#: src/gui/_menubars.py:153 src/gui/_menubars.py:223
 msgid "Cut cell to clipboard"
 msgstr "Cel naar het klembord knippen"
 
-#: src/gui/_menubars.py:155 src/gui/_menubars.py:226
-msgid "&Copy\tCtrl+c"
-msgstr "&Kopiëren\tCtrl+c"
+#: src/gui/_menubars.py:155 src/gui/_menubars.py:224
+#, fuzzy
+#| msgid "Copy"
+msgid "&Copy"
+msgstr "Kopiëren"
 
-#: src/gui/_menubars.py:156
+#: src/gui/_menubars.py:155
 msgid "Copy input strings to clipboard"
 msgstr ""
 
-#: src/gui/_menubars.py:157 src/gui/_menubars.py:231
-msgid "&Paste\tCtrl+v"
-msgstr "&Plakken\tCtrl+v"
+#: src/gui/_menubars.py:157 src/gui/_menubars.py:230
+#, fuzzy
+#| msgid "Paste"
+msgid "&Paste"
+msgstr "Plakken"
 
-#: src/gui/_menubars.py:158 src/gui/_menubars.py:232
+#: src/gui/_menubars.py:157 src/gui/_menubars.py:231
 msgid "Paste cells from clipboard"
 msgstr "Cellen vanaf het klembord plakken"
 
-#: src/gui/_menubars.py:159
-msgid "Insert &rows\tShift+Ctrl+i"
-msgstr "&Rijen invoegen\tShift+Ctrl+i"
-
-#: src/gui/_menubars.py:160 src/gui/_menubars.py:240
-msgid "Insert rows at cursor"
-msgstr ""
-
-#: src/gui/_menubars.py:161
-msgid "&Insert columns\tCtrl+i"
-msgstr "K&olommen invoegen\tCtrl+i"
-
-#: src/gui/_menubars.py:162 src/gui/_menubars.py:242
-msgid "Insert columns at cursor"
-msgstr ""
-
-#: src/gui/_menubars.py:163
-msgid "Delete rows\tShift+Ctrl+d"
-msgstr "Rijen verwijderen\tShift+Ctrl+d"
-
-#: src/gui/_menubars.py:164 src/gui/_menubars.py:246 src/gui/_menubars.py:247
-msgid "Delete rows"
-msgstr "RIjen verwijderen"
-
-#: src/gui/_menubars.py:165
-msgid "Delete columns\tCtrl+Alt+d"
-msgstr "Kolommen verwijderen\tCtrl+Alt+d"
-
-#: src/gui/_menubars.py:166 src/gui/_menubars.py:248 src/gui/_menubars.py:249
-msgid "Delete columns"
-msgstr "Kolommen verwijderen"
-
-#: src/gui/_menubars.py:182
-msgid "&File"
-msgstr "&Bestand"
-
-#: src/gui/_menubars.py:183
-msgid "&New\tCtrl+n"
-msgstr "&Nieuw\tCtrl+n"
-
-#: src/gui/_menubars.py:184 src/gui/_toolbars.py:109
-msgid "Create a new, empty spreadsheet"
-msgstr "Een nieuwe, lege spreadsheet aanmaken."
-
-#: src/gui/_menubars.py:185
-msgid "&Open"
-msgstr "&Openen"
-
-#: src/gui/_menubars.py:186 src/gui/_toolbars.py:111
-msgid "Open spreadsheet from file"
-msgstr ""
-
-#: src/gui/_menubars.py:188
-msgid "&Save\tCtrl+s"
-msgstr "O&pslaan\tCtrl+s"
-
-#: src/gui/_menubars.py:189 src/gui/_toolbars.py:112
-msgid "Save spreadsheet"
-msgstr ""
-
-#: src/gui/_menubars.py:190
-msgid "Save &As\tShift+Ctrl+s"
-msgstr "Opslaan &als\tShift+Ctrl+s"
-
-#: src/gui/_menubars.py:191
-msgid "Save spreadsheet to a new file"
-msgstr ""
-
-#: src/gui/_menubars.py:193
-msgid "&Import"
-msgstr "&Importeren"
-
-#: src/gui/_menubars.py:194
-msgid "Import a file and paste it into current grid"
-msgstr ""
-
-#: src/gui/_menubars.py:195
-msgid "&Export"
-msgstr "&Exporteren"
-
-#: src/gui/_menubars.py:196
-msgid "Export selection to file (Supported formats: CSV)"
-msgstr ""
-
-#: src/gui/_menubars.py:198
-msgid "&Approve file"
-msgstr "Bestand &goedkeuren"
-
-#: src/gui/_menubars.py:199
-msgid "Approve, unfreeze and sign the current file"
-msgstr "Het huidige bestand goedkeuren, deblokkeren en ondertekenen"
-
-#: src/gui/_menubars.py:201
-msgid "&Clear globals"
-msgstr ""
-
-#: src/gui/_menubars.py:202
-msgid "Deletes global variables from memory and reloads base modules"
-msgstr ""
-
-#: src/gui/_menubars.py:205
-msgid "Page setup"
-msgstr ""
-
-#: src/gui/_menubars.py:206
-msgid "Setup printer page"
-msgstr ""
-
-#: src/gui/_menubars.py:207
-msgid "Print preview\tShift+Ctrl+p"
-msgstr "Afdrukvoorbeeld\tShift+Ctrl+p"
-
-#: src/gui/_menubars.py:208 src/actions/_main_window_actions.py:180
-msgid "Print preview"
-msgstr "Afdrukvoorbeeld"
-
-#: src/gui/_menubars.py:209
-msgid "&Print\tCtrl+p"
-msgstr "Afdru&kken\tCtrl+p"
-
-#: src/gui/_menubars.py:210
-msgid "Print current spreadsheet"
-msgstr "De huidige spreadsheet afdrukken"
-
-#: src/gui/_menubars.py:212
-msgid "Preferences..."
-msgstr "Voorkeuren..."
-
-#: src/gui/_menubars.py:213
-msgid "Change preferences of pyspread"
-msgstr "De voorkeuren van pyspread wijzigen"
-
-#: src/gui/_menubars.py:215
-msgid "&Quit\tCtrl+q"
-msgstr "Afsl&uiten\tCtrl+q"
-
-#: src/gui/_menubars.py:215
-msgid "Quit pyspread"
-msgstr "Pyspread afsluiten"
-
-#: src/gui/_menubars.py:218
-msgid "&Edit"
-msgstr "Be&werken"
-
-#: src/gui/_menubars.py:219
-msgid "&Undo\tCtrl+z"
-msgstr "&Ongedaan maken\tCtrl+z"
-
-#: src/gui/_menubars.py:219
-msgid "Undo last step"
-msgstr "De laatste stap ongedaan maken"
-
-#: src/gui/_menubars.py:221
-msgid "&Redo\tShift+Ctrl+z"
-msgstr "Opn&ieuw\tShift+Ctrl+z"
-
-#: src/gui/_menubars.py:222
-msgid "Redo last undone step"
-msgstr "De laatst ongedaan gemaakte stap opnieuw uitvoeren"
-
-#: src/gui/_menubars.py:227 src/gui/_toolbars.py:128
-msgid "Copy the input strings of the cells to clipboard"
-msgstr "De in de cellen ingevoerde tekst (\"formules\") naar het klembord kopiëren"
-
-#: src/gui/_menubars.py:229
-msgid "Copy &Results\tShift+Ctrl+c"
-msgstr "&Waarden kopiëren\tShift+Ctrl+c"
-
-#: src/gui/_menubars.py:230 src/gui/_toolbars.py:131
-msgid "Copy the result strings of the cells to the clipboard"
-msgstr "De door de cellen weergegeven tekst (\"waardes\") naar het klembord kopiëren"
-
-#: src/gui/_menubars.py:234
-msgid "&Find\tCtrl+f"
-msgstr "&Zoeken\tCtrl+f"
-
-#: src/gui/_menubars.py:235 src/gui/_toolbars.py:121
-msgid "Find cell by content"
-msgstr ""
-
-#: src/gui/_menubars.py:236
-msgid "Replace...\tCtrl+Shift+f"
-msgstr "Vervangen...\tCtrl+Shift+f"
-
-#: src/gui/_menubars.py:237 src/gui/_toolbars.py:123
-msgid "Replace strings in cells"
-msgstr ""
-
-#: src/gui/_menubars.py:239
+#: src/gui/_menubars.py:159 src/gui/_menubars.py:240
 msgid "Insert &rows"
 msgstr "&Rijen invoegen"
 
-#: src/gui/_menubars.py:241
+#: src/gui/_menubars.py:160 src/gui/_menubars.py:241
+msgid "Insert rows at cursor"
+msgstr ""
+
+#: src/gui/_menubars.py:161 src/gui/_menubars.py:242
 msgid "&Insert columns"
 msgstr "K&olommen invoegen"
 
-#: src/gui/_menubars.py:243
+#: src/gui/_menubars.py:162 src/gui/_menubars.py:243
+msgid "Insert columns at cursor"
+msgstr ""
+
+#: src/gui/_menubars.py:163 src/gui/_menubars.py:247 src/gui/_menubars.py:248
+msgid "Delete rows"
+msgstr "RIjen verwijderen"
+
+#: src/gui/_menubars.py:164 src/gui/_menubars.py:249 src/gui/_menubars.py:250
+msgid "Delete columns"
+msgstr "Kolommen verwijderen"
+
+#: src/gui/_menubars.py:180
+msgid "&File"
+msgstr "&Bestand"
+
+#: src/gui/_menubars.py:181
+msgid "&New"
+msgstr ""
+
+#: src/gui/_menubars.py:182
+msgid "Create a new, empty spreadsheet"
+msgstr "Een nieuwe, lege spreadsheet aanmaken."
+
+#: src/gui/_menubars.py:183
+msgid "&Open"
+msgstr "&Openen"
+
+#: src/gui/_menubars.py:184
+msgid "Open spreadsheet from file"
+msgstr ""
+
+#: src/gui/_menubars.py:186
+#, fuzzy
+#| msgid "Save"
+msgid "&Save"
+msgstr "Opslaan"
+
+#: src/gui/_menubars.py:187
+msgid "Save spreadsheet"
+msgstr ""
+
+#: src/gui/_menubars.py:188
+#, fuzzy
+#| msgid "Save"
+msgid "Save &As"
+msgstr "Opslaan"
+
+#: src/gui/_menubars.py:189
+msgid "Save spreadsheet to a new file"
+msgstr ""
+
+#: src/gui/_menubars.py:191
+msgid "&Import"
+msgstr "&Importeren"
+
+#: src/gui/_menubars.py:192
+msgid "Import a file and paste it into current grid"
+msgstr ""
+
+#: src/gui/_menubars.py:193
+msgid "&Export"
+msgstr "&Exporteren"
+
+#: src/gui/_menubars.py:194
+msgid "Export selection to file (Supported formats: CSV)"
+msgstr ""
+
+#: src/gui/_menubars.py:197
+msgid "Approve, unfreeze and sign the current file"
+msgstr "Het huidige bestand goedkeuren, deblokkeren en ondertekenen"
+
+#: src/gui/_menubars.py:199
+msgid "&Clear globals"
+msgstr ""
+
+#: src/gui/_menubars.py:200
+msgid "Deletes global variables from memory and reloads base modules"
+msgstr ""
+
+#: src/gui/_menubars.py:203
+msgid "Page setup"
+msgstr ""
+
+#: src/gui/_menubars.py:204
+msgid "Setup printer page"
+msgstr ""
+
+#: src/gui/_menubars.py:205 src/gui/_menubars.py:206
+#: src/actions/_main_window_actions.py:245
+msgid "Print preview"
+msgstr "Afdrukvoorbeeld"
+
+#: src/gui/_menubars.py:207
+#, fuzzy
+#| msgid "Print"
+msgid "&Print"
+msgstr "Afdrukken"
+
+#: src/gui/_menubars.py:208
+msgid "Print current spreadsheet"
+msgstr "De huidige spreadsheet afdrukken"
+
+#: src/gui/_menubars.py:210
+msgid "Preferences..."
+msgstr "Voorkeuren..."
+
+#: src/gui/_menubars.py:211
+msgid "Change preferences of pyspread"
+msgstr "De voorkeuren van pyspread wijzigen"
+
+#: src/gui/_menubars.py:213
+msgid "&Quit"
+msgstr ""
+
+#: src/gui/_menubars.py:214
+msgid "Quit pyspread"
+msgstr "Pyspread afsluiten"
+
+#: src/gui/_menubars.py:216
+msgid "&Edit"
+msgstr "Be&werken"
+
+#: src/gui/_menubars.py:217
+#, fuzzy
+#| msgid "Undo"
+msgid "&Undo"
+msgstr "Ongedaan maken"
+
+#: src/gui/_menubars.py:218
+msgid "Undo last step"
+msgstr "De laatste stap ongedaan maken"
+
+#: src/gui/_menubars.py:219
+#, fuzzy
+#| msgid "Redo"
+msgid "&Redo"
+msgstr "Opnieuw"
+
+#: src/gui/_menubars.py:220
+msgid "Redo last undone step"
+msgstr "De laatst ongedaan gemaakte stap opnieuw uitvoeren"
+
+#: src/gui/_menubars.py:225
+msgid "Copy the input strings of the cells to clipboard"
+msgstr "De in de cellen ingevoerde tekst (\"formules\") naar het klembord kopiëren"
+
+#: src/gui/_menubars.py:228
+#, fuzzy
+#| msgid "Copy Results"
+msgid "Copy &Results"
+msgstr "Waarden kopiëren"
+
+#: src/gui/_menubars.py:229
+msgid "Copy the result strings of the cells to the clipboard"
+msgstr "De door de cellen weergegeven tekst (\"waardes\") naar het klembord kopiëren"
+
+#: src/gui/_menubars.py:232
+#, fuzzy
+#| msgid "Pasting cells... "
+msgid "Paste &As..."
+msgstr "Cellen aan het plakken..."
+
+#: src/gui/_menubars.py:233
+msgid "Transform clipboard and paste cells into grid"
+msgstr ""
+
+#: src/gui/_menubars.py:235
+#, fuzzy
+#| msgid "Find"
+msgid "&Find"
+msgstr "Zoeken"
+
+#: src/gui/_menubars.py:236
+msgid "Find cell by content"
+msgstr ""
+
+#: src/gui/_menubars.py:237
+#, fuzzy
+#| msgid "Replace"
+msgid "Replace..."
+msgstr "Vervangen"
+
+#: src/gui/_menubars.py:238
+msgid "Replace strings in cells"
+msgstr ""
+
+#: src/gui/_menubars.py:244
 msgid "Insert &table"
 msgstr "&Werkblad invoegen"
 
-#: src/gui/_menubars.py:244
+#: src/gui/_menubars.py:245
 msgid "Insert table before current table"
 msgstr "Een werkblad voor het huidige werkblad invoegen"
 
-#: src/gui/_menubars.py:250
+#: src/gui/_menubars.py:251
 msgid "Delete table"
 msgstr "Werkblad verwijderen"
 
-#: src/gui/_menubars.py:251
+#: src/gui/_menubars.py:252
 msgid "Delete current table"
 msgstr "Het huidige werkblad verwijderen"
 
-#: src/gui/_menubars.py:253 src/gui/_menubars.py:254
+#: src/gui/_menubars.py:254 src/gui/_menubars.py:255
 msgid "Resize grid"
 msgstr ""
 
-#: src/gui/_menubars.py:256
+#: src/gui/_menubars.py:257
 msgid "&View"
 msgstr "Beel&d"
 
-#: src/gui/_menubars.py:257
+#: src/gui/_menubars.py:258
 msgid "Toolbars"
 msgstr "Werkbalken"
 
-#: src/gui/_menubars.py:258 src/gui/_main_window.py:164
+#: src/gui/_menubars.py:259 src/gui/_main_window.py:164
 msgid "Main toolbar"
 msgstr ""
 
-#: src/gui/_menubars.py:259
+#: src/gui/_menubars.py:260
 msgid "Shows and hides the main toolbar."
 msgstr ""
 
-#: src/gui/_menubars.py:261 src/gui/_main_window.py:165
+#: src/gui/_menubars.py:262 src/gui/_main_window.py:165
 #, fuzzy
 msgid "Macro toolbar"
 msgstr "Macrolijst"
 
-#: src/gui/_menubars.py:262
+#: src/gui/_menubars.py:263
 msgid "Shows and hides the macro toolbar."
 msgstr ""
 
-#: src/gui/_menubars.py:265 src/gui/_main_window.py:167
+#: src/gui/_menubars.py:266 src/gui/_main_window.py:167
 msgid "Format toolbar"
 msgstr ""
 
-#: src/gui/_menubars.py:266
+#: src/gui/_menubars.py:267
 msgid "Shows and hides the format toolbar."
 msgstr ""
 
-#: src/gui/_menubars.py:268 src/gui/_main_window.py:168
+#: src/gui/_menubars.py:269 src/gui/_main_window.py:168
 msgid "Find toolbar"
 msgstr ""
 
-#: src/gui/_menubars.py:269
+#: src/gui/_menubars.py:270
 msgid "Shows and hides the find toolbar."
 msgstr ""
 
-#: src/gui/_menubars.py:273 src/gui/_main_window.py:169
+#: src/gui/_menubars.py:274 src/gui/_main_window.py:169
+#: src/gui/_main_window.py:212
 msgid "Entry line"
 msgstr ""
 
-#: src/gui/_menubars.py:274
+#: src/gui/_menubars.py:275
 msgid "Shows and hides the entry line."
 msgstr ""
 
-#: src/gui/_menubars.py:275 src/gui/_main_window.py:170
+#: src/gui/_menubars.py:276
 msgid "Table choice"
 msgstr ""
 
-#: src/gui/_menubars.py:276
+#: src/gui/_menubars.py:277
 msgid "Shows and hides the table choice."
 msgstr ""
 
-#: src/gui/_menubars.py:279
-msgid "Go to cell\tCtrl+G"
-msgstr "Ga naar cel\tCtrl+g"
+#: src/gui/_menubars.py:281
+#, fuzzy
+#| msgid "Goto cell:"
+msgid "Go to cell"
+msgstr "Ga naar cel:"
 
-#: src/gui/_menubars.py:280
+#: src/gui/_menubars.py:282
 msgid "Moves the grid to a cell."
 msgstr ""
 
-#: src/gui/_menubars.py:282
-msgid "Zoom in\tCtrl++"
-msgstr "Inzoomen\tCtrl++"
+#: src/gui/_menubars.py:284
+#, fuzzy
+#| msgid "Zoom in grid."
+msgid "Zoom in"
+msgstr "De weergave inzoomen."
 
-#: src/gui/_menubars.py:283
+#: src/gui/_menubars.py:285
 msgid "Zoom in grid."
 msgstr "De weergave inzoomen."
 
-#: src/gui/_menubars.py:284
-msgid "Zoom out\tCtrl+-"
-msgstr "Uitzoomen\tCtrl+-"
+#: src/gui/_menubars.py:286
+#, fuzzy
+#| msgid "Zoom out grid."
+msgid "Zoom out"
+msgstr "De weergave uitzoomen."
 
-#: src/gui/_menubars.py:285
+#: src/gui/_menubars.py:287
 msgid "Zoom out grid."
 msgstr "De weergave uitzoomen."
 
-#: src/gui/_menubars.py:286
-msgid "Normal size\tCtrl+0"
+#: src/gui/_menubars.py:288
+#, fuzzy
+#| msgid "Normal size\tCtrl+0"
+msgid "Normal size"
 msgstr "Normale grootte\tCtrl+0"
 
-#: src/gui/_menubars.py:287
+#: src/gui/_menubars.py:289
 msgid "Show grid in standard zoom."
 msgstr ""
 
-#: src/gui/_menubars.py:290
-msgid "Refresh selected cells\tF5"
+#: src/gui/_menubars.py:292
+#, fuzzy
+#| msgid "Refresh selected cells\tF5"
+msgid "Refresh selected cells"
 msgstr "Geselecteerde cellen verversen\tF5"
 
-#: src/gui/_menubars.py:291
+#: src/gui/_menubars.py:293
 msgid "Refresh selected cells even when frozen"
 msgstr ""
 
-#: src/gui/_menubars.py:295
+#: src/gui/_menubars.py:297
 msgid "F&ormat"
 msgstr "&Opmaak"
 
-#: src/gui/_menubars.py:296
+#: src/gui/_menubars.py:298
 msgid "Font..."
 msgstr "Lettertype..."
 
-#: src/gui/_menubars.py:297
+#: src/gui/_menubars.py:299
 msgid "Launch font dialog."
 msgstr ""
 
-#: src/gui/_menubars.py:298 src/gui/_toolbars.py:404
+#: src/gui/_menubars.py:300 src/gui/_toolbars.py:413
 msgid "Underline"
 msgstr "Onderstreept"
 
-#: src/gui/_menubars.py:299
+#: src/gui/_menubars.py:301
 msgid "Toggles underline."
 msgstr ""
 
-#: src/gui/_menubars.py:300 src/gui/_toolbars.py:406
+#: src/gui/_menubars.py:302 src/gui/_toolbars.py:415
 msgid "Strikethrough"
 msgstr "Doorgehaald"
 
-#: src/gui/_menubars.py:301
+#: src/gui/_menubars.py:303
 msgid "Toggles strikethrough."
 msgstr ""
 
-#: src/gui/_menubars.py:303
+#: src/gui/_menubars.py:305
 msgid "Frozen"
 msgstr "Bevroren"
 
-#: src/gui/_menubars.py:304
+#: src/gui/_menubars.py:306
 msgid "Toggles frozen state of cell. "
 msgstr ""
 
-#: src/gui/_menubars.py:305
+#: src/gui/_menubars.py:307
 msgid "Frozen cells are updated only when F5 is pressed."
 msgstr "Bevroren cellen worden alleen bijgewerkt als op F5 wordt gedrukt."
 
-#: src/gui/_menubars.py:306 src/gui/_toolbars.py:497
+#: src/gui/_menubars.py:308 src/gui/_toolbars.py:509
 msgid "Merge cells"
 msgstr ""
 
-#: src/gui/_menubars.py:307
+#: src/gui/_menubars.py:309
 #, fuzzy
 msgid "Merges / unmerges selected cells. "
 msgstr "Geselecteerde cellen verversen\tF5"
 
-#: src/gui/_menubars.py:310
+#: src/gui/_menubars.py:312
 msgid "Justification"
 msgstr "Horizontale uitlijning"
 
-#: src/gui/_menubars.py:311
+#: src/gui/_menubars.py:313
 msgid "Left"
 msgstr "Links"
 
-#: src/gui/_menubars.py:313 src/gui/_menubars.py:320
+#: src/gui/_menubars.py:315 src/gui/_menubars.py:322
 msgid "Center"
 msgstr "Centreren"
 
-#: src/gui/_menubars.py:315
+#: src/gui/_menubars.py:317
 msgid "Right"
 msgstr "Rechts"
 
-#: src/gui/_menubars.py:318
+#: src/gui/_menubars.py:320
 msgid "Alignment"
 msgstr "Verticale uitlijning"
 
-#: src/gui/_menubars.py:320
+#: src/gui/_menubars.py:322
 msgid "Top"
 msgstr "Boven"
 
-#: src/gui/_menubars.py:320
+#: src/gui/_menubars.py:322
 msgid "Bottom"
 msgstr "Onder"
 
-#: src/gui/_menubars.py:323
+#: src/gui/_menubars.py:325
 msgid "Text color..."
 msgstr "Tekstkleur..."
 
-#: src/gui/_menubars.py:324
+#: src/gui/_menubars.py:326
 msgid "Launch color dialog to specify text color."
 msgstr ""
 
-#: src/gui/_menubars.py:325
+#: src/gui/_menubars.py:327
 msgid "Background color..."
 msgstr "Achtergrondkleur..."
 
-#: src/gui/_menubars.py:326
+#: src/gui/_menubars.py:328
 msgid "Launch color dialog to specify background color."
 msgstr ""
 
-#: src/gui/_menubars.py:328
+#: src/gui/_menubars.py:330
 msgid "Rotation..."
 msgstr ""
 
-#: src/gui/_menubars.py:329
+#: src/gui/_menubars.py:331
 msgid "Set text rotation."
 msgstr ""
 
-#: src/gui/_menubars.py:333
+#: src/gui/_menubars.py:334
 msgid "&Macro"
 msgstr "&Macro"
 
-#: src/gui/_menubars.py:334
-msgid "&Macro list\tCtrl+m"
-msgstr "&Macrolijst\tCtrl+m"
-
 #: src/gui/_menubars.py:335
+#, fuzzy
+#| msgid "Macro list"
+msgid "&Macro list"
+msgstr "Macrolijst"
+
+#: src/gui/_menubars.py:336
 msgid "Choose, fill in, manage, and create macros"
 msgstr ""
 
-#: src/gui/_menubars.py:336
+#: src/gui/_menubars.py:337
 msgid "&Load macro list"
 msgstr "Macrolijst &laden"
 
-#: src/gui/_menubars.py:337
+#: src/gui/_menubars.py:338
 msgid "Load macro list"
 msgstr "Macrolijst laden"
 
-#: src/gui/_menubars.py:338
+#: src/gui/_menubars.py:339
 msgid "&Save macro list"
 msgstr ""
 
-#: src/gui/_menubars.py:339
+#: src/gui/_menubars.py:340
 msgid "Save macro list"
 msgstr ""
 
-#: src/gui/_menubars.py:341
+#: src/gui/_menubars.py:342
 #, fuzzy
 msgid "Insert bitmap..."
 msgstr "&Werkblad invoegen"
 
-#: src/gui/_menubars.py:342
+#: src/gui/_menubars.py:343
 msgid "Insert bitmap from file into cell"
 msgstr ""
 
-#: src/gui/_menubars.py:343
+#: src/gui/_menubars.py:344
 msgid "Link bitmap..."
 msgstr ""
 
-#: src/gui/_menubars.py:344
+#: src/gui/_menubars.py:345
 msgid "Link bitmap from file into cell"
 msgstr ""
 
-#: src/gui/_menubars.py:345
+#: src/gui/_menubars.py:346
 msgid "Insert chart..."
 msgstr ""
 
-#: src/gui/_menubars.py:346 src/gui/_toolbars.py:151
+#: src/gui/_menubars.py:347
 msgid "Insert chart into cell"
 msgstr ""
 
-#: src/gui/_menubars.py:348
+#: src/gui/_menubars.py:350
 msgid "&Help"
 msgstr "&Help"
 
-#: src/gui/_menubars.py:349
+#: src/gui/_menubars.py:351
 msgid "First &Steps"
 msgstr "Eerste &stappen"
 
-#: src/gui/_menubars.py:350
+#: src/gui/_menubars.py:352
 msgid "Launch First Steps in pyspread"
 msgstr ""
 
-#: src/gui/_menubars.py:351
+#: src/gui/_menubars.py:353
 msgid "&Tutorial"
 msgstr ""
 
-#: src/gui/_menubars.py:352
+#: src/gui/_menubars.py:354
 msgid "Launch tutorial"
 msgstr ""
 
-#: src/gui/_menubars.py:353
+#: src/gui/_menubars.py:355
 msgid "&FAQ"
 msgstr "&FAQ"
 
-#: src/gui/_menubars.py:354
+#: src/gui/_menubars.py:356
 msgid "Frequently asked questions"
 msgstr "Veelgestelde vragen"
 
-#: src/gui/_menubars.py:356
+#: src/gui/_menubars.py:358
 msgid "&Python tutorial"
 msgstr ""
 
-#: src/gui/_menubars.py:357
+#: src/gui/_menubars.py:359
 msgid "Python tutorial for coding information (online)"
 msgstr ""
 
-#: src/gui/_menubars.py:359
+#: src/gui/_menubars.py:361
 msgid "&About"
 msgstr "&Info"
 
-#: src/gui/_menubars.py:359 src/gui/_dialogs.py:1083
+#: src/gui/_menubars.py:361 src/gui/_dialogs.py:1081
 msgid "About pyspread"
 msgstr "Over pyspread"
 
-#: src/gui/_main_window.py:94
+#: src/gui/_main_window.py:97
 msgid "Welcome to pyspread."
 msgstr "Welkom bij pyspread."
 
-#: src/gui/_main_window.py:178
+#: src/gui/_main_window.py:177
 #, fuzzy
 msgid "View"
 msgstr "Beel&d"
 
-#: src/gui/_main_window.py:590
+#: src/gui/_main_window.py:190
+#, fuzzy
+msgid "Macro Toolbar"
+msgstr "Macrolijst"
+
+#: src/gui/_main_window.py:196
+#, fuzzy
+msgid "Main Toolbar"
+msgstr "Macrolijst"
+
+#: src/gui/_main_window.py:201 src/gui/_toolbars.py:156
+msgid "Find"
+msgstr "Zoeken"
+
+#: src/gui/_main_window.py:207
+msgid "Cell Attributes"
+msgstr ""
+
+#: src/gui/_main_window.py:579
 msgid "New grid with dimensions {} created."
 msgstr ""
 
-#: src/gui/_main_window.py:614 src/gui/_main_window.py:668
-msgid "Pyspread file (*.pys)|*.pys|All files (*.*)|*.*"
-msgstr "Pyspread-bestand (*.pys)|*.pys|Alle bestanden (*.*)|*.*"
+#: src/gui/_main_window.py:604 src/gui/_main_window.py:661
+#, fuzzy
+#| msgid "&Approve file"
+msgid "Pyspread file"
+msgstr "Bestand &goedkeuren"
 
-#: src/gui/_main_window.py:615
+#: src/gui/_main_window.py:605 src/gui/_main_window.py:662
+#: src/gui/_main_window.py:1113 src/gui/_main_window.py:1141
+msgid "All files"
+msgstr ""
+
+#: src/gui/_main_window.py:606
 msgid "Choose pyspread file to open."
 msgstr ""
 
-#: src/gui/_main_window.py:669
+#: src/gui/_main_window.py:663
 msgid "Choose filename for saving."
 msgstr ""
 
-#: src/gui/_main_window.py:681
+#: src/gui/_main_window.py:676
 msgid "Directory present. Save aborted."
 msgstr ""
 
-#: src/gui/_main_window.py:688
+#: src/gui/_main_window.py:684
 msgid ""
 "The file {filepath} is already present.\n"
 "Overwrite?"
 msgstr ""
 
-#: src/gui/_main_window.py:690
+#: src/gui/_main_window.py:686
 msgid "File collision"
 msgstr ""
 
-#: src/gui/_main_window.py:694
+#: src/gui/_main_window.py:691
 msgid "File present. Save aborted by user."
 msgstr ""
 
-#: src/gui/_main_window.py:720
-msgid "Csv file (*.*)|*.*|Tab delimited text file (*.*)|*.*"
+#: src/gui/_main_window.py:718 src/gui/_main_window.py:757
+#, fuzzy
+#| msgid "CSV file (*.*)|*.*"
+msgid "CSV file"
+msgstr "CSV-bestand (*.*)|*.*"
+
+#: src/gui/_main_window.py:719
+#, fuzzy
+#| msgid "Csv file (*.*)|*.*|Tab delimited text file (*.*)|*.*"
+msgid "Tab delimited text file"
 msgstr "Csv-bestand (*.*)|*.*|Tab-gescheiden tekstbestand (*.*)|*.*"
 
-#: src/gui/_main_window.py:721
+#: src/gui/_main_window.py:720
 msgid "Choose file to import."
 msgstr ""
 
-#: src/gui/_main_window.py:773
-msgid "CSV file (*.*)|*.*"
-msgstr "CSV-bestand (*.*)|*.*"
+#: src/gui/_main_window.py:783
+msgid "SVG file"
+msgstr ""
 
-#: src/gui/_main_window.py:774
+#: src/gui/_main_window.py:784
+msgid "EPS file"
+msgstr ""
+
+#: src/gui/_main_window.py:785
+msgid "PS file"
+msgstr ""
+
+#: src/gui/_main_window.py:786
+msgid "PDF file"
+msgstr ""
+
+#: src/gui/_main_window.py:787
+msgid "PNG file"
+msgstr ""
+
+#: src/gui/_main_window.py:789
 msgid "Choose filename for export."
 msgstr ""
 
-#: src/gui/_main_window.py:790
+#: src/gui/_main_window.py:811
 msgid ""
 "You are going to approve and trust a file that\n"
 "you have received from an untrusted source.\n"
@@ -693,38 +789,45 @@ msgid ""
 "Proceed and sign this file as trusted?"
 msgstr ""
 
-#: src/gui/_main_window.py:801
+#: src/gui/_main_window.py:822
 msgid "Security warning"
 msgstr ""
 
-#: src/gui/_main_window.py:809
+#: src/gui/_main_window.py:830
 msgid "Safe mode deactivated."
 msgstr ""
 
-#: src/gui/_main_window.py:816
+#: src/gui/_main_window.py:837
 msgid "Deleting globals and reloading modules cannot be undone. Proceed?"
 msgstr ""
 
-#: src/gui/_main_window.py:818
+#: src/gui/_main_window.py:839
 msgid "Really delete globals and modules?"
 msgstr ""
 
-#: src/gui/_main_window.py:825
+#: src/gui/_main_window.py:846
 msgid "Globals cleared and base modules reloaded."
 msgstr ""
 
-#: src/gui/_main_window.py:1046 src/gui/_main_window.py:1071
-msgid "Macro file (*.py)|*.py|All files (*.*)|*.*"
-msgstr "Macro-bestand (*.py)|*.py|Alle bestanden (*.*)|*.*"
+#: src/gui/_main_window.py:981
+msgid "Error evaluating data: "
+msgstr ""
 
-#: src/gui/_main_window.py:1047 src/gui/_main_window.py:1072
+#: src/gui/_main_window.py:1112 src/gui/_main_window.py:1140
+#, fuzzy
+#| msgid "Macro list"
+msgid "Macro file"
+msgstr "Macrolijst"
+
+#: src/gui/_main_window.py:1114 src/gui/_main_window.py:1142
 msgid "Choose macro file."
 msgstr ""
 
 #: src/gui/_chart_dialog.py:456 src/gui/_chart_dialog.py:486
-#, fuzzy
-msgid "Series name"
-msgstr "Echte naam"
+#: src/gui/_chart_dialog.py:534 src/gui/_chart_dialog.py:581
+#: src/gui/_chart_dialog.py:584
+msgid "Label"
+msgstr ""
 
 #: src/gui/_chart_dialog.py:457
 msgid "X"
@@ -742,7 +845,7 @@ msgstr ""
 msgid "Width"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:461
+#: src/gui/_chart_dialog.py:461 src/gui/_chart_dialog.py:539
 msgid "Color"
 msgstr ""
 
@@ -761,6 +864,8 @@ msgid "Edge color"
 msgstr "Tekstkleur..."
 
 #: src/gui/_chart_dialog.py:472 src/gui/_chart_dialog.py:499
+#: src/gui/_chart_dialog.py:522 src/gui/_chart_dialog.py:546
+#: src/gui/_chart_dialog.py:568
 msgid "Data"
 msgstr ""
 
@@ -798,59 +903,126 @@ msgstr "Achtergrondkleur..."
 msgid "Bar"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:511 src/gui/_chart_dialog.py:514
-msgid "Label"
-msgstr ""
-
-#: src/gui/_chart_dialog.py:512 src/gui/_chart_dialog.py:515
-msgid "Limits"
-msgstr ""
-
-#: src/gui/_chart_dialog.py:513 src/gui/_chart_dialog.py:516
-msgid "Log"
-msgstr ""
-
-#: src/gui/_chart_dialog.py:523
-msgid "X-Axis"
-msgstr ""
-
-#: src/gui/_chart_dialog.py:524
-msgid "Y-Axis"
-msgstr ""
-
-#: src/gui/_chart_dialog.py:675 src/gui/_chart_dialog.py:691
-msgid "+"
-msgstr ""
-
-#: src/gui/_chart_dialog.py:707 src/gui/_chart_dialog.py:805
+#: src/gui/_chart_dialog.py:511 src/gui/_chart_dialog.py:535
+#: src/gui/_chart_dialog.py:558 src/gui/_chart_dialog.py:784
+#: src/gui/_chart_dialog.py:883
 msgid "Series"
 msgstr ""
 
-#: src/gui/_chart_dialog.py:801 src/gui/_toolbars.py:150
-#: src/gui/_toolbars.py:151
+#: src/gui/_chart_dialog.py:512
+msgid "Box widths"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:513
+msgid "Vertical"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:514
+msgid "Flier"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:515
+msgid "Notch"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:523
+msgid "Box plot"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:536
+msgid "Bins"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:537
+msgid "Normed"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:538
+msgid "Cumulative"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:547
+msgid "Histogram"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:559
+msgid "Labels"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:560
+msgid "Colors"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:561
+msgid "Shadow"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:569
+msgid "Pie"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:580
+msgid "Title"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:582 src/gui/_chart_dialog.py:585
+msgid "Limits"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:583 src/gui/_chart_dialog.py:586
+msgid "Log. scale"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:587
+#, fuzzy
+#| msgid "Grid rows"
+msgid "Grid"
+msgstr "Weergegeven rijen"
+
+#: src/gui/_chart_dialog.py:588
+msgid "Legend"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:595
+msgid "Figure"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:596
+msgid "X-Axis"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:597
+msgid "Y-Axis"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:752 src/gui/_chart_dialog.py:768
+msgid "+"
+msgstr ""
+
+#: src/gui/_chart_dialog.py:879 src/gui/_toolbars.py:182
 #, fuzzy
 msgid "Insert chart"
 msgstr "&Rijen invoegen"
 
-#: src/gui/_chart_dialog.py:804
+#: src/gui/_chart_dialog.py:882
 msgid "Axes"
 msgstr ""
 
-#: src/gui/_gui_interfaces.py:69
+#: src/gui/_gui_interfaces.py:67
 msgid "Currently, only 3D grids are supported."
 msgstr ""
 
-#: src/gui/_gui_interfaces.py:102
+#: src/gui/_gui_interfaces.py:100
 msgid ""
 "There are unsaved changes.\n"
 "Do you want to save?"
 msgstr ""
 
-#: src/gui/_gui_interfaces.py:105
+#: src/gui/_gui_interfaces.py:104
 msgid "Unsaved changes"
 msgstr ""
 
-#: src/gui/_gui_interfaces.py:204
+#: src/gui/_gui_interfaces.py:203
 msgid ""
 "'{}' does not seem to be a valid CSV file.\n"
 " \n"
@@ -858,230 +1030,184 @@ msgid ""
 "{}"
 msgstr ""
 
-#: src/gui/_gui_interfaces.py:206 src/actions/_main_window_actions.py:123
+#: src/gui/_gui_interfaces.py:205 src/actions/_main_window_actions.py:129
 msgid "Error reading CSV file"
 msgstr ""
 
-#: src/gui/_gui_interfaces.py:340
+#: src/gui/_gui_interfaces.py:352
 msgid "Real name"
 msgstr "Echte naam"
 
-#: src/gui/_gui_interfaces.py:341
-msgid "Passphrase"
+#: src/gui/_gui_interfaces.py:372
+msgid "Please enter a value in each field."
 msgstr ""
 
-#: src/gui/_gui_interfaces.py:342
-msgid "E-mail"
-msgstr ""
-
-#: src/gui/_gui_interfaces.py:343
-msgid "Comment"
-msgstr "Opmerking"
-
-#: src/gui/_gui_interfaces.py:367
+#: src/gui/_gui_interfaces.py:374
 msgid "Missing value"
 msgstr "Ontbrekende waarde"
 
-#: src/gui/_gui_interfaces.py:389
-msgid "Please enter your GPG key passphrase for {}."
-msgstr ""
+#: src/gui/_grid.py:380 src/gui/_grid.py:401
+#, fuzzy
+#| msgid "Insert table before current table"
+msgid "Select bitmap for current cell"
+msgstr "Een werkblad voor het huidige werkblad invoegen"
 
-#: src/gui/_gui_interfaces.py:392
-msgid ""
-"\n"
-"The password will be stored in your config file."
-msgstr ""
-
-#: src/gui/_gui_interfaces.py:395
-msgid "Wrong password!\n"
-msgstr ""
-
-#: src/gui/_gui_interfaces.py:397 src/gui/_dialogs.py:1178
-msgid "GPG key passphrase"
-msgstr ""
-
-#: src/gui/_grid.py:392
+#: src/gui/_grid.py:461
 msgid "Weight {} unknown"
 msgstr ""
 
-#: src/gui/_grid.py:412
+#: src/gui/_grid.py:481
 msgid "Style {} unknown"
 msgstr ""
 
-#: src/gui/_grid.py:514
+#: src/gui/_grid.py:583
 msgid "Enter text angle in degrees."
 msgstr ""
 
-#: src/gui/_grid.py:801
+#: src/gui/_grid.py:901
 msgid "'{}' not found."
 msgstr ""
 
-#: src/gui/_grid.py:808
+#: src/gui/_grid.py:908
 msgid "Found '{}' in cell {}."
 msgstr "Vond '{}' in cel {}."
 
-#: src/gui/_grid.py:981
+#: src/gui/_grid.py:1081
 msgid "Grid dimensions changed to {}."
 msgstr ""
 
-#: src/gui/_printout.py:199
+#: src/gui/_printout.py:198
 msgid "Page: {}"
 msgstr "Pagina: {}"
 
-#: src/gui/_toolbars.py:108
+#: src/gui/_toolbars.py:149
 msgid "New"
 msgstr "Nieuw"
 
-#: src/gui/_toolbars.py:108
-msgid "New spreadsheet"
-msgstr "Nieuwe spreadsheet"
-
-#: src/gui/_toolbars.py:110
+#: src/gui/_toolbars.py:150
 msgid "Open"
 msgstr "Openen"
 
-#: src/gui/_toolbars.py:110
-msgid "Open spreadsheet"
-msgstr ""
-
-#: src/gui/_toolbars.py:112
+#: src/gui/_toolbars.py:151
 msgid "Save"
 msgstr "Opslaan"
 
-#: src/gui/_toolbars.py:113
-msgid "Save spreadsheet to file"
-msgstr ""
-
-#: src/gui/_toolbars.py:115
+#: src/gui/_toolbars.py:153
 msgid "Undo"
 msgstr "Ongedaan maken"
 
-#: src/gui/_toolbars.py:116
-msgid "Undo last operation"
-msgstr ""
-
-#: src/gui/_toolbars.py:117
+#: src/gui/_toolbars.py:154
 msgid "Redo"
 msgstr "Opnieuw"
 
-#: src/gui/_toolbars.py:118
-msgid "Redo next operation"
-msgstr ""
-
-#: src/gui/_toolbars.py:120
-msgid "Find"
-msgstr "Zoeken"
-
-#: src/gui/_toolbars.py:122
+#: src/gui/_toolbars.py:157
 msgid "Replace"
 msgstr "Vervangen"
 
-#: src/gui/_toolbars.py:125
+#: src/gui/_toolbars.py:159
 msgid "Cut"
 msgstr "Knippen"
 
-#: src/gui/_toolbars.py:126
-msgid "Cut cells to clipboard"
-msgstr "Cellen naar het klembord knippen"
-
-#: src/gui/_toolbars.py:127
+#: src/gui/_toolbars.py:160
 msgid "Copy"
 msgstr "Kopiëren"
 
-#: src/gui/_toolbars.py:129 src/gui/_toolbars.py:130
+#: src/gui/_toolbars.py:161
 msgid "Copy Results"
 msgstr "Waarden kopiëren"
 
-#: src/gui/_toolbars.py:132
+#: src/gui/_toolbars.py:162
 msgid "Paste"
 msgstr "Plakken"
 
-#: src/gui/_toolbars.py:133
-msgid "Paste cell from clipboard"
-msgstr "Cel vanaf het klembord plakken"
-
-#: src/gui/_toolbars.py:135
+#: src/gui/_toolbars.py:164
 msgid "Print"
 msgstr "Afdrukken"
 
-#: src/gui/_toolbars.py:136
+#: src/gui/_toolbars.py:180
 #, fuzzy
-msgid "Print spreadsheet"
-msgstr "De huidige spreadsheet afdrukken"
-
-#: src/gui/_toolbars.py:167
-msgid "Case sensitive"
-msgstr "Hoofdlettergevoelig"
-
-#: src/gui/_toolbars.py:168
-msgid "Case sensitive search"
-msgstr "Hoofdlettergevoelig zoeken"
-
-#: src/gui/_toolbars.py:174
-msgid "Regular expression"
-msgstr "Reguliere expressie"
-
-#: src/gui/_toolbars.py:175
-msgid "Treat search string as regular expression"
-msgstr ""
+msgid "Insert bitmap"
+msgstr "&Werkblad invoegen"
 
 #: src/gui/_toolbars.py:181
-msgid "Whole word"
+msgid "Link bitmap"
 msgstr ""
 
-#: src/gui/_toolbars.py:182
-msgid "Search string is surrounded by whitespace characters"
+#: src/gui/_toolbars.py:205
+msgid "Find in code and results"
 msgstr ""
 
-#: src/gui/_toolbars.py:199
-msgid "Searches in grid cell source code and grid cell results."
-msgstr ""
-
-#: src/gui/_toolbars.py:238
+#: src/gui/_toolbars.py:213
 msgid "Search direction"
 msgstr ""
 
-#: src/gui/_toolbars.py:294
+#: src/gui/_toolbars.py:225
+msgid "Case sensitive"
+msgstr "Hoofdlettergevoelig"
+
+#: src/gui/_toolbars.py:226
+msgid "Regular expression"
+msgstr "Reguliere expressie"
+
+#: src/gui/_toolbars.py:227
+msgid "Surrounded by whitespace"
+msgstr ""
+
+#: src/gui/_toolbars.py:298
 msgid "Neither UP nor DOWN in search_flags"
 msgstr ""
 
-#: src/gui/_toolbars.py:400
+#: src/gui/_toolbars.py:409
 msgid "Bold"
 msgstr "Vet"
 
-#: src/gui/_toolbars.py:402
+#: src/gui/_toolbars.py:411
 msgid "Italics"
 msgstr "Cursief"
 
-#: src/gui/_toolbars.py:407
+#: src/gui/_toolbars.py:416
 msgid "Freeze"
 msgstr "Bevriezen"
 
-#: src/gui/_grid_renderer.py:380
+#: src/gui/_grid_renderer.py:379
 msgid "Vertical alignment {} not in (top, middle, bottom)"
 msgstr ""
 
-#: src/gui/_grid_renderer.py:407
+#: src/gui/_grid_renderer.py:406
 msgid "Cell justification {} not in (left, center, right)"
 msgstr ""
 
-#: src/gui/_widgets.py:471
+#: src/gui/_widgets.py:475
 msgid "Label {} is invalid."
 msgstr ""
 
-#: src/gui/_widgets.py:489
+#: src/gui/_widgets.py:493
 msgid "Code {} is invalid."
 msgstr ""
 
-#: src/gui/_widgets.py:738
+#: src/gui/_widgets.py:703
+msgid "Toggles link insertion mode."
+msgstr ""
+
+#: src/gui/_widgets.py:765
+msgid "Enter Python expression here."
+msgstr ""
+
+#: src/gui/_widgets.py:864
+msgid ""
+"Pyspread is in safe mode.\n"
+"Expressions are not evaluated."
+msgstr ""
+
+#: src/gui/_widgets.py:934
 msgid "For switching tables enter the table number or use the mouse wheel."
 msgstr ""
 
-#: src/gui/_dialogs.py:172
+#: src/gui/_dialogs.py:173
 msgid "Dialect"
 msgstr ""
 
-#: src/gui/_dialogs.py:173
+#: src/gui/_dialogs.py:174
 msgid ""
 "To make it easier to specify the format of input and output records, specific formatting parameters are grouped together into dialects.\n"
 "'excel': Defines the usual properties of an Excel-generated CSV file.\n"
@@ -1089,67 +1215,67 @@ msgid ""
 "'excel-tab': Defines the usual properties of an Excel-generated TAB-delimited file."
 msgstr ""
 
-#: src/gui/_dialogs.py:179
+#: src/gui/_dialogs.py:180
 msgid "Delimiter"
 msgstr "Scheidingsteken"
 
-#: src/gui/_dialogs.py:180
+#: src/gui/_dialogs.py:181
 msgid "A one-character string used to separate fields."
 msgstr ""
 
-#: src/gui/_dialogs.py:181
+#: src/gui/_dialogs.py:182
 msgid "Doublequote"
 msgstr ""
 
-#: src/gui/_dialogs.py:182
+#: src/gui/_dialogs.py:183
 msgid "Controls how instances of quotechar appearing inside a field should be themselves be quoted. When True, the character is doubled. When False, the escapechar is used as a prefix to the quotechar."
 msgstr ""
 
-#: src/gui/_dialogs.py:186
+#: src/gui/_dialogs.py:187
 msgid "Escape character"
 msgstr ""
 
-#: src/gui/_dialogs.py:187
+#: src/gui/_dialogs.py:188
 msgid "A one-character string used by the writer to escape the delimiter if quoting is set to QUOTE_NONE and the quotechar if doublequote is False. On reading, the escapechar removes any special meaning from the following character."
 msgstr ""
 
-#: src/gui/_dialogs.py:192
+#: src/gui/_dialogs.py:193
 msgid "Quote character"
 msgstr ""
 
-#: src/gui/_dialogs.py:193
+#: src/gui/_dialogs.py:194
 msgid "A one-character string used to quote fields containing special characters, such as the delimiter or quotechar, or which contain new-line characters."
 msgstr ""
 
-#: src/gui/_dialogs.py:196
+#: src/gui/_dialogs.py:197
 msgid "Quoting style"
 msgstr ""
 
-#: src/gui/_dialogs.py:197
+#: src/gui/_dialogs.py:198
 msgid "Controls when quotes should be recognised."
 msgstr ""
 
-#: src/gui/_dialogs.py:198
+#: src/gui/_dialogs.py:199
 msgid "Header present"
 msgstr ""
 
-#: src/gui/_dialogs.py:199
+#: src/gui/_dialogs.py:200
 msgid "Analyze the CSV file and treat the first row as strings if it appears to be a series of column headers."
 msgstr ""
 
-#: src/gui/_dialogs.py:201
+#: src/gui/_dialogs.py:202
 msgid "Skip initial space"
 msgstr ""
 
-#: src/gui/_dialogs.py:202
+#: src/gui/_dialogs.py:203
 msgid "When True, whitespace immediately following the delimiter is ignored."
 msgstr ""
 
-#: src/gui/_dialogs.py:383
+#: src/gui/_dialogs.py:384
 msgid "{} unknown."
 msgstr ""
 
-#: src/gui/_dialogs.py:391
+#: src/gui/_dialogs.py:392
 msgid ""
 "The dialect is invalid. \n"
 " \n"
@@ -1157,269 +1283,271 @@ msgid ""
 "{}"
 msgstr ""
 
-#: src/gui/_dialogs.py:614
+#: src/gui/_dialogs.py:615
 msgid "CSV Import: {}"
 msgstr ""
 
-#: src/gui/_dialogs.py:817
+#: src/gui/_dialogs.py:819
 msgid "Macro list"
 msgstr "Macrolijst"
 
-#: src/gui/_dialogs.py:819
+#: src/gui/_dialogs.py:821
 msgid "Enter python code here."
 msgstr ""
 
-#: src/gui/_dialogs.py:820
+#: src/gui/_dialogs.py:822
 msgid "Accept all changes"
 msgstr "Alle wijzigingen accepteren"
 
-#: src/gui/_dialogs.py:821
+#: src/gui/_dialogs.py:823
 msgid "Apply changes to current macro"
 msgstr ""
 
-#: src/gui/_dialogs.py:822
+#: src/gui/_dialogs.py:824
 msgid "Remove current macro"
 msgstr ""
 
-#: src/gui/_dialogs.py:864
+#: src/gui/_dialogs.py:866
 msgid "Rows"
 msgstr "Rijen"
 
-#: src/gui/_dialogs.py:867
+#: src/gui/_dialogs.py:869
 msgid "Columns"
 msgstr "Kolommen"
 
-#: src/gui/_dialogs.py:870
+#: src/gui/_dialogs.py:872
 msgid "Tables"
 msgstr "Werkbladen"
 
-#: src/gui/_dialogs.py:984
+#: src/gui/_dialogs.py:980
 msgid "Goto cell:"
 msgstr "Ga naar cel:"
 
-#: src/gui/_dialogs.py:989
+#: src/gui/_dialogs.py:985
 msgid "Row: "
 msgstr "Rij: "
 
-#: src/gui/_dialogs.py:998
+#: src/gui/_dialogs.py:994
 msgid "Column: "
 msgstr "Kolom: "
 
-#: src/gui/_dialogs.py:1006
+#: src/gui/_dialogs.py:1002
 msgid "Table: "
 msgstr "Werkblad: "
 
-#: src/gui/_dialogs.py:1014
+#: src/gui/_dialogs.py:1010
 msgid "OK"
 msgstr "OK"
 
-#: src/gui/_dialogs.py:1017
+#: src/gui/_dialogs.py:1013
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: src/gui/_dialogs.py:1063
+#: src/gui/_dialogs.py:1059
 msgid ""
 "A non-traditional Python spreadsheet application.\n"
 "Pyspread is based on and written in the programming language Python."
 msgstr ""
 
-#: src/gui/_dialogs.py:1067
+#: src/gui/_dialogs.py:1063
 msgid "Pyspread Web site"
 msgstr ""
 
-#: src/gui/_dialogs.py:1085
+#: src/gui/_dialogs.py:1083
 msgid ""
 "pyspread {}\n"
 "Copyright Martin Manns"
 msgstr ""
 
-#: src/gui/_dialogs.py:1136
+#: src/gui/_dialogs.py:1133
 msgid "Max. undo steps"
 msgstr ""
 
-#: src/gui/_dialogs.py:1137
+#: src/gui/_dialogs.py:1134
 msgid "Maximum number of undo steps"
 msgstr ""
 
-#: src/gui/_dialogs.py:1143
+#: src/gui/_dialogs.py:1140
 msgid "Grid rows"
 msgstr "Weergegeven rijen"
 
-#: src/gui/_dialogs.py:1144
+#: src/gui/_dialogs.py:1141
 msgid "Number of grid rows when starting pyspread"
 msgstr ""
 
-#: src/gui/_dialogs.py:1150
+#: src/gui/_dialogs.py:1147
 msgid "Grid columns"
 msgstr "Weergegeven kolommen"
 
-#: src/gui/_dialogs.py:1151
+#: src/gui/_dialogs.py:1148
 msgid "Number of grid columns when starting pyspread"
 msgstr ""
 
-#: src/gui/_dialogs.py:1157
+#: src/gui/_dialogs.py:1154
 msgid "Grid tables"
 msgstr "Weergegeven werkbladen"
 
-#: src/gui/_dialogs.py:1158
+#: src/gui/_dialogs.py:1155
 msgid "Number of grid tables when starting pyspread"
 msgstr ""
 
-#: src/gui/_dialogs.py:1164
+#: src/gui/_dialogs.py:1161
 msgid "Max. result length"
 msgstr ""
 
-#: src/gui/_dialogs.py:1165
+#: src/gui/_dialogs.py:1162
 msgid "Maximum length of cell result string"
 msgstr ""
 
-#: src/gui/_dialogs.py:1171
+#: src/gui/_dialogs.py:1168
 msgid "GPG key name"
 msgstr ""
 
-#: src/gui/_dialogs.py:1172
+#: src/gui/_dialogs.py:1169
 msgid "Name of the GPG key for signing files"
 msgstr ""
 
-#: src/gui/_dialogs.py:1179
-msgid "Passphrase of the GPG key for signing files"
-msgstr ""
-
-#: src/gui/_dialogs.py:1185
-msgid "Store passphrase in config file"
-msgstr ""
-
-#: src/gui/_dialogs.py:1186
-msgid "If False then the passprase is not stored on exit"
-msgstr ""
-
-#: src/gui/_dialogs.py:1194
+#: src/gui/_dialogs.py:1177
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: src/gui/_dialogs.py:1257
+#: src/gui/_dialogs.py:1245
 msgid "GPG key data"
 msgstr ""
 
-#: src/gui/_dialogs.py:1277
-msgid "Store passphrase in keyring"
-msgstr ""
-
-#: src/gui/_dialogs.py:1284
+#: src/gui/_dialogs.py:1262
 msgid "Starts key generation."
 msgstr ""
 
-#: src/gui/_dialogs.py:1289
+#: src/gui/_dialogs.py:1267
 msgid "Exits pyspread."
 msgstr ""
 
-#: src/actions/_grid_actions.py:100
+#: src/gui/_dialogs.py:1287
+#, fuzzy
+#| msgid "Paste"
+msgid "Paste as"
+msgstr "Plakken"
+
+#: src/gui/_dialogs.py:1292
+msgid "Dimension of object"
+msgstr ""
+
+#: src/gui/_dialogs.py:1296
+msgid "Transpose"
+msgstr ""
+
+#: src/actions/_grid_actions.py:107
 msgid "{nele} elements processed. Press <Esc> to abort."
 msgstr ""
 
-#: src/actions/_grid_actions.py:102
+#: src/actions/_grid_actions.py:109
 msgid "{nele} of {totalele} elements processed. Press <Esc> to abort."
 msgstr ""
 
-#: src/actions/_grid_actions.py:166
+#: src/actions/_grid_actions.py:176
 msgid "Valid signature found. File is trusted."
 msgstr ""
 
-#: src/actions/_grid_actions.py:174
+#: src/actions/_grid_actions.py:185
 msgid "File is not properly signed. Safe mode activated. Select File -> Approve to leave safe mode."
 msgstr ""
 
-#: src/actions/_grid_actions.py:194
+#: src/actions/_grid_actions.py:205
 msgid "File format unsupported."
 msgstr "Bestandsindeling niet ondersteund."
 
-#: src/actions/_grid_actions.py:203
+#: src/actions/_grid_actions.py:214
 msgid "File loading aborted."
 msgstr ""
 
-#: src/actions/_grid_actions.py:270 src/actions/_grid_actions.py:337
-#: src/actions/_grid_actions.py:437 src/actions/_main_window_actions.py:85
-#: src/actions/_main_window_actions.py:452
+#: src/actions/_grid_actions.py:281 src/actions/_grid_actions.py:348
+#: src/actions/_grid_actions.py:453 src/actions/_main_window_actions.py:91
+#: src/actions/_main_window_actions.py:522
 msgid "Error opening file {}."
 msgstr ""
 
-#: src/actions/_grid_actions.py:284
+#: src/actions/_grid_actions.py:295
 msgid "File version {} unsupported (not 0.1)."
 msgstr ""
 
-#: src/actions/_grid_actions.py:298
+#: src/actions/_grid_actions.py:309
 msgid "No section parser present."
 msgstr ""
 
-#: src/actions/_grid_actions.py:367
-msgid "Error signing file. File is not signed."
+#: src/actions/_grid_actions.py:383
+msgid "Error signing file. "
 msgstr ""
 
-#: src/actions/_grid_actions.py:384
+#: src/actions/_grid_actions.py:400
 msgid "File saved and signed"
 msgstr ""
 
-#: src/actions/_grid_actions.py:386
+#: src/actions/_grid_actions.py:402
 msgid "File signed"
 msgstr ""
 
-#: src/actions/_grid_actions.py:398
+#: src/actions/_grid_actions.py:414
 msgid "Save aborted."
 msgstr "Opslaan afgebroken."
 
-#: src/actions/_grid_actions.py:430
+#: src/actions/_grid_actions.py:446
 msgid "Error writing to file {}."
 msgstr ""
 
-#: src/actions/_grid_actions.py:676
+#: src/actions/_grid_actions.py:537
+msgid "File saved but not signed because it is unapproved."
+msgstr ""
+
+#: src/actions/_grid_actions.py:701
 msgid "Key length {}  not in (2, 3)"
 msgstr ""
 
-#: src/actions/_grid_actions.py:681
+#: src/actions/_grid_actions.py:706
 msgid "Paste aborted."
 msgstr "Plakken afgebroken."
 
-#: src/actions/_grid_actions.py:692
+#: src/actions/_grid_actions.py:717
 msgid "rows and columns"
 msgstr "rijen en kolommen"
 
-#: src/actions/_grid_actions.py:694
+#: src/actions/_grid_actions.py:719
 msgid "rows"
 msgstr "rijen"
 
-#: src/actions/_grid_actions.py:696
+#: src/actions/_grid_actions.py:721
 msgid "columns"
 msgstr "kolommen"
 
-#: src/actions/_grid_actions.py:698
+#: src/actions/_grid_actions.py:723
 msgid "Import cell overflow missing"
 msgstr ""
 
-#: src/actions/_grid_actions.py:700
+#: src/actions/_grid_actions.py:726
 msgid "The imported data did not fit into the grid {cause}. It has been truncated. Use a larger grid for full import."
 msgstr ""
 
-#: src/actions/_grid_actions.py:709
+#: src/actions/_grid_actions.py:735
 msgid "s"
 msgstr ""
 
-#: src/actions/_grid_actions.py:711
+#: src/actions/_grid_actions.py:737
 msgid "{ncells} cell{plural} pasted at cell {topleft}"
 msgstr ""
 
-#: src/actions/_grid_actions.py:746
+#: src/actions/_grid_actions.py:772
 msgid "Pasting cells... "
 msgstr "Cellen aan het plakken..."
 
-#: src/actions/_grid_actions.py:968
+#: src/actions/_grid_actions.py:993
 msgid "Zoomed to {0:.2f}."
 msgstr ""
 
-#: src/actions/_grid_actions.py:1064
+#: src/actions/_grid_actions.py:1091
 msgid "Switched to table {}."
 msgstr ""
 
-#: src/actions/_grid_actions.py:1244
+#: src/actions/_grid_actions.py:1271
 msgid "Replaced {} with {} in cell {}."
 msgstr "Verving {} door {} in cel {}."
 
@@ -1435,11 +1563,12 @@ msgstr ""
 msgid "Freezing selections is not supported."
 msgstr "Het bevriezen van selecties wordt niet ondersteund."
 
-#: src/actions/_main_window_actions.py:122
+#: src/actions/_main_window_actions.py:128
 msgid "Unknown import choice {}."
 msgstr ""
 
-#: src/actions/_main_window_actions.py:151
+#: src/actions/_main_window_actions.py:167
+#: src/actions/_main_window_actions.py:195
 msgid ""
 "The file {} could not be fully written\n"
 " \n"
@@ -1447,6 +1576,105 @@ msgid ""
 "{}"
 msgstr ""
 
-#: src/actions/_main_window_actions.py:153
+#: src/actions/_main_window_actions.py:169
 msgid "Error writing CSV file"
 msgstr ""
+
+#: src/actions/_main_window_actions.py:197
+msgid "Error writing SVG file"
+msgstr ""
+
+#~ msgid "Cu&t\tCtrl+x"
+#~ msgstr "K&nippen\tCtrl+x"
+
+#~ msgid "&Copy\tCtrl+c"
+#~ msgstr "&Kopiëren\tCtrl+c"
+
+#~ msgid "&Paste\tCtrl+v"
+#~ msgstr "&Plakken\tCtrl+v"
+
+#~ msgid "Insert &rows\tShift+Ctrl+i"
+#~ msgstr "&Rijen invoegen\tShift+Ctrl+i"
+
+#~ msgid "&Insert columns\tCtrl+i"
+#~ msgstr "K&olommen invoegen\tCtrl+i"
+
+#~ msgid "Delete rows\tShift+Ctrl+d"
+#~ msgstr "Rijen verwijderen\tShift+Ctrl+d"
+
+#~ msgid "Delete columns\tCtrl+Alt+d"
+#~ msgstr "Kolommen verwijderen\tCtrl+Alt+d"
+
+#~ msgid "&New\tCtrl+n"
+#~ msgstr "&Nieuw\tCtrl+n"
+
+#~ msgid "&Save\tCtrl+s"
+#~ msgstr "O&pslaan\tCtrl+s"
+
+#~ msgid "Save &As\tShift+Ctrl+s"
+#~ msgstr "Opslaan &als\tShift+Ctrl+s"
+
+#~ msgid "Print preview\tShift+Ctrl+p"
+#~ msgstr "Afdrukvoorbeeld\tShift+Ctrl+p"
+
+#~ msgid "&Print\tCtrl+p"
+#~ msgstr "Afdru&kken\tCtrl+p"
+
+#~ msgid "&Quit\tCtrl+q"
+#~ msgstr "Afsl&uiten\tCtrl+q"
+
+#~ msgid "&Undo\tCtrl+z"
+#~ msgstr "&Ongedaan maken\tCtrl+z"
+
+#~ msgid "&Redo\tShift+Ctrl+z"
+#~ msgstr "Opn&ieuw\tShift+Ctrl+z"
+
+#~ msgid "Copy &Results\tShift+Ctrl+c"
+#~ msgstr "&Waarden kopiëren\tShift+Ctrl+c"
+
+#~ msgid "&Find\tCtrl+f"
+#~ msgstr "&Zoeken\tCtrl+f"
+
+#~ msgid "Replace...\tCtrl+Shift+f"
+#~ msgstr "Vervangen...\tCtrl+Shift+f"
+
+#~ msgid "Go to cell\tCtrl+G"
+#~ msgstr "Ga naar cel\tCtrl+g"
+
+#~ msgid "Zoom in\tCtrl++"
+#~ msgstr "Inzoomen\tCtrl++"
+
+#~ msgid "Zoom out\tCtrl+-"
+#~ msgstr "Uitzoomen\tCtrl+-"
+
+#~ msgid "&Macro list\tCtrl+m"
+#~ msgstr "&Macrolijst\tCtrl+m"
+
+#~ msgid "Pyspread file (*.pys)|*.pys|All files (*.*)|*.*"
+#~ msgstr "Pyspread-bestand (*.pys)|*.pys|Alle bestanden (*.*)|*.*"
+
+#~ msgid "Macro file (*.py)|*.py|All files (*.*)|*.*"
+#~ msgstr "Macro-bestand (*.py)|*.py|Alle bestanden (*.*)|*.*"
+
+#, fuzzy
+#~ msgid "Series name"
+#~ msgstr "Echte naam"
+
+#~ msgid "Comment"
+#~ msgstr "Opmerking"
+
+#~ msgid "New spreadsheet"
+#~ msgstr "Nieuwe spreadsheet"
+
+#~ msgid "Cut cells to clipboard"
+#~ msgstr "Cellen naar het klembord knippen"
+
+#~ msgid "Paste cell from clipboard"
+#~ msgstr "Cel vanaf het klembord plakken"
+
+#, fuzzy
+#~ msgid "Print spreadsheet"
+#~ msgstr "De huidige spreadsheet afdrukken"
+
+#~ msgid "Case sensitive search"
+#~ msgstr "Hoofdlettergevoelig zoeken"
